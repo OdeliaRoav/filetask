@@ -4,7 +4,7 @@ import com.example.filetask.entity.User;
 import com.example.filetask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartFile; // HTMl에서 파일 올리면 Spring이 MultipartFile형태로 전달해주는 역할
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,14 +21,15 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
-
+    //입출력시 예외처리 생각해야함
     public Map<String, Object> uploadFile(MultipartFile file) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
-        String fileName = file.getOriginalFilename();
+        String fileName = file.getOriginalFilename(); //.dbfile인지 확인하기 위해서 원래 이름 그대로 가져옴
 
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
+            // 잘못된 파일이면 즉시 에러 발생 -> RuntimeException
         }
 
         BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
@@ -40,6 +41,7 @@ public class UserService {
         }
 
         int successCount = 0;
+        //만약 실패한다면?
         List<String> failList = new ArrayList<>();
 
         for (int i = 0; i < lines.size(); i++) {
@@ -60,7 +62,7 @@ public class UserService {
                 userRepository.save(user);
                 successCount++;
 
-            } catch (Exception e) {
+            } catch (Exception e) { //User 클래스 안에 id, desc, regtime 등 누락 시
                 failList.add((i + 1) + "번 줄 실패 : " + oneLine);
             }
         }
