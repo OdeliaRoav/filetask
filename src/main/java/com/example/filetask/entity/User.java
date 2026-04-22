@@ -24,7 +24,7 @@ public class User {
     private String name;
     private String level;
 
-    @Column(name = "descrption")
+    @Column(name = "description")
     private String desc;
 
     @Column(name = "reg_date")
