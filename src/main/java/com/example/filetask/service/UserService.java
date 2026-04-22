@@ -17,11 +17,17 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+
+    //생성자 안쓰려면 @RequiredArgsConstructor 근데 생성자 쓰는게 더 편한것같음
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     //입출력시 예외처리 생각해야함
+    //MultipartFile은 HTML에서 파일 업로드시 저장되는 그 유형뭐시기
     public Map<String, Object> uploadFile(MultipartFile file) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
@@ -31,7 +37,6 @@ public class UserService {
             throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
             // 잘못된 파일이면 즉시 에러 발생 -> RuntimeException
         }
-
         BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
         List<String> lines = new ArrayList<>();
 
@@ -49,7 +54,7 @@ public class UserService {
 
             try {
                 String[] data = oneLine.split("/", -1);
-
+                //split이 limit 기준으로 >0이면 갯수대로, 0이면 빈값은 제외하고 출력, limit<0이면 빈값도 모두 출력함 즉 홍길동/B//5432 이런게 가능해진다는 뜻
                 User user = new User(
                         data[0],
                         data[1],
@@ -70,7 +75,7 @@ public class UserService {
         result.put("totalCount", lines.size());
         result.put("successCount", successCount);
         result.put("failList", failList);
-
+        //result.get하려면 int면 int test = (int)result.get("totalCount"); 이런식으로
         return result;
     }
 
