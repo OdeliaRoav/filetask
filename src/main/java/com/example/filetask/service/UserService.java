@@ -4,6 +4,7 @@ import com.example.filetask.entity.User;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile; // HTMl에서 파일 올리면 Spring이 MultipartFile형태로 전달해주는 역할
 
@@ -117,6 +118,12 @@ public class UserService {
     public List<User> getAllUsers(){
         return userQueryRepository.findAllUsers();
     }
+
+    public ResponseEntity<String> deleteById(String id) {
+        userRepository.deleteById(id);
+        return ResponseEntity.ok("삭제");
+    }
+
 
 /*
     public Optional<User> findById(String id){
