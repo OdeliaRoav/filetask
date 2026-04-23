@@ -31,8 +31,7 @@ public class User {
     private LocalDateTime regDate;
 
     @Builder
-    public User(String id, String pwd, String name, String level,
-                String description, LocalDateTime reg_date) {
+    public User(String id, String pwd, String name, String level, String description, LocalDateTime reg_date) {
         this.id = id;
         this.pwd = pwd;
         this.name = name;
