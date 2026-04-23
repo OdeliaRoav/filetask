@@ -1,8 +1,8 @@
 package com.example.filetask.service;
 
 import com.example.filetask.entity.User;
+import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile; // HTMl에서 파일 올리면 Spring이 MultipartFile형태로 전달해주는 역할
@@ -13,21 +13,20 @@ import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final RedisTemplate<String, String> redisTemplate;
+    private final UserQueryRepository userQueryRepository;
 
     //생성자 안쓰려면 @RequiredArgsConstructor 근데 생성자 쓰는게 더 편한것같음
-    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate) {
+    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate; //파일명 기준으로 레디스에 저장하고 중복 시 확인을 묻는 방향으로
+        this.userQueryRepository = userQueryRepository;
     }
 
 
@@ -42,8 +41,6 @@ public class UserService {
             throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
             // 요구사항 4번 : dbfile 이외 확장자는 모두 예외처리
         }
-        BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
-
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
@@ -57,6 +54,8 @@ public class UserService {
 
             return result;
         }
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
         List<String> lines = new ArrayList<>();
 
@@ -109,7 +108,15 @@ public class UserService {
         return result;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    //단일 결과 반환
+    public Optional<User> findById(String id){
+        return userRepository.findById(id);
     }
+
+    //복수 결과 반환
+    public List<User> getAllUsers(){
+        return userQueryRepository.findAllUsers();
+    }
+
+
 }
