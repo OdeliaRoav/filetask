@@ -19,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        return userService.uploadFile(file);
+    public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
+        return userService.uploadFile(file, force);
     }
 }
