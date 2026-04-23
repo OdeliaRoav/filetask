@@ -110,7 +110,7 @@ public class UserService {
 
     //단일 결과 반환
     public Optional<User> findById(String id){
-        return userRepository.findById(id);
+        return userQueryRepository.findById(id);
     }
 
     //복수 결과 반환
@@ -118,5 +118,14 @@ public class UserService {
         return userQueryRepository.findAllUsers();
     }
 
+/*
+    public Optional<User> findById(String id){
+        return userRepository.findById(id);
+    }
 
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+QueryDSL 안쓸때
+*/
 }
