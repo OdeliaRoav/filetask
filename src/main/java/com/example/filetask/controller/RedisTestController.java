@@ -13,11 +13,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/redis")
-public class RedisController {
+public class RedisTestController {
 
     private final RedisTemplate<String, String> redisTemplate;
 
-    public RedisController(RedisTemplate<String, String> redisTemplate) {
+    public RedisTestController(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
