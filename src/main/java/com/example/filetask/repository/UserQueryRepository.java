@@ -28,7 +28,6 @@ public class UserQueryRepository{
 
     }
 
-
     public List<User> findAllUsers(){
         QUser user = QUser.user;
 
