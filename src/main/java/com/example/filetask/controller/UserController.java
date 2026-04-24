@@ -21,6 +21,14 @@ public class UserController {
         this.userService = userService;
     }
 
+
+    @GetMapping
+    public List<User> getAllUsers(){
+        return userService.getAllUsers();
+    }
+
+
+    // Swagger 테스트용
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
         return userService.uploadFile(file, force);
@@ -29,11 +37,6 @@ public class UserController {
     @GetMapping("/{id}")
     public Optional<User> getUser(@PathVariable String id){
         return userService.findById(id);
-    }
-
-    @GetMapping
-    public List<User> getAllUsers(){
-        return userService.getAllUsers();
     }
 
     @DeleteMapping("/{id}")
