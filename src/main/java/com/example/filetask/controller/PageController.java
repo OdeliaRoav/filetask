@@ -29,8 +29,13 @@ public class PageController {
     public String uploadFile(@RequestParam("file") MultipartFile file,
                              @RequestParam(value = "force", defaultValue = "false") boolean force,
                              Model model) throws IOException {
-        Map<String, Object> result = userService.uploadFile(file, force);
-        model.addAttribute("result", result);
+        try {
+            Map<String, Object> result = userService.uploadFile(file, force);
+            model.addAttribute("result", result);
+
+        }catch (RuntimeException e){
+            model.addAttribute("errorMessage", e.getMessage());
+        }
         return "upload";
     }
 }

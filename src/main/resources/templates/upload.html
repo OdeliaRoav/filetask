@@ -41,6 +41,7 @@
             <p th:text="'성공 ' + ${result['successCount']} + '건, 실패 ' + ${result['failCount']} + '건'">
                 성공 0건, 실패 0건
             </p>
+            <button type="button" onclick="loadUsers()">조회</button>
             <p>실패한 라인</p>
             <ul>
                 <li th:each="fail : ${result['failList']}" th:text="${fail}">실패 라인</li>
@@ -67,7 +68,24 @@
     </table>
 </div>
 
+<script th:if="${errorMessage != null}">
+    alert(`[[${errorMessage}]]`);
+
+</script>
+
 <script>
+    function formatDesc(desc) {
+        return desc ?? '';
+    } // 요구사항에 맞게 NULL 안 뜨게
+
+    function formatRegDate(regDate) {
+        if (!regDate) {
+            return '';
+        }
+
+        return String(regDate).replace('T', ' ');
+    }
+
     function loadUsers() {
         $.ajax({
             type: 'get',
@@ -84,8 +102,8 @@
                         '<td>' + user.pwd + '</td>' +
                         '<td>' + user.name + '</td>' +
                         '<td>' + user.level + '</td>' +
-                        '<td>' + user.desc + '</td>' +
-                        '<td>' + user.regDate + '</td>';
+                        '<td>' + formatDesc(user.desc) + '</td>' +
+                        '<td>' + formatRegDate(user.regDate) + '</td>';
 
                     tbody.appendChild(row);
                 }
