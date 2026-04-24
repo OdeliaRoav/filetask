@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>FileTask</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+            integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+<h1>FileTask</h1>
+
+<h2>파일 업로드</h2>
+<form action="/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" accept=".dbfile" required>
+    <input type="checkbox" name="force" value="true"> 중복이어도 업로드 진행
+    <button type="submit">업로드</button>
+</form>
+
+<div th:if="${result != null}">
+    <hr>
+    <h2>업로드 결과</h2>
+
+    <div th:if="${result['successCount'] == null}">
+        <p th:text="${result['message']}">중복 파일입니다.</p>
+        <p th:text="'파일명: ' + ${result['fileName']}">파일명</p>
+        <p th:text="'남은 시간: ' + ${result['ttlSeconds']} + '초'">남은 시간</p>
+    </div>
+
+    <div th:if="${result['successCount'] != null}">
+        <p th:text="'파일명: ' + ${result['fileName']}">파일명</p>
+
+        <div th:if="${result['failCount'] == 0}">
+            <p>전체 성공</p>
+            <p th:text="${result['successCount']} + '건 입력 성공'">0건 입력 성공</p>
+            <button type="button" onclick="loadUsers()">조회</button>
+        </div>
+
+        <div th:if="${result['failCount'] > 0}">
+            <p>전체/일부 실패</p>
+            <p th:text="'성공 ' + ${result['successCount']} + '건, 실패 ' + ${result['failCount']} + '건'">
+                성공 0건, 실패 0건
+            </p>
+            <p>실패한 라인</p>
+            <ul>
+                <li th:each="fail : ${result['failList']}" th:text="${fail}">실패 라인</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="userArea" style="display:none;">
+    <hr>
+    <h2>User 테이블 전체 등록 데이터</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>PWD</th>
+            <th>NAME</th>
+            <th>LEVEL</th>
+            <th>DESC</th>
+            <th>REG_DATE</th>
+        </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+    </table>
+</div>
+
+<script>
+    function loadUsers() {
+        $.ajax({
+            type: 'get',
+            url: '/users',
+            success: function (users) {
+                const tbody = document.getElementById('userTableBody');
+                tbody.innerHTML = '';
+
+                for (const user of users) {
+                    const row = document.createElement('tr');
+
+                    row.innerHTML =
+                        '<td>' + user.id + '</td>' +
+                        '<td>' + user.pwd + '</td>' +
+                        '<td>' + user.name + '</td>' +
+                        '<td>' + user.level + '</td>' +
+                        '<td>' + user.desc + '</td>' +
+                        '<td>' + user.regDate + '</td>';
+
+                    tbody.appendChild(row);
+                }
+
+                document.getElementById('userArea').style.display = 'block';
+            },
+            error: function () {
+                alert('조회 중 오류가 발생했습니다.');
+            }
+        });
+    }
+</script>
+</body>
+</html>
