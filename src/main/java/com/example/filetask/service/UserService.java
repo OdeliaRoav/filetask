@@ -24,7 +24,6 @@ public class UserService {
     private final UserQueryRepository userQueryRepository;
 
     //생성자 안쓰려면 @RequiredArgsConstructor 근데 생성자 쓰는게 더 편한것같음
-    //UserService가 동작하려면 뭐가 필요한지 한번에 볼 수 있음
     public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate; //파일명 기준으로 레디스에 저장하고 중복 시 확인을 묻는 방향으로
@@ -45,7 +44,6 @@ public class UserService {
         }
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
-        //키가 존재하면 true, 없으면 false 반환해서 중복 여부 체크 용도
 
         if(Boolean.TRUE.equals(duplicated) && !force){
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
