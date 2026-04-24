@@ -9,5 +9,5 @@ import java.util.*;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    //JpaRepository 안에 save, findAll 구현
+
 }
