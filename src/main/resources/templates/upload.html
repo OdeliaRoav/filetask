@@ -9,11 +9,11 @@
 </head>
 <body>
 <h1>FileTask</h1>
-
+<!-- 타임리프 기본 문법 ${} : 모델에 담긴 데이터를 읽음 -->
 <h2>파일 업로드</h2>
 <form action="/upload" method="post" enctype="multipart/form-data">
     <input type="file" name="file" accept=".dbfile" required>
-    <input type="checkbox" name="force" value="true"> 중복이어도 업로드 진행
+    <input type="checkbox" name="force" value="true"> 중복 업로드 진행
     <button type="submit">업로드</button>
 </form>
 
@@ -25,6 +25,7 @@
         <p th:text="${result['message']}">중복 파일입니다.</p>
         <p th:text="'파일명: ' + ${result['fileName']}">파일명</p>
         <p th:text="'남은 시간: ' + ${result['ttlSeconds']} + '초'">남은 시간</p>
+        <button type="button" onclick="loadUsers()">조회</button>
     </div>
 
     <div th:if="${result['successCount'] != null}">
@@ -38,9 +39,10 @@
 
         <div th:if="${result['failCount'] > 0}">
             <p>전체/일부 실패</p>
-            <p th:text="'성공 ' + ${result['successCount']} + '건, 실패 ' + ${result['failCount']} + '건'">
-                성공 0건, 실패 0건
+            <p th:text="'성공 ' + ${result['successCount']} + '건 실패 ' + ${result['failCount']} + '건'">
+                성공 0건 실패 0건
             </p>
+            <button type="button" onclick="loadUsers()">조회</button>
             <p>실패한 라인</p>
             <ul>
                 <li th:each="fail : ${result['failList']}" th:text="${fail}">실패 라인</li>
@@ -79,13 +81,14 @@
                 for (const user of users) {
                     const row = document.createElement('tr');
 
+
                     row.innerHTML =
                         '<td>' + user.id + '</td>' +
                         '<td>' + user.pwd + '</td>' +
                         '<td>' + user.name + '</td>' +
                         '<td>' + user.level + '</td>' +
-                        '<td>' + user.desc + '</td>' +
-                        '<td>' + user.regDate + '</td>';
+                        '<td>' + (user.desc ?? ' ') + '</td>' +
+                        '<td>' + formatRegDate(user.regDate) + '</td>';
 
                     tbody.appendChild(row);
                 }
@@ -96,6 +99,18 @@
                 alert('조회 중 오류가 발생했습니다.');
             }
         });
+    }
+
+    function formatRegDate(regDate) {
+        const date = new Date(regDate);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+
+        return year + '년 ' + month + '월 ' + day + '일 ' + hour + '시 ' + minute + '분';
     }
 </script>
 </body>
