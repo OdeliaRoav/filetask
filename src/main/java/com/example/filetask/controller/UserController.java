@@ -26,6 +26,7 @@ public class UserController {
         return userService.uploadFile(file, force);
     }
 
+    //Swagger
     @GetMapping("/{id}")
     public Optional<User> getUser(@PathVariable String id){
         return userService.findById(id);

@@ -29,10 +29,6 @@ public class UserService {
         this.userQueryRepository = userQueryRepository;
     }
 
-
-
-
-
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
