@@ -1,0 +1,150 @@
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+}
+
+.dhx_layout-line.dhx_layout-rows>.dhx_layout-cell {
+	border-bottom : none;
+}
+
+.dhx_widget--bordered, .dhx_grid-content {
+	border: none;
+}
+
+.dhx_data-wrap {
+    border-top: none;
+}
+
+.dhx_header-wrapper {
+	margin-right: 40px;
+}
+
+.dhx_layout-cell[aria-label=tab-content-grid] {
+	padding-left: 30px;
+}
+
+.dhx_layout-cell[aria-label=tab-content-boardWrap]
+, .dhx_layout-cell[aria-label=tab-content-boardContentWrap] {
+	margin: 20px;	
+}
+
+.dhx_layout-line.dhx_layout-columns>.dhx_layout-cell[aria-label=tab-content-searchForm] {
+	border: none;
+}
+
+.formButton {
+	margin-left: 20px;
+}
+
+.treeButton>button {
+	width: 100%;
+}
+
+.treeForm {
+	border-left: 1px solid #e4e4e4;
+	border-right: 1px solid #e4e4e4;
+}
+
+.hoverIcon {
+	display: none;
+}
+
+.furence-template-button {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+#addCategoryName {
+	border: none;
+	height: 24px;
+    position: absolute;
+    top: 6px;
+    width: 150px;
+}
+
+.dhx_grid-body {
+	overflow-y: auto;
+   	overflow-x: hidden;
+   	border: 1px solid #dfdfdf;
+}
+
+.buttonForm {
+	display: flex;
+       align-items: flex-end;
+}
+
+.dhx_grid-cell[data-dhx-col-id=subject] {
+	cursor:pointer;
+}
+
+.dhx_form-group--textarea {
+	height: 55px;
+}
+
+.dhx_layout-cell[aria-label=tab-content-contentForm]>.dhx_layout-cell-content {
+	margin: 20px 40px 0px 0px;
+}
+
+.contentMainForm {
+	overflow: scroll;
+}
+
+.contentButton {
+	display: flex;
+   	justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.dhx_simplevault-files {
+	max-height: 111px;
+}
+
+.fileLabel {
+	margin: 6px 16px 0px 0px;
+}
+
+.fileLabel .dhx_input--textinput {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: right;
+	padding: 0;
+}
+
+.contentContainer {
+    background-color: #F6F6F6;
+    display: block;
+    width: 100%;
+    height: auto;
+    padding: 6px 8px;
+    border: 1px solid #d6d6d6;
+    height: 250px;
+    overflow: auto;
+}
+
+.contentContainer p {
+	margin: 0px;
+}
+
+.jodit-wysiwyg_iframe {
+	background-color: var(--dhx-background-secondary); !important;
+}
+
+.jodit-status-bar_resize-handle_true{
+	display: none; !important;
+}
+
+.jodit-status-bar-link {
+	display: none;
+}
+.jodit-editor__resize{
+	display: none;
+}
+.jodit-status-bar__item-right{
+	display: none;
+}
+.jodit-xpath{
+	display: none;
+}

@@ -22,7 +22,7 @@ public class PageController {
 
     @GetMapping("/upload")
     public String uploadPage() {
-        return "upload";
+        return "upload/upload";
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
@@ -31,6 +31,6 @@ public class PageController {
                              Model model) throws IOException {
         Map<String, Object> result = userService.uploadFile(file, force);
         model.addAttribute("result", result);
-        return "upload";
+        return "upload/upload";
     }
 }
