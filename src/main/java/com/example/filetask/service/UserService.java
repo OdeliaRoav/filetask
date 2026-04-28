@@ -120,6 +120,12 @@ public class UserService {
         return ResponseEntity.ok("삭제");
     }
 
+    public ResponseEntity<String> deleteAllUsers() {
+        userRepository.deleteAll();
+        return ResponseEntity.ok("삭제");
+
+    }
+
 
 /*
     public Optional<User> findById(String id){

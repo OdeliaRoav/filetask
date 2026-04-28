@@ -3,7 +3,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-
+    <%@include file="../common/include.jsp" %>
 
 <title>FileTask</title>
 <script type="text/javascript" src="js/board/board.js"></script>

@@ -42,5 +42,7 @@ public class UserController {
         return userService.deleteById(id);
     }
 
+    @DeleteMapping
+    public ResponseEntity<String>  deleteAllUsers() { return userService.deleteAllUsers(); };
 
 }

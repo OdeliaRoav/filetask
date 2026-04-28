@@ -214,10 +214,6 @@ const uploadFile =() =>{
             console.log("파일명", res.fileName);
             showUploadResult(res);
 
-            if(res.successCount != null){
-                console.log("로드까지 들어옴")
-                loadFile();
-            }
         },
         error: function (err) {
             console.log(err);
