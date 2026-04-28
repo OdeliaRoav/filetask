@@ -1,7 +1,5 @@
 package com.example.filetask.config;
 
-//JPAQueryFactory로 QueryDSL을 사용
-//JPA의 엔티티를 이용해 쿼리를 쉽게 사용할 수 있는 도구라고 한다.
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
