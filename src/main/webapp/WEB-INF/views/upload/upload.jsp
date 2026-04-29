@@ -3,19 +3,25 @@
 <html>
 <head>
 <meta charset="UTF-8">
-    <%@include file="../common/include.jsp" %>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/dhtmlx8/codebase/suite.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/custom_suite.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/board/board.css">
 
-<title>FileTask</title>
-<script type="text/javascript" src="js/board/board.js"></script>
+    <script src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/jquery.js"></script>
+    <script src="${pageContext.request.contextPath}/dhtmlx8/codebase/suite.js"></script>
+    <script src="${pageContext.request.contextPath}/js/board/board.js"></script>
 
-<script type="text/javascript">
-language = ${empty language ? 0 : language};
-</script>
-</head>
+    <title>FileTask</title>
+    <script type="text/javascript" src="js/board/board.js"></script>
 
-<body onload ="boardManager()">
+    <script type="text/javascript">
+        language = ${empty language ? 0 : language};
+    </script>
+    </head>
 
-<div id="layout" style="height: 100%;"></div>
+    <body onload ="boardManager()">
 
-</body>
-</html>
+    <div id="layout" style="height: 100%;"></div>
+
+    </body>
+    </html>

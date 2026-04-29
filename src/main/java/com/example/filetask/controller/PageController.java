@@ -20,6 +20,7 @@ public class PageController {
         this.userService = userService;
     }
 
+    //페이지 로드
     @GetMapping("/upload")
     public String uploadPage() {
         return "upload/upload";

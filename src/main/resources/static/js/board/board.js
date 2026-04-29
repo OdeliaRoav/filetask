@@ -4,9 +4,9 @@ var grid;
 var uploadForm;
 
 const boardManager = () => {
-    createLayout();
-    createUploadForm();
-    createGrid();
+    createLayout(); //레이아웃 생성
+    createUploadForm(); //버튼 생성
+    createGrid(); //그리드 생성
 }
 
 const createLayout = () => {
@@ -30,7 +30,7 @@ const createLayout = () => {
                         resizable: true
                     },
                     {
-                        id: "content",
+                        id: "content", //그리드 영역으로
                         header: "User 테이블 전체 등록 데이터",
                         resizable: true
                     },
@@ -39,7 +39,7 @@ const createLayout = () => {
         ]
     });
     layout.getCell("sidebar").attachHTML(`
-        <div id="resultArea" style="padding:12px; font-size:14px;">
+        <div id="resultArea">
             <p>업로드 결과가 없습니다.</p>
         </div>
     `);
@@ -180,7 +180,6 @@ const uploadFile =() =>{
 
     console.log(files);
 
-
     if(!files || files.length === 0){
         alert("파일을 선택하세요");
         return;
@@ -202,6 +201,7 @@ const uploadFile =() =>{
         formData.append("force", "true");
     }
 
+    //JQuery AJAX
     $.ajax({
         type: "POST",
         url: "/users/upload", //계속 /upload로만 보내서 오류 발생 -> /users/upload로 정정

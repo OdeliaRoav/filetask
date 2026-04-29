@@ -41,7 +41,8 @@ public class UserService {
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
-
+        //Redis TTL 부분
+        //redis-cli 매번 안하면 안되서 그냥 Boolean RedisAvaliable = false 만들어서 try-catch로 Exception e 잡아도 괜찮을 것 같다.
         if(Boolean.TRUE.equals(duplicated) && !force){
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             result.put("duplicated", true);
@@ -90,6 +91,7 @@ public class UserService {
             }
         }
 
+        //Redis에 저장
         redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
 
         result.put("duplicated", Boolean.TRUE.equals(duplicated));
