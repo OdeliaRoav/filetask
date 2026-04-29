@@ -20,22 +20,19 @@ public class PageController {
         this.userService = userService;
     }
 
+    //페이지 로드
     @GetMapping("/upload")
     public String uploadPage() {
-        return "upload";
+        return "upload/upload";
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public String uploadFile(@RequestParam("file") MultipartFile file,
                              @RequestParam(value = "force", defaultValue = "false") boolean force,
                              Model model) throws IOException {
-        try {
-            Map<String, Object> result = userService.uploadFile(file, force);
-            model.addAttribute("result", result);
+        Map<String, Object> result = userService.uploadFile(file, force);
+        model.addAttribute("result", result);
+        return "upload/upload";
 
-        }catch (RuntimeException e){
-            model.addAttribute("errorMessage", e.getMessage());
-        }
-        return "upload";
     }
 }

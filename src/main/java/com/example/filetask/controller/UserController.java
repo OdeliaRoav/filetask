@@ -34,6 +34,7 @@ public class UserController {
         return userService.uploadFile(file, force);
     }
 
+    //Swagger
     @GetMapping("/{id}")
     public Optional<User> getUser(@PathVariable String id){
         return userService.findById(id);
@@ -43,4 +44,9 @@ public class UserController {
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
         return userService.deleteById(id);
     }
+
+    @DeleteMapping
+    public ResponseEntity<String>  deleteAllUsers() { return userService.deleteAllUsers(); };
+
 }
+

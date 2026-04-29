@@ -1,0 +1,150 @@
+.dhx_form-group--state_error .dhx_input {
+	box-shadow: inset 0 0 0 1px #EAEAEA;
+}
+.dhx_form-group--state_error .dhx_label {
+	color: unset;
+}
+
+
+.furence-tree-template-button-wrap,
+.furence-tree-template-button-wrap .furence-template-button{
+	display: flex;
+    align-items: center;
+}
+
+.furence-tree-template-wrap{
+	display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: default;
+}
+
+.furence-custom-form .dhx_form-group {
+	margin-bottom: 0px;
+}
+
+.furence-custom-form .dhx_form-element .dhx_button,
+.furence-custom-form .dhx_form-group .dhx_input{
+    width: -webkit-fill-available;
+	margin-left: 5px;
+}
+.dhx_input {
+	box-shadow: inset 0 0 0 1px #EAEAEA;
+}
+.dhx_menu {
+	background-color: #30333d;
+}
+.dhx_simplevault-files__download {
+	position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.dhx_layout-cell-header__title {
+	overflow: visible;
+	cursor: default;
+}
+.contentsTitleWrap>.dhx_layout-cell-header h3{
+	margin-bottom: 5px;
+	margin-top: 5px;
+    font-size: 25px;
+}
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    overflow: hidden;
+}
+
+.noneData {
+/* 	height: 500px !important; */
+	background-color: #e4e4e4;
+}
+
+.dhx_sidebar-button:active
+, .dhx_sidebar-button:hover
+, .dhx_sidebar-button--active {
+	background-color: #30333d;
+}
+
+.dhx_menu-button--active:not(:disabled)
+, .dhx_menu-button:active:not(:disabled)
+, .dhx_menu-button:focus:not(:disabled)
+, .dhx_menu-button:hover:not(:disabled) {
+	background-color: #30333d;
+}
+
+.dhx_tree-folder--selected:before, .dhx_tree-list-item--selected:before {
+	background-color: #FFF;
+}
+
+.dhx_tree-folder--focused:before, .dhx_tree-folder:hover:before
+, .dhx_tree-list-item--focused:before, .dhx_tree-list-item:hover:before {
+	background-color: #FFF;
+}
+.dhx_month_head, .dhx_cal_date, .dhx_cal_lsection, .dhx_wrap_section span {
+	cursor: default;
+}
+.dhx_scale_bar {
+	cursor: default;
+}
+
+.dhx_tree-folder--selected span,
+.dhx_tree-folder--focused span,
+.dhx_tree-list-item--focused span,
+.dhx_tree-list-item--selected span {
+	font-weight: 900;
+}
+.dhx_timepicker__close {
+	display: none;
+}
+.selectionRow {
+	background-color: #E6E6E6;
+}
+.dhx_input__caption {
+	margin-top: 7px;
+}
+.dhx_form-group--state_success label {
+	color: initial !important;	
+}
+.dhx_form-group--state_success input,
+.dhx_form-group--state_success textarea{
+	box-shadow: inset 0 0 0 1px #EAEAEA !important;
+}
+
+.dhx_cell-editor__checkbox:has(.dhx_checkbox__input:disabled+.dhx_checkbox__visual-input) {
+	cursor: auto;
+}
+
+.dhx_checkbox__input:disabled+.dhx_checkbox__visual-input {
+	background: linear-gradient(to top right, #fff calc(50% - 1px), #8D8F94, #fff calc(50% + 1px) );
+	cursor: auto;
+}
+
+.dhx_sidebar-button {
+	height: 44px;
+}
+
+#masterCheckbox {
+	zoom: 1.5 !important;
+}
+
+.dhx_progress-bar {
+	z-index: 1;
+}
+
+.dhx_tree-list-item--selected:before {
+	box-shadow: none;
+}
+
+.furence_list_item,
+.dhx_grid-cell,
+.furence-tree-template-wrap {
+	cursor: pointer;
+}
+
+.dhx_form-group--state_success .dhx_label, .dhx_form-group--state_success .dhx_text {
+	color: initial;
+}

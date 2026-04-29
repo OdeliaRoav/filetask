@@ -20,7 +20,6 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -45,13 +44,20 @@ dependencies {
     //redis 의존성
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    //JSP 의존성
+    implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
+    implementation 'jakarta.servlet.jsp.jstl:jakarta.servlet.jsp.jstl-api'
+    implementation 'org.glassfish.web:jakarta.servlet.jsp.jstl'
+
+    //JSP
+    implementation 'org.webjars:jquery:3.6.2'
 }
 
 //49~61 QueryDSL 관련 설정
 def generated = 'src/main/generated'
 
 tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
     options.generatedSourceOutputDirectory = file(generated)
 }
 
