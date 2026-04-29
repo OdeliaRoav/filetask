@@ -38517,10 +38517,10 @@ var SimpleVault = /** @class */ (function (_super) {
 					 * Lawrence
 					 * Simplevault Download button created
 					 */
-                    dom_1.el(".dhx_button.dhx_simplevault-files__download.dhx_button--icon.dhx_button--view_link.dhx_button--size_small.dhx_button--color_secondary.dhx_button--circle", {
-                        "data-dhx-id": file.id,
-                        onclick: _this._handlers.download,
-                    }, [dom_1.el("span.dxi.dxi-download")]),
+                    // dom_1.el(".dhx_button.dhx_simplevault-files__download.dhx_button--icon.dhx_button--view_link.dhx_button--size_small.dhx_button--color_secondary.dhx_button--circle", {
+                    //     "data-dhx-id": file.id,
+                    //     onclick: _this._handlers.download,
+                    // }, [dom_1.el("span.dxi.dxi-download")]),
                     dom_1.el(".dhx_button.dhx_simplevault-files__delete.dhx_button--icon.dhx_button--view_link.dhx_button--size_small.dhx_button--color_secondary.dhx_button--circle", {
                         "data-dhx-id": file.id,
                         onclick: _this._handlers.remove,

@@ -3,20 +3,23 @@
 <html>
 <head>
 <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/dhtmlx8/codebase/suite.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/custom_suite.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/board/board.css">
-
-    <script src="${pageContext.request.contextPath}/webjars/jquery/3.6.2/jquery.js"></script>
-    <script src="${pageContext.request.contextPath}/dhtmlx8/codebase/suite.js"></script>
-    <script src="${pageContext.request.contextPath}/js/board/board.js"></script>
 
     <title>FileTask</title>
-    <script type="text/javascript" src="js/board/board.js"></script>
+    <link rel="stylesheet" type="text/css" href="/dhtmlx8/codebase/suite.css">
+    <link rel="stylesheet" type="text/css" href="/css/custom_suite.css">
+    <link rel="stylesheet" type="text/css" href="/css/board/board.css">
+
+    <script src="/webjars/jquery/3.6.2/jquery.js"></script>
+    <script src="/dhtmlx8/codebase/suite.js"></script>
+    <script src="/js/board/board.js"></script>
+
+    <link rel="stylesheet" href="jodit/jodit.min.css">
+    <script src="jodit/jodit.min.js"></script>
 
     <script type="text/javascript">
         language = ${empty language ? 0 : language};
     </script>
+
     </head>
 
     <body onload ="boardManager()">

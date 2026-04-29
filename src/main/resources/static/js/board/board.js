@@ -15,22 +15,27 @@ const createLayout = () => {
         rows: [
             {
                 id: "toolbar",
+                css: "toolbarArea",
                 header: "FileTask",
                 collapsable: true,
-                height: "210px",
+                height: "225px",
                 resizable: true
             },
             {
+                css: "tabArea",
                 cols: [
                     {
                         id: "sidebar",
                         header: "결과",
                         collapsable: true,
-                        width: "500px",
-                        resizable: true
+                        width: "300px",
+                        resizable: true,
+                        align: "center"
+
                     },
                     {
                         id: "content", //그리드 영역으로
+                        css:"contentGrid",
                         header: "User 테이블 전체 등록 데이터",
                         resizable: true
                     },
@@ -38,25 +43,32 @@ const createLayout = () => {
             },
         ]
     });
+
     layout.getCell("sidebar").attachHTML(`
         <div id="resultArea">
-            <p>업로드 결과가 없습니다.</p>
+            <p align = "center">업로드 결과가 없습니다.</p>
         </div>
     `);
 
 };
 
 const createUploadForm = () => {
-    uploadForm =new dhx.Form("form_container", {
+    uploadForm =new dhx.Form("form", {
+        css: "upload_form",
+        height: 150,
+        padding: 0,
         cols: [
             {
                 type: "simpleVault",
                 name:"simplevault",
                 label: "파일",
-                labelWidth: "120px",
+                labelWidth: "150px",
+                labelHeight: "150px",
                 labelPosition: "left",
                 disabled: false,
-                required: false
+                required: false,
+                css:'test',
+                style: 'test'
             },
             {
                 type: "checkbox",
@@ -67,6 +79,7 @@ const createUploadForm = () => {
                 type: "button",
                 name: "uploadbtn",
                 text: "업로드",
+                height: 40,
                 size: "medium",
                 view: "flat",
                 color: "primary"
@@ -74,7 +87,9 @@ const createUploadForm = () => {
             {
                 type: "button",
                 name: "loadbtn",
+                css: "loadbtn",
                 text: "조회",
+                height: 40,
                 size: "medium",
                 view: "flat",
                 color: "primary"
@@ -227,23 +242,30 @@ const uploadFile =() =>{
 };
 
 const showUploadResult = (result) => {
+    //document.getElementById() -> 해당하는, 예를 들어 ResultArea니깐 ResultArea가 id인 DOM 요소를 반환함
     const area = document.getElementById("resultArea");
 
     if(result.successCount == null){
         area.innerHTML = `
+        <div id = "result", align = "center">
             <p> ${result.message || "중복 파일"}</p>
             <p> 파일명 : ${result.fileName}</p>
             <p> 남은 시간 : ${result.ttlSeconds}</p>   
+        </div>    
         `;
         console.log(result.ttlSeconds);
         return;
     }
 
+    //백틱 사용하면 문자열이랑 변수 사용 가능
+    //innerText쓰면 안됨 안에 내용 다 가져와서(코드들) 여기서는 innerHTML이 맞는듯 해당하는 것만 가져오게
     if(result.failCount == 0 ){
         area.innerHTML = `
+        <div id = "result", align = "center">
             <p>전체 성공</p>
             <p>파일명 : ${result.fileName}</p>
             <p>${result.successCount}건 입력 성공</p>
+        </div>
         `;
         return;
     }
@@ -255,13 +277,15 @@ const showUploadResult = (result) => {
     const failListHTML = (result.failList || []).map(fail => `<li>${fail}</li>`).join("");
 
     area.innerHTML = `
-        <p>전체/일부 실패</p>
-        <p>파일명 : ${result.fileName}</p>
-        <p>성공 : ${result.successCount}, 실패 : ${result.failCount}건</p>
-     
-        <p>실패한 라인</p>
-        <ul>${failListHTML}</ul>`;
-
+        <div id = "result" align = "center">
+            <p>전체/일부 실패</p>
+            <p>파일명 : ${result.fileName}</p>
+            <p>성공 : ${result.successCount}, 실패 : ${result.failCount}건</p>
+         
+            <p>실패한 라인</p>
+            <ul>${failListHTML}</ul>
+        </div>
+        `;
 };
 
 const loadFile = () => {
@@ -278,7 +302,7 @@ const loadFile = () => {
                 regDate : formatRegDate(user.regDate)
             }));
             grid.data.removeAll(); //기존 삭제하고
-            grid.data.parse(gridData); //새로 파싱
+            grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
         },
         error:function(err){
             console.log(err);
@@ -301,20 +325,23 @@ const formatRegDate = (regDate) => {
     const hour = String(date.getHours()).padStart(2,'0');
     const minute = String(date.getMinutes()).padStart(2,'0');
 
-    return `${year}년 ${month}월 ${day}일 ${hour}시 ${minute}분`
+    return `${year}년${month}월${day}일 ${hour}시${minute}분`
 }
 
 const createGrid =() => {
     grid = new dhx.Grid("grid", {
+
         columns: [
-            {id: "id", header:[{text:"ID", align: "center"}]},
-            {id: "pwd", header:[{text: "PWD", align: "center"}]},
-            {id: "name", header:[{text:"NAME", align: "center"}]},
-            {id: "level", header:[{text:"LEVEL", align: "center"}]},
-            {id: "desc", header:[{text:"DESCRIPTION", align: "center"}]},
-            {id: "regDate", header:[{text:"REG_DATE", align: "center"}]}
+            {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
+            {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
+            {id: "name", align: "center", header:[{text:"NAME", align: "center"}]},
+            {id: "level", align: "center", header:[{text:"LEVEL", align: "center"}]},
+            {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
+            {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
         ],
         autoWidth: true,
+
+
         data:[]
     });
 
