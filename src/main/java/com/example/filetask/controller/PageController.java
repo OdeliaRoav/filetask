@@ -33,5 +33,6 @@ public class PageController {
         Map<String, Object> result = userService.uploadFile(file, force);
         model.addAttribute("result", result);
         return "upload/upload";
+
     }
 }
