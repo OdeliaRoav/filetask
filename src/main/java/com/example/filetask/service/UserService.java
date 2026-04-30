@@ -1,6 +1,8 @@
 package com.example.filetask.service;
 
 import com.example.filetask.entity.User;
+import com.example.filetask.entity.Info;
+import com.example.filetask.repository.InfoRepository;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,14 +22,17 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final InfoRepository infoRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserQueryRepository userQueryRepository;
 
 
-    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository) {
+
+    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, InfoRepository infoRepository) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.userQueryRepository = userQueryRepository;
+        this.infoRepository = infoRepository;
     }
 
 
@@ -134,6 +139,27 @@ public class UserService {
     }
 
 
+    public void signup(Info user) {
+        if(infoRepository.existsById(user.getId())){
+            throw new RuntimeException("존재하는 아이디입니다.");
+        }
+        Info signupUser = Info.signup(user.getId(), user.getPwd(), user.getName());
+        infoRepository.save(signupUser);
+    }
+
+
+    public Info login(String id, String pwd) {
+        Info user = infoRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 없다."));
+
+        if(!user.getPwd().equals(pwd)){
+            throw new RuntimeException("비밀번호가 없다.");
+        }
+
+        return user;
+    }
+
+}
+
 /*
     public Optional<User> findById(String id){
         return userRepository.findById(id);
@@ -144,4 +170,3 @@ public class UserService {
     }
 QueryDSL 안쓸때
 */
-}

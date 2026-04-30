@@ -21,9 +21,19 @@ public class PageController {
     }
 
     //페이지 로드
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login/login";
+    }
+
     @GetMapping("/upload")
     public String uploadPage() {
         return "upload/upload";
+    }
+
+    @GetMapping("/signup")
+    public String signupPage(){
+        return "signup/signup";
     }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")

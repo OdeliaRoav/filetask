@@ -1,5 +1,6 @@
 package com.example.filetask.controller;
 
+import com.example.filetask.entity.Info;
 import com.example.filetask.entity.User;
 import com.example.filetask.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,18 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @PostMapping("/signup")
+    public ResponseEntity<?> signup(@RequestBody Info user){
+        userService.signup(user);
+        return ResponseEntity.ok("회원가입 성공");
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Info user){
+        Info loginUser = userService.login(user.getId(), user.getPwd());
+        return ResponseEntity.ok(loginUser);
+    }
+
 
     // Swagger 테스트용
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
@@ -34,7 +47,6 @@ public class UserController {
         return userService.uploadFile(file, force);
     }
 
-    //Swagger
     @GetMapping("/{id}")
     public Optional<User> getUser(@PathVariable String id){
         return userService.findById(id);
