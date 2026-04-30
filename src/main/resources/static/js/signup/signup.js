@@ -51,7 +51,7 @@ const form = ()=> {
         rows: [
             {
                 type: "input",
-                label: "id",
+                label: "Id",
                 placeholder: "ID를 입력해주세요.",
                 name: "id"
             },
@@ -113,7 +113,7 @@ const signupButton = () =>{
             name: values.name
         }),
         success: function(){
-            singupSuccess();
+            signupSuccess();
             location.href = "/login";
         },
         error: function(err){
@@ -123,7 +123,7 @@ const signupButton = () =>{
     });
 };
 
-function singupSuccess() {
+function signupSuccess() {
     dhx.alert({
         header: "회원가입 성공",
         text: "로그인해주세요.",
