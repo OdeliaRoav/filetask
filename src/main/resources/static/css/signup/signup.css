@@ -1,0 +1,103 @@
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.dhx_layout-line.dhx_layout-rows > .dhx_layout-cell {
+    border-bottom: none;
+}
+
+.dhx_widget--bordered,
+.dhx_grid-content {
+    border: none;
+}
+
+.dhx_data-wrap,
+.dhx_grid_data,
+.contentGrid {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.contentGrid .dhx_grid_data{
+    border-color: white;
+}
+
+
+.dhx_data-wrap {
+    border-top: none;
+}
+
+.dhx_header-wrapper {
+    margin-right: 40px;
+}
+
+
+
+.contentGrid .dhx_grid-body,
+.contentGrid .dhx_data-wrap,
+.contentGrid .dhx_grid_data {
+    background-color: #30333d;
+
+}
+.tabArea,
+.tabArea .dhx_layout-cell,
+.tabArea .dhx_layout-cell-content,
+.tabArea .dhx_form,
+.tabArea .dhx_form-group
+{
+    background-color: #30333d;
+
+}
+
+
+.tabArea,
+.tabArea .dhx_layout-cell-header,
+.tabArea .dhx_layout-cell-header__title {
+    background-color: #5d6071;
+    color: #fff;
+    border-color: #FFFFFF1F;
+}
+
+.toolbarArea,
+.toolbarArea .dhx_layout-cell-content,
+.toolbarArea .dhx_form,
+.toolbarArea .dhx_form-group,
+.toolbarArea .dhx_form-element,
+.toolbarArea .dhx_simplevault {
+    background-color: #30333d;
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+
+.toolbarArea .dhx_layout-cell-header,
+.toolbarArea .dhx_layout-cell-header__title {
+    background-color: #5d6071;
+    color: #fff;
+    border-color: #5d6071;
+}
+
+/*Content안에 글씨(label) 흰색으로*/
+.contentGrid .dhx_label {
+    color: #fff;
+}
+
+/*입력칸 길이 조정*/
+.contentGrid .dhx_input{
+    width: 250px;
+}
+
+
+
+
+
+.dhx_grid-body {
+    border: 1px solid #dfdfdf;
+    margin-left: auto;
+    margin-right: auto;
+}
+
