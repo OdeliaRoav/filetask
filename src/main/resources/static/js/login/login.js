@@ -105,7 +105,7 @@ const loginButton = () => {
     const values = loginPlatform.getValue();
 
     if (!values.id || !values.pwd) {
-        alert("아이디와 비밀번호를 입력해주세요.");
+        loginPwdsShow();
         return;
     }
 
@@ -118,12 +118,12 @@ const loginButton = () => {
             pwd: values.pwd
         }),
         success: function () {
-            alert("로그인 성공");
+            loginSuccess();
             location.href = "/upload";
         },
         error: function (err) {
             console.log(err);
-            alert( "로그인 실패");
+            loginFail();
         }
     });
 };
@@ -134,6 +134,31 @@ const signupButton = () => {
 };
 
 
+function loginPwdsShow() {
+    dhx.alert({
+        header: "아이디와 비밀번호를 입력해주세요.",
+        text: "아이디와 비밀번호를 입력해야 로그인할 수 있습니다.",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    });
+}
+
+
+function loginSuccess() {
+    dhx.alert({
+        header: "로그인 성공",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    });
+}
+
+function loginFail() {
+    dhx.alert({
+        header: "로그인 실패",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    })
+};
 
 
 

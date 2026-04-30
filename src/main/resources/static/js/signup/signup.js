@@ -91,6 +91,7 @@ const form = ()=> {
         }
     });
 
+    //loginPlatform을 content cell 칸으로 지정한다.
     layout.getCell("content").attach(loginPlatform);
 };
 
@@ -98,7 +99,7 @@ const signupButton = () =>{
     const values = loginPlatform.getValue();
 
     if (!values.id || !values.password || !values.name) {
-        alert("아이디, 비밀번호, 이름을 모두 입력해주세요.");
+        noInfo();
         return;
     }
 
@@ -112,13 +113,39 @@ const signupButton = () =>{
             name: values.name
         }),
         success: function(){
-            alert("회원가입 성공");
+            singupSuccess();
             location.href = "/login";
         },
         error: function(err){
             console.log(err);
-            alert(err.responseText || "회원가입 실패");
+            signupFail();
         }
     });
 };
+
+function singupSuccess() {
+    dhx.alert({
+        header: "회원가입 성공",
+        text: "로그인해주세요.",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    })
+};
+
+function signupFail() {
+    dhx.alert({
+        header: "회원가입 실패",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    })
+};
+
+function noInfo() {
+    dhx.alert({
+        header: "아이디, 비밀번호, 이름을 모두 입력해주세요.",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    })
+};
+
 
