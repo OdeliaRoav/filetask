@@ -196,7 +196,7 @@ const uploadFile =() =>{
     console.log(files);
 
     if(!files || files.length === 0){
-        alert("파일을 선택하세요");
+        uploadFail();
         return;
     }
 
@@ -206,7 +206,7 @@ const uploadFile =() =>{
     console.log(file);
 
     if(!file.name.endsWith(".dbfile")){
-        alert("dbfile만 선택 가능합니다.");
+        wrongFile();
         return;
     }
 
@@ -232,12 +232,10 @@ const uploadFile =() =>{
         },
         error: function (err) {
             console.log(err);
-            alert("업로드 실패");
+            uploadFail();
         }
 
     });
-
-
 
 };
 
@@ -314,7 +312,7 @@ const loadFile = () => {
 
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
-        return;
+        return fail;
     }
 
     const date = new Date(regDate);
@@ -347,3 +345,19 @@ const createGrid =() => {
 
     layout.getCell("content").attach(grid);
 }
+
+function uploadFail() {
+    dhx.alert({
+        header: "파일을 선택하세요.",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    })
+};
+
+function wrongFile() {
+    dhx.alert({
+        header: ".dbfile만 업로드 가능합니다.",
+        buttonsAlignment: "center",
+        buttons: ["ok"],
+    })
+};

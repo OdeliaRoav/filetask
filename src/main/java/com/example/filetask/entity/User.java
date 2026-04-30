@@ -40,4 +40,6 @@ public class User {
         this.regDate = reg_date;
 
     }
+
+
 }
