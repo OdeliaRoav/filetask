@@ -10,3 +10,8 @@ create table t_user
     reg_date    timestamp    not null
 );
 
+
+create table Info(
+    id          varchar(16) primary key,
+    pwd         varchar(32) not null
+);
