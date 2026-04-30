@@ -8,11 +8,9 @@
     <!-- DHMLTX5 SUITE LIBRARY -->
     <link rel="stylesheet" type="text/css" href="dhtmlx8/codebase/suite.css">
     <link rel="stylesheet" type="text/css" href="css/custom_suite.css">
-
     <script type="text/javascript" src="dhtmlx8/codebase/suite.js" ></script>
     <!-- DHMLTX5 SUITE LIBRARY -->
     <script src="/webjars/jquery/3.6.2/jquery.js"></script>
-
     <link rel="stylesheet" type="text/css" href="css/signup/signup.css">
     <script src="/js/signup/signup.js"></script>
 

@@ -1,4 +1,3 @@
-
 var layout;
 var loginPlatform;
 
