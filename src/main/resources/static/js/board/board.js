@@ -18,7 +18,7 @@ const createLayout = () => {
                 css: "toolbarArea",
                 header: "FileTask",
                 collapsable: true,
-                height: "225px",
+                height: "240px",
                 resizable: true
             },
             {
@@ -55,136 +55,160 @@ const createLayout = () => {
 const createUploadForm = () => {
     uploadForm =new dhx.Form("form", {
         css: "upload_form",
-        height: 150,
-        padding: 0,
-        cols: [
-            {
-                type: "simpleVault",
-                name:"simplevault",
-                label: "파일",
-                labelWidth: "150px",
-                labelHeight: "150px",
-                labelPosition: "left",
-                disabled: false,
-                required: false,
-                css:'test',
-                style: 'test'
-            },
-            {
-                type: "checkbox",
-                name: "force",
-                text: "중복 업로드 진행"
-            },
-            {
-                type: "button",
-                name: "uploadbtn",
-                text: "업로드",
-                height: 40,
-                size: "medium",
-                view: "flat",
-                color: "primary"
-            },
-            {
-                type: "button",
-                name: "loadbtn",
-                css: "loadbtn",
-                text: "조회",
-                height: 40,
-                size: "medium",
-                view: "flat",
-                color: "primary"
-            }
-        ]
+        height: 200,
+        padding: 20,
+        cols:[
+                    {
+                        type: "simpleVault",
+                        name:"simplevault",
+                        label: "파일",
+                        labelWidth: "80px",
+                        labelHeight: "200px",
+                        labelPosition: "left",
+                        disabled: false,
+                        required: false,
+                        css:'test',
+                        style: 'test',
+                        $vaultHeight: 150,
+                        width: "390px"
+                    },
+                    {
+                        width: "210px",
+                        rows: [
+                    {
+                        type: "checkbox",
+                        name: "force",
+                        text: "중복 업로드 진행",
+                        width: "180px"
+                    },
+                    {
+                        cols: [
+                    {
+                        type: "button",
+                        name: "uploadbtn",
+                        text: "업로드",
+                        height: 40,
+                        width: 70,
+                        size: "medium",
+                        view: "flat",
+                        color: "primary"
+                    },
+                    {
+                        type: "button",
+                        name: "loadbtn",
+                        css: "loadbtn",
+                        text: "조회",
+                        height: 40,
+                        width: 56,
+                        size: "medium",
+                        view: "flat",
+                        color: "primary"
+                    },
+                        ]
+                    }
+                        ]
+                    },
+                    {
+                        width: "430px",
+                        rows: [
+                            {
+                                cols: [
+                    {
+                        type: "combo",
+                        name: "combobox",
+                        placeholder: "검색 기준",
+                        width: "120px",
+                        disabled: false,
+                        required: false,
+                        data: [
+                            {id: "id", value: "ID"},
+                            {id: "name", value: "NAME"},
+                            {id: "level", value: "LEVEL"},
+                            {id: "desc", value: "DESCRIPTION"}
+                        ]
+                    },
+                    {
+                        type: "input",
+                        name: "keyword",
+                        placeholder: "검색어 입력",
+                        width: "140px"
+                    },
+                    {
+                        type: "button",
+                        name: "select",
+                        text: "검색",
+                        height: 40,
+                        width: 56,
+                        size: "medium",
+                        view: "flat",
+                        color: "primary"
+                    },
+                                ]
+                            },
+                            {
+                                cols: [
+                    {
+                        type: "input",
+                        name : "deleted",
+                        placeholder: "삭제할 ID 입력",
+                        width: "140px"
+                    },
+                    {
+                        type: "button",
+                        name: "deleteIdBtn",
+                        text: "삭제 행",
+                        height: 40,
+                        width: 74,
+                        size: "medium",
+                        view: "flat",
+                        color: "primary"
+                    },
+                    {
+                        type: "button",
+                        name: "deleteAllBtn",
+                        text: "전체 삭제",
+                        height: 40,
+                        width: 86,
+                        size: "medium",
+                        view: "flat",
+                        color: "primary"
+                    },
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        type: "spacer",
+                        css: "toolbar_spacer"
+                    }
+                ]
+
     });
 
-    uploadForm.events.on("click", function(event) {
-        // console.log("clicked");
-        // console.log(id);
-        // console.log(event);
-        if(event === "uploadbtn"){
-            console.log("upload");
+    uploadForm.events.on("click", function(name) {
+        if(name === "uploadbtn"){
             uploadFile();
         }
-    });
 
-    uploadForm.events.on("click", function(event){
-        if(event === "loadbtn"){
-            console.log("load");
+        if(name === "loadbtn"){
             loadFile();
         }
-    })
+
+        if(name === "select"){
+            searchFile();
+        }
+
+        if(name === "deleteIdBtn"){
+            deleteById();
+        }
+
+        if(name === "deleteAllBtn"){
+            deleteAll();
+        }
+    });
 
     layout.getCell("toolbar").attach(uploadForm);
 };
-    /*
-    uploadForm.events.on("click", () =>{
-        const fileInput = document.getElementById("fileInput");
-        const file = fileInput.files;
-        const formData = new FormData();
-        formData.append("file", file);
-
-        const response = axios.post('/upload', formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            }
-        })
-
-    });
-    */
-
-
-
-// const createUploadForm = () => {
-//     uploadForm = new dhx.Form(null, {
-//         padding: 0,
-//         rows: [
-//             {
-//                 type: "text",
-//                 inputType: "file",
-//                 name: "file",
-//                 label: "파일 업로드",
-//                 width: "50px",
-//                 id: "file"
-//             },
-//             {
-//                 label: '업로드',
-//                 type: "button",
-//                 text: "업로드",
-//                 name: "upload",
-//                 id: "upload",
-//             }
-//         ]
-//     });
-//
-//     uploadForm.events.on("click", function(id,event) {
-//         console.log("clicked");
-//         console.log(id);
-//         console.log(event);
-//         if(event == "upload"){
-//
-//             uploadFile();
-//         }
-//     });
-//
-//     layout.getCell("toolbar").attach(uploadForm);
-//
-//     /*
-//     uploadForm.events.on("click", () =>{
-//         const fileInput = document.getElementById("fileInput");
-//         const file = fileInput.files;
-//         const formData = new FormData();
-//         formData.append("file", file);
-//
-//         const response = axios.post('/upload', formData, {
-//             headers: {
-//                 'Content-Type': 'multipart/form-data',
-//             }
-//         })
-//
-//     });
-//     */
-//
-// };
 
 
 const uploadFile =() =>{
@@ -291,22 +315,58 @@ const loadFile = () => {
         type: "GET",
         url: "/users",
         success: function(users){
-            const gridData = users.map(user => ({
-                id: user.id,
-                pwd: user.pwd,
-                name: user.name,
-                level: user.level,
-                desc: user.desc||"",
-                regDate : formatRegDate(user.regDate)
-            }));
-            grid.data.removeAll(); //기존 삭제하고
-            grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
+            renderUsers(users);
         },
         error:function(err){
             console.log(err);
             alert("오류가 발생했습니다.");
         }
     });
+};
+
+const searchFile = () => {
+    const values = uploadForm.getValue();
+    const field = values.combobox;
+    const keyword = values.keyword;
+
+    if(!field || !keyword){
+        dhx.alert({
+            header: "조회 기준과 검색어를 입력하세요.",
+            buttonsAlignment: "center",
+            buttons: ["ok"],
+        });
+        return;
+    }
+
+    $.ajax({
+        type: "GET",
+        url: "/users/search",
+        data: {
+            field: field,
+            keyword: keyword
+        },
+        success: function(users){
+            renderUsers(users);
+        },
+        error:function(err){
+            console.log(err);
+            alert("조회 중 오류가 발생했습니다.");
+        }
+    });
+};
+
+const renderUsers = (users) => {
+    const gridData = users.map(user => ({
+        id: user.id,
+        pwd: user.pwd,
+        name: user.name,
+        level: user.level,
+        desc: user.desc||"",
+        regDate : formatRegDate(user.regDate)
+    }));
+
+    grid.data.removeAll(); //기존 삭제하고
+    grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
 };
 
 
@@ -325,6 +385,56 @@ const formatRegDate = (regDate) => {
 
     return `${year}년${month}월${day}일 ${hour}시${minute}분`
 }
+
+const deleteById = () => {
+    const values = uploadForm.getValue();
+    const id = values.deleted;
+
+    if(!id){
+        dhx.alert({
+            header: "삭제할 ID를 입력하세요",
+            buttons: ["ok"],
+        });
+        return;
+    }
+
+    $.ajax({
+        type: "DELETE",
+        url: `/users/${encodeURIComponent(id)}`,
+        success: function(){
+            dhx.alert({
+                header: "삭제되었습니다.",
+                buttons: ["ok"],
+            });
+
+            loadFile();
+        },
+        error: function(err){
+            console.log(err);
+            alert("삭제 중 오류가 발생했습니다.");
+        }
+    });
+};
+
+
+const deleteAll = () => {
+
+    $.ajax({
+        type: "DELETE",
+        url: "/users",
+        success: function(){
+            dhx.alert({
+                header: "전체 삭제",
+                buttons: ["ok"],
+            });
+            loadFile();
+        },
+        error: function(err){
+            console.log(err);
+            alert("삭제 중 오류가 발생했습니다.");
+        }
+    });
+};
 
 const createGrid =() => {
     grid = new dhx.Grid("grid", {
