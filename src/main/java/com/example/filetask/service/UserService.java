@@ -36,16 +36,17 @@ public class UserService {
     }
 
 
-
+    //파일 업로드 처리를 하고, 그 결과(성공 여부, 파일명 등)를 Map 형태의 데이터 묶음으로 반환하는 함수.
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
 
+        //만약에 JS에서 뚫리면 이걸로 잡음
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
-
         }
+
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
@@ -64,6 +65,7 @@ public class UserService {
             return result;
         }
 
+        //여기서부터 시작 jsp -> PageController -> JS(업로드 버튼) -> 후에 시작하는곳
         BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
         List<String> lines = new ArrayList<>();
@@ -155,6 +157,10 @@ public class UserService {
 
     //Swagger용
     public ResponseEntity<String> deleteById(String id) {
+        if (!userRepository.existsById(id)) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body("NOT_FOUND");
+        }
+
         userRepository.deleteById(id);
         return ResponseEntity.ok("삭제");
     }

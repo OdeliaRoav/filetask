@@ -67,8 +67,6 @@ const createUploadForm = () => {
                         labelPosition: "left",
                         disabled: false,
                         required: false,
-                        css:'test',
-                        style: 'test',
                         $vaultHeight: 150,
                         width: "390px"
                     },
@@ -131,7 +129,7 @@ const createUploadForm = () => {
                         type: "input",
                         name: "keyword",
                         placeholder: "검색어 입력",
-                        width: "140px"
+                        width: ""
                     },
                     {
                         type: "button",
@@ -151,7 +149,7 @@ const createUploadForm = () => {
                         type: "input",
                         name : "deleted",
                         placeholder: "삭제할 ID 입력",
-                        width: "140px"
+                        width: "120px"
                     },
                     {
                         type: "button",
@@ -210,7 +208,7 @@ const createUploadForm = () => {
     layout.getCell("toolbar").attach(uploadForm);
 };
 
-
+//formData, uploadForm -> multipart/form-data 처리할때 사용하는 방식
 const uploadFile =() =>{
     const formData = new FormData();
     console.log("함수 내부 console", formData);
@@ -390,6 +388,7 @@ const deleteById = () => {
     const values = uploadForm.getValue();
     const id = values.deleted;
 
+
     if(!id){
         dhx.alert({
             header: "삭제할 ID를 입력하세요",
@@ -400,18 +399,28 @@ const deleteById = () => {
 
     $.ajax({
         type: "DELETE",
-        url: `/users/${encodeURIComponent(id)}`,
+        url: "/users/" + id,
         success: function(){
             dhx.alert({
                 header: "삭제되었습니다.",
                 buttons: ["ok"],
             });
-
             loadFile();
         },
         error: function(err){
             console.log(err);
-            alert("삭제 중 오류가 발생했습니다.");
+            //404로 보내는거 확인
+            if(err.status === 404){
+                dhx.alert({
+                    header:"조회되지 않습니다.",
+                    buttons: ["ok"]
+                });
+                return;
+            }
+            dhx.alert({
+                header:"삭제 중 오류가 발생했습니다.",
+                buttons: ["ok"]
+            });
         }
     });
 };

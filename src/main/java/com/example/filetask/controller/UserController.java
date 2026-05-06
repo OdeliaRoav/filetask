@@ -45,16 +45,9 @@ public class UserController {
         return ResponseEntity.ok(loginUser);
     }
 
-
-    // Swagger 테스트용
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
         return userService.uploadFile(file, force);
-    }
-
-    @GetMapping("/{id}")
-    public Optional<User> getUser(@PathVariable String id){
-        return userService.findById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -65,5 +58,11 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<String>  deleteAllUsers() { return userService.deleteAllUsers(); };
 
+
+    //Swagger 테스트 용
+    @GetMapping("/{id}")
+    public Optional<User> getUser(@PathVariable String id){
+        return userService.findById(id);
+    }
 }
 

@@ -102,8 +102,14 @@ html, body {
 }
 
 .upload_form .dhx_input__container{
-	width: 100%;
+
 }
+
+.upload_form .dhx_combobox-input-list{
+	width: 120px;
+}
+
+
 
 .upload_form .dhx_form-group {
 	gap: 12px;
