@@ -53,7 +53,7 @@ dependencies {
     implementation 'org.webjars:jquery:3.6.2'
 }
 
-//49~61 QueryDSL 관련 설정
+//QueryDSL 관련 설정
 def generated = 'src/main/generated'
 
 tasks.withType(JavaCompile) {

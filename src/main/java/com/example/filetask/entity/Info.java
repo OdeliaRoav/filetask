@@ -7,6 +7,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
@@ -31,7 +33,14 @@ public class Info {
     }
 
 
-
+//    public User(String id, String pwd, String name, String level, String description, LocalDateTime reg_date) {
+//        this.id = id;
+//        this.pwd = pwd;
+//        this.name = name;
+//        this.level = level;
+//        this.desc = description;
+//        this.regDate = reg_date;
+//    }
 }
 
 

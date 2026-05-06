@@ -3,6 +3,7 @@ package com.example.filetask.controller;
 import com.example.filetask.entity.Info;
 import com.example.filetask.entity.User;
 import com.example.filetask.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -45,16 +46,9 @@ public class UserController {
         return ResponseEntity.ok(loginUser);
     }
 
-
-    // Swagger 테스트용
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
         return userService.uploadFile(file, force);
-    }
-
-    @GetMapping("/{id}")
-    public Optional<User> getUser(@PathVariable String id){
-        return userService.findById(id);
     }
 
     @DeleteMapping("/{id}")
@@ -65,5 +59,11 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<String>  deleteAllUsers() { return userService.deleteAllUsers(); };
 
+
+    //Swagger 테스트 용
+    @GetMapping("/{id}")
+    public Optional<User> getUser(@PathVariable String id){
+        return userService.findById(id);
+    }
 }
 
