@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.Map;
 
 @Controller
+
 public class PageController {
 
     private final UserService userService;

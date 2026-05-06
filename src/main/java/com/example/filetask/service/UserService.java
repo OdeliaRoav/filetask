@@ -36,6 +36,10 @@ public class UserService {
     }
 
 
+
+    //List : 순서가 있으며, 데이터(값) 중복 허용
+    //Set : 순서가 없으며, 데이터(값) 중복을 허용하지 않음
+    //Map : Key&Value 구조, Key는 중복을 허용하지 않으며, Value(값)은 중복을 허용
     //파일 업로드 처리를 하고, 그 결과(성공 여부, 파일명 등)를 Map 형태의 데이터 묶음으로 반환하는 함수.
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
 
@@ -133,9 +137,6 @@ public class UserService {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
-
-
-
     public void signup(Info user) {
         if(infoRepository.existsById(user.getId())){
             throw new RuntimeException("존재하는 아이디입니다.");
@@ -144,9 +145,8 @@ public class UserService {
         infoRepository.save(signupUser);
     }
 
-
     public Info login(String id, String pwd) {
-        Info user = infoRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 없다."));
+        Info user = infoRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 없습니다."));
 
         if(!user.getPwd().equals(pwd)){
             throw new RuntimeException("비밀번호가 없습니다");
@@ -155,7 +155,9 @@ public class UserService {
         return user;
     }
 
+
     //Swagger용
+    //ResponseEntity
     public ResponseEntity<String> deleteById(String id) {
         if (!userRepository.existsById(id)) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body("NOT_FOUND");
