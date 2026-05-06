@@ -119,7 +119,9 @@ const loginButton = () => {
         }),
         success: function () {
             loginSuccess();
-            location.href = "/upload";
+            setTimeout(function(){
+                location.href = "/upload";
+            }, 1000)
         },
         error: function (err) {
             console.log(err);
@@ -148,7 +150,7 @@ function loginSuccess() {
     dhx.alert({
         header: "로그인 성공",
         buttonsAlignment: "center",
-        buttons: ["ok"],
+        buttons: ["ok"]
     });
 }
 

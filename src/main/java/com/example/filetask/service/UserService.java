@@ -127,16 +127,11 @@ public class UserService {
         return userQueryRepository.findAllUsers();
     }
 
-    public ResponseEntity<String> deleteById(String id) {
-        userRepository.deleteById(id);
-        return ResponseEntity.ok("삭제");
+    public List<User> searchUsers(String field, String keyword){
+        return userQueryRepository.searchUsers(field, keyword);
     }
 
-    public ResponseEntity<String> deleteAllUsers() {
-        userRepository.deleteAll();
-        return ResponseEntity.ok("삭제");
 
-    }
 
 
     public void signup(Info user) {
@@ -152,13 +147,26 @@ public class UserService {
         Info user = infoRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 없다."));
 
         if(!user.getPwd().equals(pwd)){
-            throw new RuntimeException("비밀번호가 없다.");
+            throw new RuntimeException("비밀번호가 없습니다");
         }
 
         return user;
     }
 
+    //Swagger용
+    public ResponseEntity<String> deleteById(String id) {
+        userRepository.deleteById(id);
+        return ResponseEntity.ok("삭제");
+    }
+
+    public ResponseEntity<String> deleteAllUsers() {
+        userRepository.deleteAll();
+        return ResponseEntity.ok("전체 삭제");
+
+    }
+
 }
+
 
 /*
     public Optional<User> findById(String id){

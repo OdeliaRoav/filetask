@@ -27,13 +27,18 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/search")
+    public List<User> searchUsers(@RequestParam String field, @RequestParam String keyword){
+        return userService.searchUsers(field, keyword);
+    }
+
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Info user){
         userService.signup(user);
         return ResponseEntity.ok("회원가입 성공");
     }
 
-    //ReponseEntity.ok가 200이랑 안에 든 객체 같이 전송함
+    //ResponseEntity.ok가 200이랑 안에 든 객체 같이 전송함
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Info user){
         Info loginUser = userService.login(user.getId(), user.getPwd());
