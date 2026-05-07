@@ -308,13 +308,18 @@ const loadFile = () => {
         },
         error:function(err){
             console.log(err);
-            alert("오류가 발생했습니다.");
+            dhx.alert({
+                header: "오류가 발생했습니다.",
+                buttonsAlignment: "center",
+                buttons: ["ok"]
+            });
         }
     });
 };
 
 const searchFile = () => {
     const values = uploadForm.getValue();
+    console.log(values);
     const field = values.combobox;
     const keyword = values.keyword;
 
@@ -334,12 +339,16 @@ const searchFile = () => {
             field: field,
             keyword: keyword
         },
-        success: function(users){
-            renderUsers(users);
-        },
         error:function(err){
             console.log(err);
-            alert("조회 중 오류가 발생했습니다.");
+            dhx.alert({
+                header: "조회 중 오류가 발생했습니다.",
+                buttonsAlignment: "center",
+                buttons: ["ok"]
+            });
+        },
+        success: function(users){
+            renderUsers(users);
         }
     });
 };
@@ -377,6 +386,7 @@ const formatRegDate = (regDate) => {
 
 const deleteById = () => {
     const values = uploadForm.getValue();
+    console.log(values);
     const id = values.deleted;
 
 
@@ -431,7 +441,10 @@ const deleteAll = () => {
         },
         error: function(err){
             console.log(err);
-            alert("삭제 중 오류가 발생했습니다.");
+            dhx.alert({
+                header: "삭제 중 오류가 발생했습니다.",
+                buttons: ["ok"]
+            });
         }
     });
 };
@@ -462,7 +475,7 @@ function uploadFail() {
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
-};
+}
 
 function wrongFile() {
     dhx.alert({
@@ -470,4 +483,4 @@ function wrongFile() {
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
-};
+}

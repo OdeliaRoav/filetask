@@ -11,7 +11,7 @@
 
     <script src="/webjars/jquery/3.6.2/jquery.js"></script>
     <script src="/dhtmlx8/codebase/suite.js"></script>
-    <script src="/js/board/board.js"></script>
+    <script src="/js/board/upload.js"></script>
 
     <link rel="stylesheet" href="jodit/jodit.min.css">
     <script src="jodit/jodit.min.js"></script>

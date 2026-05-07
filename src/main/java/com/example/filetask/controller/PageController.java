@@ -22,7 +22,7 @@ public class PageController {
 
     //회원가입 페이지 로드
     @GetMapping("/signup")
-    public String signupPage(){
+    public String signupPage() {
         return "signup/signup";
     }
 
