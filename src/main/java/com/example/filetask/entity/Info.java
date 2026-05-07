@@ -1,5 +1,6 @@
 package com.example.filetask.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -7,23 +8,24 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "Info")
-
 public class Info {
 
     @Id
+    @Column(length = 16, nullable = false)
     private String id;
+
+    @Column(length = 32, nullable = false)
     private String pwd;
+
+    @Column(length = 32, nullable = false)
     private String name;
 
-
-    //builder로 묶어봤는데 오류 터져서 객체로 묶는게 나을듯
     public static Info signup(String id, String pwd, String name){
         Info info = new Info();
         info.id = id;
@@ -31,16 +33,4 @@ public class Info {
         info.name = name;
         return info;
     }
-
-
-//    public User(String id, String pwd, String name, String level, String description, LocalDateTime reg_date) {
-//        this.id = id;
-//        this.pwd = pwd;
-//        this.name = name;
-//        this.level = level;
-//        this.desc = description;
-//        this.regDate = reg_date;
-//    }
 }
-
-

@@ -39,7 +39,6 @@ public class UserController {
         return ResponseEntity.ok("회원가입 성공");
     }
 
-    //ResponseEntity.ok가 200이랑 안에 든 객체 같이 전송함
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Info user){
         Info loginUser = userService.login(user.getId(), user.getPwd());

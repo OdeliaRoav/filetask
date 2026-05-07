@@ -261,11 +261,7 @@ const uploadFile =() =>{
 
 };
 
-//순서가 jsp -> js -> 위에 UploadFile -> UserService에서 result 생성 -> 돌아와서 UploadFile() 안에 showUploadResult들어옴
-//그 후 successCount가 0이면 중복 파일이고, failCount가 0이면 전체 성공, 그게 아니면 부분 성공으로 반환함
-//즉 UserService에서 Result를 생성하고 그 Result 값으로 여기서 판단함 js -> service(Result 생성) -> 다시 js로 와서 판단
 const showUploadResult = (result) => {
-    //document.getElementById() -> 해당하는, 예를 들어 ResultArea니깐 ResultArea가 id인 DOM 요소를 반환함
     const area = document.getElementById("resultArea");
 
     if(result.successCount == null){
@@ -280,8 +276,6 @@ const showUploadResult = (result) => {
         return;
     }
 
-    //백틱 사용하면 문자열이랑 변수 사용 가능
-    //innerText쓰면 안됨 안에 내용 다 가져와서(코드들) 여기서는 innerHTML이 맞는듯 해당하는 것만 가져오게
     if(result.failCount == 0 ){
         area.innerHTML = `
         <div id = "result", align = "center">

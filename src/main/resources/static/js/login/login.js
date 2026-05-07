@@ -130,7 +130,6 @@ const loginButton = () => {
     });
 };
 
-//js에서 href쓸때 -> location.href = ""
 const signupButton = () => {
     location.href = "/signup";
 };

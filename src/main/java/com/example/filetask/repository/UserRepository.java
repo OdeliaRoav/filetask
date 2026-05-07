@@ -9,5 +9,5 @@ import java.util.*;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-    //JpaRepository로 기본 CRUD 기능 제공
+
 }

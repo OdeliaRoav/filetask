@@ -106,6 +106,7 @@ const signupButton = () =>{
         type: "POST",
         url: "/users/signup",
         contentType: "application/json",
+        //객체를 JSON으로 변경해서 보냄
         data: JSON.stringify({
             id: values.id,
             pwd: values.password,
@@ -113,7 +114,9 @@ const signupButton = () =>{
         }),
         success: function(){
             signupSuccess();
-            location.href = "/login";
+            setTimeout(function(){
+                location.href = "/login";
+                },1000)
         },
         error: function(err){
             console.log(err);

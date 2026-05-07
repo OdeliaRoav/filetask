@@ -13,5 +13,6 @@ create table t_user
 
 create table Info(
     id          varchar(16) primary key,
-    pwd         varchar(32) not null
+    pwd         varchar(32) not null,
+    name        varchar(32) not null
 );

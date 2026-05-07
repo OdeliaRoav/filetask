@@ -36,27 +36,17 @@ public class UserService {
     }
 
 
-
-    //List : 순서가 있으며, 데이터(값) 중복 허용
-    //Set : 순서가 없으며, 데이터(값) 중복을 허용하지 않음
-    //Map : Key&Value 구조, Key는 중복을 허용하지 않으며, Value(값)은 중복을 허용
-    //파일 업로드 처리를 하고, 그 결과(성공 여부, 파일명 등)를 Map 형태의 데이터 묶음으로 반환하는 함수.
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
 
         Map<String, Object> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
 
-        //만약에 JS에서 뚫리면 이걸로 잡음
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
         }
 
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
-
-
-        //Redis TTL 부분
-        //redis-cli 매번 안하면 안되서 그냥 Boolean RedisAvaliable = false 만들어서 try-catch로 Exception e 잡아도 괜찮을 것 같다.
 
         if(Boolean.TRUE.equals(duplicated) && !force){
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
@@ -69,7 +59,6 @@ public class UserService {
             return result;
         }
 
-        //여기서부터 시작 jsp -> PageController -> JS(업로드 버튼) -> 후에 시작하는곳
         BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
 
         List<String> lines = new ArrayList<>();
@@ -172,17 +161,6 @@ public class UserService {
         return ResponseEntity.ok("전체 삭제");
 
     }
-
 }
 
 
-/*
-    public Optional<User> findById(String id){
-        return userRepository.findById(id);
-    }
-
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
-    }
-QueryDSL 안쓸때
-*/
