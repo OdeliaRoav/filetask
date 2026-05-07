@@ -208,7 +208,6 @@ const createUploadForm = () => {
     layout.getCell("toolbar").attach(uploadForm);
 };
 
-//formData, uploadForm -> multipart/form-data 처리할때 사용하는 방식
 const uploadFile =() =>{
     const formData = new FormData();
     console.log("함수 내부 console", formData);
@@ -223,7 +222,6 @@ const uploadFile =() =>{
     }
 
 
-    //files[0].file이 존재하면 사용, 없으면 files[0] 사용
     const file = files[0].file || files[0];
     console.log(file);
 
@@ -287,10 +285,6 @@ const showUploadResult = (result) => {
         return;
     }
 
-    //<li> 목록 표시
-    //result.failList || [] -> reuslt.failList가 존재하고 배열이면 사용, 형태가 틀릴 경우 [](빈 배열) 사용
-    //failList의 각 요소들을 <li>로 받음 즉 "<li>...</li>", "<li>...</li>"
-    //.join("") 안쓰면 각 배열에 ','로 구분되서 나옴
     const failListHTML = (result.failList || []).map(fail => `<li>${fail}</li>`).join("");
 
     area.innerHTML = `
