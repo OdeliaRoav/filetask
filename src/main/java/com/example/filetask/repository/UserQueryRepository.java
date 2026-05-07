@@ -17,17 +17,6 @@ public class UserQueryRepository{
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    //Swagger에서만 사용한다.
-    public Optional<User> findById(String id){
-        QUser user = QUser.user;
-
-        return Optional.ofNullable(jpaQueryFactory
-                .selectFrom(user)
-                .where(user.id.eq(id))
-                .fetchOne());
-
-    }
-
     //조회 버튼
     public List<User> findAllUsers(){
         QUser user = QUser.user;
@@ -71,9 +60,19 @@ public class UserQueryRepository{
                     .fetch();
         }
 
-        //불변 리스트 반환
         return List.of();
     }
 
+
+
+    //Swagger에서만 사용한다.
+    public Optional<User> findById(String id){
+        QUser user = QUser.user;
+
+        return Optional.ofNullable(jpaQueryFactory
+                .selectFrom(user)
+                .where(user.id.eq(id))
+                .fetchOne());
+    }
 
 }

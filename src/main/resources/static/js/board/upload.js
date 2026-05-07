@@ -206,6 +206,7 @@ const createUploadForm = () => {
     });
 
     layout.getCell("toolbar").attach(uploadForm);
+
 };
 
 const uploadFile =() =>{
@@ -222,8 +223,8 @@ const uploadFile =() =>{
     }
 
 
-    const file = files[0].file || files[0];
-    console.log(file);
+    const file = files[0].file;
+    console.log("로그 테스트 : " + file.name);
 
     if(!file.name.endsWith(".dbfile")){
         wrongFile();
