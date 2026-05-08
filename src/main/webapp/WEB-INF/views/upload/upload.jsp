@@ -7,11 +7,11 @@
     <title>FileTask</title>
     <link rel="stylesheet" type="text/css" href="/dhtmlx8/codebase/suite.css">
     <link rel="stylesheet" type="text/css" href="/css/custom_suite.css">
-    <link rel="stylesheet" type="text/css" href="/css/board/board.css">
+    <link rel="stylesheet" type="text/css" href="/css/upload/upload.css">
 
     <script src="/webjars/jquery/3.6.2/jquery.js"></script>
     <script src="/dhtmlx8/codebase/suite.js"></script>
-    <script src="/js/board/board.js"></script>
+    <script src="/js/upload/upload.js"></script>
 
     <link rel="stylesheet" href="jodit/jodit.min.css">
     <script src="jodit/jodit.min.js"></script>
