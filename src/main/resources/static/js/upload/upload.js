@@ -2,6 +2,8 @@
 var layout;
 var grid;
 var uploadForm;
+var contentLayout;
+var menuDetail;
 
 const boardManager = () => {
     createLayout(); //레이아웃 생성
@@ -354,21 +356,6 @@ const searchFile = () => {
     });
 };
 
-const renderUsers = (users) => {
-    const gridData = users.map(user => ({
-        id: user.id,
-        pwd: user.pwd,
-        name: user.name,
-        level: user.level,
-        desc: user.desc||"",
-        regDate : formatRegDate(user.regDate)
-    }));
-
-    grid.data.removeAll(); //기존 삭제하고
-    grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
-};
-
-
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
         return fail;
@@ -384,6 +371,23 @@ const formatRegDate = (regDate) => {
 
     return `${year}년${month}월${day}일 ${hour}시${minute}분`
 }
+
+
+const renderUsers = (users) => {
+    const gridData = users.map(user => ({
+        id: user.id,
+        pwd: user.pwd,
+        name: user.name,
+        level: user.level,
+        desc: user.desc||"",
+        regDate : formatRegDate(user.regDate)
+    }));
+
+    grid.data.removeAll(); //기존 삭제하고
+    grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
+};
+
+
 
 const deleteById = () => {
     const values = uploadForm.getValue();
@@ -450,8 +454,37 @@ const deleteAll = () => {
     });
 };
 
+
+
+
 const createGrid =() => {
-    grid = new dhx.Grid("grid", {
+    contentLayout = new dhx.Layout(null, {
+        type: "none",
+        height: 500,
+        rows:[
+            {
+                id:"contentMenu",
+                height: 37
+            },
+            {
+                id:"contentGrid"
+            }
+        ]
+    });
+    layout.getCell("content").attach(contentLayout);
+
+    menuDetail = new dhx.Menu(null, {
+        css:"content_menu dhx_widget--bordered",
+        data: dataJSON
+    });
+
+    menuDetail.events.on("click", function(id,e){
+        console.log(id);
+    });
+
+    contentLayout.getCell("contentMenu").attach(menuDetail);
+
+    grid = new dhx.Grid(null, {
 
         columns: [
             {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
@@ -462,13 +495,12 @@ const createGrid =() => {
             {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
         ],
         autoWidth: true,
-
-
+        selection: "cell",
         data:[]
     });
 
-    layout.getCell("content").attach(grid);
-}
+    contentLayout.getCell("contentGrid").attach(grid);
+};
 
 function uploadFail() {
     dhx.alert({
@@ -485,3 +517,162 @@ function wrongFile() {
         buttons: ["ok"],
     })
 }
+
+
+const dataJSON = [
+    {
+        "id": "edit",
+        "value": "Edit",
+        "hotKey": "ctrl-z",
+        "count": 25,
+        "countColor": "success",
+        "items": [
+            {
+                "id": "undo",
+                "value": "Undo",
+                "icon": "dxi dxi-undo",
+                "hotKey": "Ctrl-z",
+                "count": 25,
+                "countColor": "danger",
+                "items": [
+                    {
+                        "id": "redo1",
+                        "value": "Redo",
+                        "icon": "dxi dxi-redo",
+                        "disabled": "true"
+                    },
+                    {
+                        "type": "separator"
+                    },
+                    {
+                        "id": "lock1",
+                        "value": "Lock cell",
+                        "icon": "dxi dxi-key"
+                    }
+                ]
+            },
+            {
+                "id": "redo",
+                "value": "Redo",
+                "icon": "dxi dxi-redo"
+            },
+            {
+                "type": "separator"
+            },
+            {
+                "id": "lock",
+                "value": "Lock cell",
+                "icon": "dxi dxi-key"
+            },
+            {
+                "id": "clear",
+                "value": "Clear",
+                "icon": "dxi dxi-eraser",
+                "items": [
+                    {
+                        "id": "clear-value",
+                        "value": "Clear value"
+                    },
+                    {
+                        "id": "clear-styles",
+                        "value": "Clear styles"
+                    },
+                    {
+                        "id": "clear-all",
+                        "value": "Clear all"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "type": "separator"
+    },
+    {
+        "id": "insert",
+        "value": "Insert",
+        "disabled": true,
+        "items": [
+            {
+                "id": "columns",
+                "value": "Columns",
+                "icon": "dxi dxi-table-column",
+                "items": [
+                    {
+                        "id": "add-col",
+                        "value": "Add column",
+                        "icon": "dxi dxi-table-column-plus-before"
+                    },
+                    {
+                        "id": "remove-col",
+                        "value": "Remove column",
+                        "icon": "dxi dxi-table-column-remove"
+                    }
+                ]
+            },
+            {
+                "id": "rows",
+                "value": "Rows",
+                "icon": "dxi dxi-table-row",
+                "items": [
+                    {
+                        "id": "add-row",
+                        "value": "Add row",
+                        "icon": "dxi dxi-table-row-plus-after"
+                    },
+                    {
+                        "id": "remove-row",
+                        "value": "Remove row",
+                        "icon": "dxi dxi-table-row-remove"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "configuration",
+        "value": "Format",
+        "items": [
+            {
+                "id": "font-weight-bold",
+                "value": "Bold",
+                "icon": "dxi dxi-format-bold"
+            },
+            {
+                "id": "font-style-italic",
+                "value": "Italic",
+                "icon": "dxi dxi-format-italic"
+            },
+            {
+                "id": "text-decoration-underline",
+                "value": "Underline",
+                "icon": "dxi dxi-format-underline"
+            },
+            {
+                "type": "separator"
+            },
+            {
+                "id": "align",
+                "value": "Align",
+                "icon": "dxi dxi-empty",
+                "items": [
+                    {
+                        "id": "align-left",
+                        "value": "Left",
+                        "icon": "dxi dxi-format-align-left"
+                    },
+                    {
+                        "id": "align-center",
+                        "value": "Center",
+                        "icon": "dxi dxi-format-align-center"
+                    },
+                    {
+                        "id": "align-right",
+                        "value": "Right",
+                        "icon": "dxi dxi-format-align-right"
+                    }
+                ]
+            }
+        ]
+    }
+];

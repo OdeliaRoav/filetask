@@ -33,6 +33,21 @@ html, body {
 
 }
 
+.content_menu,
+.content_menu--popup-menu {
+	background-color: #30333d;
+	color: #fff;
+}
+
+.content_menu .dhx_button,
+.content_menu .dhx_button__text,
+.content_menu .dxi,
+.content_menu--popup-menu .dhx_button,
+.content_menu--popup-menu .dhx_button__text,
+.content_menu--popup-menu .dxi {
+	color: #fff;
+}
+
 .contentGrid .dhx_grid-cell {
 	background-color: #30333d;
 	color: white;
