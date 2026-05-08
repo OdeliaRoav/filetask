@@ -29,7 +29,7 @@ public class UserQueryRepository{
     public List<User> searchUsers(String field, String keyword){
         QUser user = QUser.user;
 
-
+        //할 일 : 중복되는 코드들 줄여서 동적으로 검색하는 기능 추가해야함
         //대소 무시하고 문자열 있는지 확인
         if("id".equals(field)){
             return jpaQueryFactory
