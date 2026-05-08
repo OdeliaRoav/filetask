@@ -475,11 +475,50 @@ const createGrid =() => {
 
     menuDetail = new dhx.Menu(null, {
         css:"content_menu dhx_widget--bordered",
-        data: dataJSON
+        data: dataset
     });
 
     menuDetail.events.on("click", function(id,e){
-        console.log(id);
+        const cell = grid.selection.getCell();
+        if(!cell){
+            dhx.alert({
+                header:"셀을 먼저 선택하세요",
+                buttons: ["ok"],
+            })
+            return;
+        }
+
+        const rowId = cell.row.id;
+        const colId = cell.column.id;
+
+        if(id == "font-weight-bold"){
+            grid.addCellCss(rowId, colId, "cell-bold");
+        }
+
+        if(id == "font-style-italic"){
+            grid.addCellCss(rowId, colId, "cell-italic");
+        }
+
+        if(id == "text-decoration-underline"){
+            grid.addCellCss(rowId, colId, "cell-underline");
+        }
+
+        if(id == "align-left"){
+            grid.addCellCss(rowId, colId, "cell-align-left");
+        }
+
+        if(id == "align-right"){
+            grid.addCellCss(rowId, colId, "cell-align-right");
+        }
+
+
+        //Grid 메소드 addCellCss() -> row, column 지정해서 css적용
+        if(id == "align-center"){
+            grid.addCellCss(rowId, colId, "cell-align-center");
+        }
+
+
+
     });
 
     contentLayout.getCell("contentMenu").attach(menuDetail);
@@ -487,12 +526,12 @@ const createGrid =() => {
     grid = new dhx.Grid(null, {
 
         columns: [
-            {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
-            {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
-            {id: "name", align: "center", header:[{text:"NAME", align: "center"}]},
-            {id: "level", align: "center", header:[{text:"LEVEL", align: "center"}]},
-            {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
-            {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
+            {id: "id", header:[{text:"ID", align: "center"}]},
+            {id: "pwd", header:[{text: "PWD", align: "center"}]},
+            {id: "name", header:[{text:"NAME", align: "center"}]},
+            {id: "level", header:[{text:"LEVEL", align: "center"}]},
+            {id: "desc", header:[{text:"DESC", align: "center"}]},
+            {id: "regDate", header:[{text:"REG_DATE", align: "center"}]}
         ],
         autoWidth: true,
         selection: "cell",
@@ -501,6 +540,15 @@ const createGrid =() => {
 
     contentLayout.getCell("contentGrid").attach(grid);
 };
+
+// columns: [
+//     {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
+//     {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
+//     {id: "name", align: "center", header:[{text:"NAME", align: "center"}]},
+//     {id: "level", align: "center", header:[{text:"LEVEL", align: "center"}]},
+//     {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
+//     {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
+// ],
 
 function uploadFail() {
     dhx.alert({
@@ -519,84 +567,117 @@ function wrongFile() {
 }
 
 
-const dataJSON = [
-    {
-        "id": "edit",
-        "value": "Edit",
-        "hotKey": "ctrl-z",
+const dataset = [{
+    "id": "edit",
+    "value": "Edit",
+    "hotKey": "ctrl-z",
+    "count": 25,
+    "countColor": "success",
+    "items": [{
+        "id": "undo",
+        "value": "Undo",
+        "icon": "dxi dxi-undo",
+        "hotKey": "Ctrl-z",
         "count": 25,
-        "countColor": "success",
-        "items": [
-            {
-                "id": "undo",
-                "value": "Undo",
-                "icon": "dxi dxi-undo",
-                "hotKey": "Ctrl-z",
-                "count": 25,
-                "countColor": "danger",
-                "items": [
-                    {
-                        "id": "redo1",
-                        "value": "Redo",
-                        "icon": "dxi dxi-redo",
-                        "disabled": "true"
-                    },
-                    {
-                        "type": "separator"
-                    },
-                    {
-                        "id": "lock1",
-                        "value": "Lock cell",
-                        "icon": "dxi dxi-key"
-                    }
-                ]
-            },
-            {
-                "id": "redo",
-                "value": "Redo",
-                "icon": "dxi dxi-redo"
-            },
+        "countColor": "danger",
+        "items": [{
+            "id": "redo1",
+            "value": "Redo",
+            "icon": "dxi dxi-redo",
+            "disabled": "true"
+        },
             {
                 "type": "separator"
             },
             {
-                "id": "lock",
+                "id": "lock1",
                 "value": "Lock cell",
                 "icon": "dxi dxi-key"
+            }
+        ]
+    },
+        {
+            "id": "redo",
+            "value": "Redo",
+            "icon": "dxi dxi-redo"
+        },
+        {
+            "type": "separator"
+        },
+        {
+            "id": "lock",
+            "value": "Lock cell",
+            "icon": "dxi dxi-key"
+        },
+        {
+            "id": "clear",
+            "value": "Clear",
+            "icon": "dxi dxi-eraser",
+            "items": [{
+                "id": "clear-value",
+                "value": "Clear value"
             },
+                {
+                    "id": "clear-styles",
+                    "value": "Clear styles"
+                },
+                {
+                    "id": "clear-all",
+                    "value": "Clear all"
+                }
+            ]
+        }
+    ]
+},
+    {
+        "type": "separator"
+    },
+    {
+        "id": "insert",
+        "value": "Insert",
+        "disabled": true,
+        "items": [{
+            "id": "columns",
+            "value": "Columns",
+            "icon": "dxi dxi-table-column",
+            "items": [{
+                "id": "add-col",
+                "value": "Add column",
+                "icon": "dxi dxi-table-column-plus-before"
+            },
+                {
+                    "id": "remove-col",
+                    "value": "Remove column",
+                    "icon": "dxi dxi-table-column-remove"
+                }
+            ]
+        },
             {
-                "id": "clear",
-                "value": "Clear",
-                "icon": "dxi dxi-eraser",
-                "items": [
+                "id": "rows",
+                "value": "Rows",
+                "icon": "dxi dxi-table-row",
+                "items": [{
+                    "id": "add-row",
+                    "value": "Add row",
+                    "icon": "dxi dxi-table-row-plus-after"
+                },
                     {
-                        "id": "clear-value",
-                        "value": "Clear value"
-                    },
-                    {
-                        "id": "clear-styles",
-                        "value": "Clear styles"
-                    },
-                    {
-                        "id": "clear-all",
-                        "value": "Clear all"
+                        "id": "remove-row",
+                        "value": "Remove row",
+                        "icon": "dxi dxi-table-row-remove"
                     }
                 ]
             }
         ]
     },
     {
-        "type": "separator"
-    },
-    {
         "id": "configuration",
         "value": "Format",
-        "items": [
-            {
-                "id": "font-weight-bold",
-                "value": "Bold",
-                "icon": "dxi dxi-format-bold"
-            },
+        "items": [{
+            "id": "font-weight-bold",
+            "value": "Bold",
+            "icon": "dxi dxi-format-bold"
+        },
             {
                 "id": "font-style-italic",
                 "value": "Italic",
@@ -614,12 +695,11 @@ const dataJSON = [
                 "id": "align",
                 "value": "Align",
                 "icon": "dxi dxi-empty",
-                "items": [
-                    {
-                        "id": "align-left",
-                        "value": "Left",
-                        "icon": "dxi dxi-format-align-left"
-                    },
+                "items": [{
+                    "id": "align-left",
+                    "value": "Left",
+                    "icon": "dxi dxi-format-align-left"
+                },
                     {
                         "id": "align-center",
                         "value": "Center",
@@ -631,6 +711,28 @@ const dataJSON = [
                         "icon": "dxi dxi-format-align-right"
                     }
                 ]
+            }
+        ]
+    },
+    {
+        "type": "spacer"
+    },
+    {
+        "value": "Help",
+        "items": [{
+            "id": "about",
+            "value": "About",
+            "icon": "mdi mdi-information-variant"
+        },
+            {
+                "id": "help",
+                "value": "Help",
+                "icon": "mdi mdi-help"
+            },
+            {
+                "id": "bug",
+                "value": "Bug reporting",
+                "icon": "mdi mdi-bug"
             }
         ]
     }

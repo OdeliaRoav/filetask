@@ -5,7 +5,6 @@ import com.example.filetask.entity.User;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Optional;
 
