@@ -3,7 +3,6 @@ package com.example.filetask.controller;
 import com.example.filetask.entity.Info;
 import com.example.filetask.entity.User;
 import com.example.filetask.service.UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

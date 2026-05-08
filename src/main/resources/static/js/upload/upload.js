@@ -211,11 +211,11 @@ const createUploadForm = () => {
 
 const uploadFile =() =>{
     const formData = new FormData();
-    console.log("함수 내부 console", formData);
     const values = uploadForm.getValue();
     const files = values.simplevault;
 
-    console.log(files);
+    console.log("values : ", values);
+    console.log("files : ", files);
 
     if(!files || files.length === 0){
         uploadFail();
@@ -224,7 +224,7 @@ const uploadFile =() =>{
 
 
     const file = files[0].file;
-    console.log("로그 테스트 : " + file.name);
+    console.log("fileName : " + file.name);
 
     if(!file.name.endsWith(".dbfile")){
         wrongFile();
