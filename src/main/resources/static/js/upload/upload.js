@@ -589,47 +589,6 @@ const dataJSON = [
         "type": "separator"
     },
     {
-        "id": "insert",
-        "value": "Insert",
-        "disabled": true,
-        "items": [
-            {
-                "id": "columns",
-                "value": "Columns",
-                "icon": "dxi dxi-table-column",
-                "items": [
-                    {
-                        "id": "add-col",
-                        "value": "Add column",
-                        "icon": "dxi dxi-table-column-plus-before"
-                    },
-                    {
-                        "id": "remove-col",
-                        "value": "Remove column",
-                        "icon": "dxi dxi-table-column-remove"
-                    }
-                ]
-            },
-            {
-                "id": "rows",
-                "value": "Rows",
-                "icon": "dxi dxi-table-row",
-                "items": [
-                    {
-                        "id": "add-row",
-                        "value": "Add row",
-                        "icon": "dxi dxi-table-row-plus-after"
-                    },
-                    {
-                        "id": "remove-row",
-                        "value": "Remove row",
-                        "icon": "dxi dxi-table-row-remove"
-                    }
-                ]
-            }
-        ]
-    },
-    {
         "id": "configuration",
         "value": "Format",
         "items": [
