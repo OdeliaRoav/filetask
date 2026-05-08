@@ -354,21 +354,6 @@ const searchFile = () => {
     });
 };
 
-const renderUsers = (users) => {
-    const gridData = users.map(user => ({
-        id: user.id,
-        pwd: user.pwd,
-        name: user.name,
-        level: user.level,
-        desc: user.desc||"",
-        regDate : formatRegDate(user.regDate)
-    }));
-
-    grid.data.removeAll(); //기존 삭제하고
-    grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
-};
-
-
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
         return fail;
@@ -385,11 +370,24 @@ const formatRegDate = (regDate) => {
     return `${year}년${month}월${day}일 ${hour}시${minute}분`
 }
 
+const renderUsers = (users) => {
+    const gridData = users.map(user => ({
+        id: user.id,
+        pwd: user.pwd,
+        name: user.name,
+        level: user.level,
+        desc: user.desc||"",
+        regDate : formatRegDate(user.regDate)
+    }));
+
+    grid.data.removeAll(); //기존 삭제하고
+    grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
+};
+
 const deleteById = () => {
     const values = uploadForm.getValue();
     console.log(values);
     const id = values.deleted;
-
 
     if(!id){
         dhx.alert({
