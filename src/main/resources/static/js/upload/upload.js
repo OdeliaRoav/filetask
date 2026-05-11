@@ -115,69 +115,69 @@ const createUploadForm = () => {
                         rows: [
                             {
                                 cols: [
-                    {
-                        type: "combo",
-                        name: "combobox",
-                        placeholder: "검색 기준",
-                        width: "120px",
-                        disabled: false,
-                        required: false,
-                        data: [
-                            {id: "id", value: "ID"},
-                            {id: "name", value: "NAME"},
-                            {id: "level", value: "LEVEL"},
-                            {id: "desc", value: "DESCRIPTION"}
-                        ]
-                    },
-                    {
-                        type: "input",
-                        name: "keyword",
-                        placeholder: "검색어 입력",
-                        width: ""
-                    },
-                    {
-                        type: "button",
-                        name: "select",
-                        text: "검색",
-                        height: 40,
-                        width: 56,
-                        size: "medium",
-                        view: "flat",
-                        color: "primary"
-                    },
-                                ]
+                                    {
+                                        type: "combo",
+                                        name: "combobox",
+                                        placeholder: "검색 기준",
+                                        width: "120px",
+                                        disabled: false,
+                                        required: false,
+                                        data: [
+                                            {id: "id", value: "ID"},
+                                            {id: "name", value: "NAME"},
+                                            {id: "level", value: "LEVEL"},
+                                            {id: "desc", value: "DESCRIPTION"}
+                                        ]
+                                    },
+                                    {
+                                        type: "input",
+                                        name: "keyword",
+                                        placeholder: "검색어 입력",
+                                        width: ""
+                                    },
+                                    {
+                                        type: "button",
+                                        name: "select",
+                                        text: "검색",
+                                        height: 40,
+                                        width: 56,
+                                        size: "medium",
+                                        view: "flat",
+                                        color: "primary"
+                                    },
+                                                ]
                             },
                             {
                                 cols: [
-                    {
-                        type: "input",
-                        name : "deleted",
-                        placeholder: "삭제할 ID 입력",
-                        width: "120px"
-                    },
-                    {
-                        type: "button",
-                        name: "deleteIdBtn",
-                        text: "삭제 행",
-                        height: 40,
-                        width: 74,
-                        size: "medium",
-                        view: "flat",
-                        color: "primary"
-                    },
-                    {
-                        type: "button",
-                        name: "deleteAllBtn",
-                        text: "전체 삭제",
-                        height: 40,
-                        width: 86,
-                        size: "medium",
-                        view: "flat",
-                        color: "primary"
-                    },
-                                ]
+                                {
+                                    type: "input",
+                                    name : "deleted",
+                                    placeholder: "삭제할 ID 입력",
+                                    width: "120px"
+                                },
+                                {
+                                    type: "button",
+                                    name: "deleteIdBtn",
+                                    text: "삭제 행",
+                                    height: 40,
+                                    width: 74,
+                                    size: "medium",
+                                    view: "flat",
+                                    color: "primary"
+                                },
+                                {
+                                    type: "button",
+                                    name: "deleteAllBtn",
+                                    text: "전체 삭제",
+                                    height: 40,
+                                    width: 86,
+                                    size: "medium",
+                                    view: "flat",
+                                    color: "primary"
+                                },
+                                ],
                             }
-                        ]
+                            ]
                     },
                     {
                         type: "spacer",
