@@ -5,10 +5,14 @@ import com.example.filetask.entity.User;
 import com.querydsl.core.QueryFactory;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+//import com.querydsl.core.BooleanBuilder;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @Repository
 public class UserQueryRepository{

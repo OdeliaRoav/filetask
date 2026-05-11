@@ -91,7 +91,7 @@ public class UserService {
                 userRepository.save(user);
                 successCount++;
 
-            } catch (Exception e) { // User 클래스 안에 id, desc, regtime 등 누락 시
+            } catch (Exception e) {
                 failList.add((i + 1) + "번 줄 실패 : " + oneLine);
                 failCount++;
             }
@@ -142,6 +142,11 @@ public class UserService {
         return user;
     }
 
+    public ResponseEntity<String> deleteAllUsers() {
+        userRepository.deleteAll();
+        return ResponseEntity.ok("전체 삭제");
+
+    }
 
 
     //ResponseEntity
@@ -154,10 +159,8 @@ public class UserService {
         return ResponseEntity.ok("삭제");
     }
 
-    public ResponseEntity<String> deleteAllUsers() {
-        userRepository.deleteAll();
-        return ResponseEntity.ok("전체 삭제");
-
+    public Optional<User> findById(String id){
+        return userQueryRepository.findById(id);
     }
 
     public ResponseEntity<String> deleteCell(String rowId, String colId) {
