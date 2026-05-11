@@ -388,6 +388,7 @@ const deleteById = () => {
     const values = uploadForm.getValue();
     console.log(values);
     const id = values.deleted;
+    console.log(values.deleted);
 
     if(!id){
         dhx.alert({
