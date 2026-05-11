@@ -9,12 +9,14 @@
     <link rel="stylesheet" type="text/css" href="/css/custom_suite.css">
     <link rel="stylesheet" type="text/css" href="/css/upload/upload.css">
 
+
     <script src="/webjars/jquery/3.6.2/jquery.js"></script>
     <script src="/dhtmlx8/codebase/suite.js"></script>
     <script src="/js/upload/upload.js"></script>
 
     <link rel="stylesheet" href="jodit/jodit.min.css">
     <script src="jodit/jodit.min.js"></script>
+    <link href="https://cdn.materialdesignicons.com/3.6.95/css/materialdesignicons.min.css?v=6.4.2" media="all" rel="stylesheet" type="text/css">
 
     <script type="text/javascript">
         language = ${empty language ? 0 : language};

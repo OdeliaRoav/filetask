@@ -2,6 +2,10 @@
 var layout;
 var grid;
 var uploadForm;
+var contentLayout;
+var menuDetail;
+var rowId;
+var colId;
 
 const boardManager = () => {
     createLayout(); //레이아웃 생성
@@ -340,6 +344,11 @@ const searchFile = () => {
             field: field,
             keyword: keyword
         },
+        success: function(users){
+            renderUsers(users);
+
+            // uploadForm.setValue({"keyword" : ""});
+        },
         error:function(err){
             console.log(err);
             dhx.alert({
@@ -347,9 +356,6 @@ const searchFile = () => {
                 buttonsAlignment: "center",
                 buttons: ["ok"]
             });
-        },
-        success: function(users){
-            renderUsers(users);
         }
     });
 };
@@ -370,6 +376,7 @@ const formatRegDate = (regDate) => {
     return `${year}년${month}월${day}일 ${hour}시${minute}분`
 }
 
+
 const renderUsers = (users) => {
     const gridData = users.map(user => ({
         id: user.id,
@@ -383,6 +390,8 @@ const renderUsers = (users) => {
     grid.data.removeAll(); //기존 삭제하고
     grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
 };
+
+
 
 const deleteById = () => {
     const values = uploadForm.getValue();
@@ -407,6 +416,7 @@ const deleteById = () => {
                 buttons: ["ok"],
             });
             loadFile();
+            uploadForm.setValue({"deleted": ""});
         },
         error: function(err){
             console.log(err);
@@ -428,10 +438,10 @@ const deleteById = () => {
 
 
 const deleteAll = () => {
-
     $.ajax({
         type: "DELETE",
         url: "/users",
+        contentType: "application/json",
         success: function(){
             dhx.alert({
                 header: "전체 삭제",
@@ -449,25 +459,119 @@ const deleteAll = () => {
     });
 };
 
+
+
+
 const createGrid =() => {
-    grid = new dhx.Grid("grid", {
+    contentLayout = new dhx.Layout(null, {
+        type: "none",
+        height: 500,
+        rows:[
+            {
+                id:"contentMenu",
+                height: 37
+            },
+            {
+                id:"contentGrid"
+            }
+        ]
+    });
+    layout.getCell("content").attach(contentLayout);
+
+    menuDetail = new dhx.Menu(null, {
+        css:"content_menu dhx_widget--bordered",
+        data: dataset
+    });
+
+    menuDetail.events.on("click", function(id,e){
+        const cell = grid.selection.getCell();
+        if(!cell){
+            dhx.alert({
+                header:"셀을 먼저 선택하세요",
+                buttons: ["ok"],
+            })
+            return;
+        }
+        console.log(id);
+        rowId = cell.row.id;
+        colId = cell.column.id;
+
+        if(id == "font-weight-bold"){
+            grid.addCellCss(rowId, colId, "cell-bold");
+        }
+
+        if(id == "font-style-italic"){
+            grid.addCellCss(rowId, colId, "cell-italic");
+        }
+
+        if(id == "text-decoration-underline"){
+            grid.addCellCss(rowId, colId, "cell-underline");
+        }
+
+        if(id == "align-left"){
+            grid.addCellCss(rowId, colId, "cell-align-left");
+        }
+
+        if(id == "align-right"){
+            grid.addCellCss(rowId, colId, "cell-align-right");
+        }
+
+
+        //Grid 메소드 addCellCss() -> row, column 지정해서 css적용
+        if(id == "align-center"){
+            grid.addCellCss(rowId, colId, "cell-align-center");
+        }
+
+        if (id === "clear-styles") {
+            clearStyle();
+            dhx.alert({
+                header: "셀 스타일 삭제",
+                buttons: ["ok"],
+            })
+        }
+
+        if(id === "clear-value"){
+            clearValue();
+        }
+
+        if(id === "clear-all"){
+            clearValue(function() {
+                clearStyle();
+            });
+        }
+
+    });
+
+    contentLayout.getCell("contentMenu").attach(menuDetail);
+
+    grid = new dhx.Grid(null, {
 
         columns: [
-            {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
-            {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
-            {id: "name", align: "center", header:[{text:"NAME", align: "center"}]},
-            {id: "level", align: "center", header:[{text:"LEVEL", align: "center"}]},
-            {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
-            {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
+            {id: "id", header:[{text:"ID", align: "center"}]},
+            {id: "pwd", header:[{text: "PWD", align: "center"}]},
+            {id: "name", header:[{text:"NAME", align: "center"}]},
+            {id: "level", header:[{text:"LEVEL", align: "center"}]},
+            {id: "desc", header:[{text:"DESC", align: "center"}]},
+            {id: "regDate", header:[{text:"REG_DATE", align: "center"}]}
         ],
         autoWidth: true,
-
-
+        selection: "cell",
         data:[]
     });
 
-    layout.getCell("content").attach(grid);
-}
+    contentLayout.getCell("contentGrid").attach(grid);
+};
+
+// dhx.menu 적용 전
+// columns: [
+//     {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
+//     {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
+//     {id: "name", align: "center", header:[{text:"NAME", align: "center"}]},
+//     {id: "level", align: "center", header:[{text:"LEVEL", align: "center"}]},
+//     {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
+//     {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
+// ],
+
 
 function uploadFail() {
     dhx.alert({
@@ -484,3 +588,124 @@ function wrongFile() {
         buttons: ["ok"],
     })
 }
+
+function clearStyle(){
+    grid.removeCellCss(rowId, colId, "cell-bold");
+    grid.removeCellCss(rowId, colId, "cell-italic");
+    grid.removeCellCss(rowId, colId, "cell-underline");
+    grid.removeCellCss(rowId, colId, "cell-align-left");
+    grid.removeCellCss(rowId, colId, "cell-align-center");
+    grid.removeCellCss(rowId, colId, "cell-align-right");
+    return;
+}
+
+function clearValue(onSuccess){
+    $.ajax({
+        type: "DELETE",
+        url: "/users/cell",
+        data: {
+            rowId: rowId,
+            colId: colId
+        },
+        success: function(){
+            loadFile();
+            if(onSuccess){
+                onSuccess();
+            }
+            dhx.alert({
+                header: "셀 삭제 성공",
+                buttons:["ok"]
+            })
+        },
+        error: function(e){
+            console.log(e);
+            if(e.status==400){
+                dhx.alert({
+                    header: "셀 삭제 실패",
+                    buttons:["ok"]
+                });
+                return;
+            }
+
+            dhx.alert({
+                header: "셀 삭제 중 오류 발생",
+                buttons:["ok"]
+            })
+        }
+    })
+}
+
+
+const dataset = [{
+    "id": "edit",
+    "value": "Edit",
+    "hotKey": "ctrl-z",
+    "count": 25,
+    "countColor": "success",
+    "items": [{
+            "id": "clear",
+            "value": "Clear",
+            "icon": "dxi dxi-eraser",
+            "items": [{
+                "id": "clear-value",
+                "value": "Clear value"
+            },
+                {
+                    "id": "clear-styles",
+                    "value": "Clear styles"
+                },
+                {
+                    "id": "clear-all",
+                    "value": "Clear all"
+                }
+            ]
+        }
+    ]},
+    {
+        "type": "separator"
+    },
+    {
+        "id": "configuration",
+        "value": "Format",
+        "items": [{
+            "id": "font-weight-bold",
+            "value": "Bold",
+            "icon": "dxi dxi-format-bold"
+        },
+            {
+                "id": "font-style-italic",
+                "value": "Italic",
+                "icon": "dxi dxi-format-italic"
+            },
+            {
+                "id": "text-decoration-underline",
+                "value": "Underline",
+                "icon": "dxi dxi-format-underline"
+            },
+            {
+                "type": "separator"
+            },
+            {
+                "id": "align",
+                "value": "Align",
+                "icon": "dxi dxi-empty",
+                "items": [{
+                    "id": "align-left",
+                    "value": "Left",
+                    "icon": "dxi dxi-format-align-left"
+                },
+                    {
+                        "id": "align-center",
+                        "value": "Center",
+                        "icon": "dxi dxi-format-align-center"
+                    },
+                    {
+                        "id": "align-right",
+                        "value": "Right",
+                        "icon": "dxi dxi-format-align-right"
+                    }
+                ]
+            }
+        ]
+    }
+];

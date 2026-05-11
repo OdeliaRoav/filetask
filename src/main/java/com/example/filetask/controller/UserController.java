@@ -57,6 +57,10 @@ public class UserController {
     @DeleteMapping
     public ResponseEntity<String>  deleteAllUsers() { return userService.deleteAllUsers(); };
 
+    @DeleteMapping("/cell")
+    public ResponseEntity<String> deleteCell(@RequestParam("rowId") String rowId, @RequestParam("colId") String colId) throws IOException {
+        return userService.deleteCell(rowId, colId);
+    }
 
 
     //Swagger 테스트 용
