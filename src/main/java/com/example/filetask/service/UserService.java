@@ -114,10 +114,6 @@ public class UserService {
     }
 
 
-    public Optional<User> findById(String id){
-        return userQueryRepository.findById(id);
-    }
-
     public List<User> getAllUsers(){
         return userQueryRepository.findAllUsers();
     }
@@ -144,9 +140,13 @@ public class UserService {
         return user;
     }
 
+    public ResponseEntity<String> deleteAllUsers() {
+        userRepository.deleteAll();
+        return ResponseEntity.ok("전체 삭제");
+
+    }
 
     //Swagger용
-    //ResponseEntity
     public ResponseEntity<String> deleteById(String id) {
         if (!userRepository.existsById(id)) {
             return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body("NOT_FOUND");
@@ -156,10 +156,8 @@ public class UserService {
         return ResponseEntity.ok("삭제");
     }
 
-    public ResponseEntity<String> deleteAllUsers() {
-        userRepository.deleteAll();
-        return ResponseEntity.ok("전체 삭제");
-
+    public Optional<User> findById(String id){
+        return userQueryRepository.findById(id);
     }
 }
 

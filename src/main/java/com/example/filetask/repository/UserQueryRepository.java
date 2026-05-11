@@ -2,12 +2,14 @@ package com.example.filetask.repository;
 
 import com.example.filetask.entity.QUser;
 import com.example.filetask.entity.User;
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Optional;
+
+import static com.querydsl.jpa.JPAExpressions.selectFrom;
 
 @Repository
 public class UserQueryRepository{
@@ -29,38 +31,37 @@ public class UserQueryRepository{
     //콤보박스로 특정 조회
     public List<User> searchUsers(String field, String keyword){
         QUser user = QUser.user;
+        BooleanBuilder builder = new BooleanBuilder();
 
+        if(keyword == null || keyword.isBlank()){
+            return List.of();
+        }
 
         //대소 무시하고 문자열 있는지 확인
         if("id".equals(field)){
-            return jpaQueryFactory
-                    .selectFrom(user)
-                    .where(user.id.containsIgnoreCase(keyword))
-                    .fetch();
+            builder.and(user.id.containsIgnoreCase(keyword));
         }
 
         if("name".equals(field)){
-            return jpaQueryFactory
-                    .selectFrom(user)
-                    .where(user.name.containsIgnoreCase(keyword))
-                    .fetch();
+            builder.and(user.name.containsIgnoreCase(keyword));
         }
 
         if("level".equals(field)){
-            return jpaQueryFactory
-                    .selectFrom(user)
-                    .where(user.level.containsIgnoreCase(keyword))
-                    .fetch();
+            builder.and(user.level.containsIgnoreCase(keyword));
         }
 
         if("desc".equals(field)){
-            return jpaQueryFactory
-                    .selectFrom(user)
-                    .where(user.desc.containsIgnoreCase(keyword))
-                    .fetch();
+            builder.and(user.desc.containsIgnoreCase(keyword));
         }
 
-        return List.of();
+        if(!builder.hasValue()){
+            return List.of();
+        }
+
+        return jpaQueryFactory
+                .selectFrom(user)
+                .where(builder)
+                .fetch();
     }
 
 
