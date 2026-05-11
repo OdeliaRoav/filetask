@@ -1,14 +1,12 @@
 package com.example.filetask.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-
 
 @Entity
 @Getter
@@ -26,7 +24,7 @@ public class Info {
     @Column(length = 32, nullable = false)
     private String name;
 
-    public static Info signup(String id, String pwd, String name){
+    public static Info signup(String id, String pwd, String name) {
         Info info = new Info();
         info.id = id;
         info.pwd = pwd;

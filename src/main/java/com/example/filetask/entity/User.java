@@ -36,22 +36,21 @@ public class User {
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
-    public void clearPwd(){
-        this.pwd ="";
+    public void clearPwd() {
+        this.pwd = "";
     }
 
-    public void clearName(){
+    public void clearName() {
         this.name = "";
     }
 
-    public void clearLevel(){
+    public void clearLevel() {
         this.level = "";
     }
 
-    public void clearDesc(){
+    public void clearDesc() {
         this.desc = "";
     }
-
 
     public User(String id, String pwd, String name, String level, String description, LocalDateTime reg_date) {
         this.id = id;

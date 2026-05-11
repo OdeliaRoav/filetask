@@ -22,7 +22,7 @@ html, body {
 	margin-right: auto;
 }
 
-.contentGrid .dhx_grid_data{
+.contentGrid .dhx_grid_data {
 	border-color: white;
 }
 
@@ -30,7 +30,6 @@ html, body {
 .contentGrid .dhx_data-wrap,
 .contentGrid .dhx_grid_data {
 	background-color: #30333d;
-
 }
 
 .content_menu,
@@ -112,15 +111,15 @@ html, body {
 .upload_form button[data-dhx-id="select"],
 .upload_form button[data-dhx-id="deleteIdBtn"],
 .upload_form button[data-dhx-id="deleteAllBtn"] {
-	border-radius:10px;
+	border-radius: 10px;
 	background-color: #7379d5;
 }
 
-.upload_form .dhx_input__container{
+.upload_form .dhx_input__container {
 
 }
 
-.upload_form .dhx_combobox-input-list{
+.upload_form .dhx_combobox-input-list {
 	width: 120px;
 }
 

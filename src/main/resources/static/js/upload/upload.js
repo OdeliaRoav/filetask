@@ -1,4 +1,3 @@
-
 var layout;
 var grid;
 var uploadForm;
@@ -7,12 +6,16 @@ var menuDetail;
 var rowId;
 var colId;
 
+// 화면 초기화 함수
+// upload.jsp의 body onload에서 호출되며, 레이아웃, 업로드 폼, 그리드를 순서대로 생성한다.
 const boardManager = () => {
     createLayout(); //레이아웃 생성
     createUploadForm(); //버튼 생성
     createGrid(); //그리드 생성
 }
 
+// 전체 화면 레이아웃 생성
+// 상단은 업로드/검색/삭제 도구 영역, 왼쪽은 업로드 결과, 오른쪽은 DB 조회 그리드로 나눈다.
 const createLayout = () => {
     layout = new dhx.Layout("layout", {
         type: "line",
@@ -39,7 +42,7 @@ const createLayout = () => {
                     },
                     {
                         id: "content", //그리드 영역으로
-                        css:"contentGrid",
+                        css: "contentGrid",
                         header: "User 테이블 전체 등록 데이터",
                         resizable: true
                     },
@@ -56,15 +59,17 @@ const createLayout = () => {
 
 };
 
+// 업로드, 조회, 검색, 삭제 버튼 폼 생성
+// 사용자가 자주 쓰는 기능을 상단에 모아 파일 처리 후 바로 조회/검색/삭제할 수 있게 배치한다.
 const createUploadForm = () => {
-    uploadForm =new dhx.Form("form", {
+    uploadForm = new dhx.Form("form", {
         css: "upload_form",
         height: 200,
         padding: 20,
-        cols:[
+        cols: [
                     {
                         type: "simpleVault",
-                        name:"simplevault",
+                        name: "simplevault",
                         label: "파일",
                         labelWidth: "80px",
                         labelHeight: "200px",
@@ -187,6 +192,8 @@ const createUploadForm = () => {
 
     });
 
+    // 버튼 이름에 따라 실행할 기능을 분기한다.
+    // DHTMLX Form은 버튼 클릭 시 name 값을 넘겨주므로 한 이벤트에서 여러 버튼을 처리한다.
     uploadForm.events.on("click", function(name) {
         if(name === "uploadbtn"){
             uploadFile();
@@ -213,6 +220,8 @@ const createUploadForm = () => {
 
 };
 
+// 파일 업로드 요청 처리
+// 선택한 파일을 FormData에 담아 /users/upload로 전송하고, 서버 응답은 결과 영역에 표시한다.
 const uploadFile =() =>{
     const formData = new FormData();
     const values = uploadForm.getValue();
@@ -221,6 +230,7 @@ const uploadFile =() =>{
     console.log("values : ", values);
     console.log("files : ", files);
 
+    // 파일을 선택하지 않은 경우 서버 요청을 보내지 않고 사용자에게 먼저 알린다.
     if(!files || files.length === 0){
         uploadFail();
         return;
@@ -230,6 +240,8 @@ const uploadFile =() =>{
     const file = files[0].file;
     console.log("fileName : " + file.name);
 
+    // 과제 조건상 dbfile 확장자만 허용하므로 프론트에서도 1차 검증한다.
+    // 서버에서도 같은 검증을 다시 수행하므로 프론트 검증은 사용자 편의 목적이다.
     if(!file.name.endsWith(".dbfile")){
         wrongFile();
         return;
@@ -241,7 +253,8 @@ const uploadFile =() =>{
         formData.append("force", "true");
     }
 
-    //JQuery AJAX
+    // JQuery AJAX 업로드 요청
+    // multipart/form-data는 브라우저가 직접 boundary를 만들어야 하므로 processData와 contentType을 false로 둔다.
     $.ajax({
         type: "POST",
         url: "/users/upload", //계속 /upload로만 보내서 오류 발생 -> /users/upload로 정정
@@ -264,21 +277,25 @@ const uploadFile =() =>{
 
 };
 
+// 업로드 결과 표시
+// 서버가 내려준 successCount, failCount, failList를 기준으로 전체 성공/중복/일부 실패 화면을 만든다.
 const showUploadResult = (result) => {
     const area = document.getElementById("resultArea");
 
+    // successCount가 없으면 실제 저장 결과가 아니라 중복 업로드 안내 응답으로 판단한다.
     if(result.successCount == null){
         area.innerHTML = `
         <div id = "result", align = "center">
             <p> ${result.message}</p>
             <p> 파일명 : ${result.fileName}</p>
-            <p> 남은 시간 : ${result.ttlSeconds}</p>   
-        </div>    
+            <p> 남은 시간 : ${result.ttlSeconds}</p>
+        </div>
         `;
         console.log(result.ttlSeconds);
         return;
     }
 
+    // 실패 건수가 0이면 전체 성공 메시지만 간단히 보여준다.
     if(result.failCount == 0 ){
         area.innerHTML = `
         <div id = "result", align = "center">
@@ -290,6 +307,7 @@ const showUploadResult = (result) => {
         return;
     }
 
+    // 실패 목록은 서버에서 "라인 번호 + 실패 이유 + 원본 텍스트" 형태로 내려온다.
     const failListHTML = (result.failList || []).map(fail => `<li>${fail}</li>`).join("");
 
     area.innerHTML = `
@@ -297,13 +315,15 @@ const showUploadResult = (result) => {
             <p>전체/일부 실패</p>
             <p>파일명 : ${result.fileName}</p>
             <p>성공 : ${result.successCount}, 실패 : ${result.failCount}건</p>
-         
+
             <p>실패한 라인</p>
             <ul>${failListHTML}</ul>
         </div>
         `;
 };
 
+// 전체 데이터 조회
+// 업로드 성공 후 조회 버튼이나 삭제 후 새로고침 용도로 사용하며, 서버의 JSON 응답을 그리드에 반영한다.
 const loadFile = () => {
     $.ajax({
         type: "GET",
@@ -322,12 +342,15 @@ const loadFile = () => {
     });
 };
 
+// 검색 조회
+// 콤보박스에서 선택한 검색 기준과 입력한 검색어를 서버로 보내 조건에 맞는 사용자 목록만 조회한다.
 const searchFile = () => {
     const values = uploadForm.getValue();
     console.log(values);
     const field = values.combobox;
     const keyword = values.keyword;
 
+    // 검색 기준과 검색어가 없으면 의미 있는 조회가 불가능하므로 요청 전에 막는다.
     if(!field || !keyword){
         dhx.alert({
             header: "조회 기준과 검색어를 입력하세요.",
@@ -360,9 +383,12 @@ const searchFile = () => {
     });
 };
 
+// 등록일 표시 형식 변환
+// 서버에서 받은 regDate 값을 그리드에서 보기 쉬운 문자열로 변환한다.
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
-        return fail;
+        // 날짜 값이 없을 때 정의되지 않은 fail 변수를 반환하면 렌더링이 중단되므로 빈 값으로 표시한다.
+        return "";
     }
 
     const date = new Date(regDate);
@@ -377,6 +403,8 @@ const formatRegDate = (regDate) => {
 }
 
 
+// 그리드 데이터 렌더링
+// 서버 JSON 배열을 DHTMLX Grid가 읽을 수 있는 형태로 매핑한 뒤 기존 데이터를 지우고 다시 넣는다.
 const renderUsers = (users) => {
     const gridData = users.map(user => ({
         id: user.id,
@@ -393,12 +421,15 @@ const renderUsers = (users) => {
 
 
 
+// ID 기준 삭제
+// 입력한 ID를 /users/{id} DELETE 요청으로 보내고, 삭제 후 목록을 다시 조회한다.
 const deleteById = () => {
     const values = uploadForm.getValue();
     console.log(values);
     const id = values.deleted;
     console.log(values.deleted);
 
+    // 삭제할 ID가 없으면 서버 요청 없이 사용자에게 입력 필요 메시지를 보여준다.
     if(!id){
         dhx.alert({
             header: "삭제할 ID를 입력하세요",
@@ -436,7 +467,8 @@ const deleteById = () => {
     });
 };
 
-
+// 전체 삭제
+// 현재 DB에 저장된 사용자 데이터를 모두 지운 뒤, 그리드를 다시 조회해 화면을 최신 상태로 맞춘다.
 const deleteAll = () => {
     $.ajax({
         type: "DELETE",
@@ -462,6 +494,8 @@ const deleteAll = () => {
 
 
 
+// 그리드와 셀 편집 메뉴 생성
+// 오른쪽 content 영역에 메뉴와 Grid를 붙이고, 선택한 셀의 스타일 변경/값 삭제 기능을 제공한다.
 const createGrid =() => {
     contentLayout = new dhx.Layout(null, {
         type: "none",
@@ -483,6 +517,8 @@ const createGrid =() => {
         data: dataset
     });
 
+    // 메뉴 클릭 처리
+    // 현재 선택된 셀의 rowId, colId를 저장해 스타일 변경이나 셀 값 삭제 요청에 사용한다.
     menuDetail.events.on("click", function(id,e){
         const cell = grid.selection.getCell();
         if(!cell){
@@ -544,6 +580,8 @@ const createGrid =() => {
 
     contentLayout.getCell("contentMenu").attach(menuDetail);
 
+    // 사용자 테이블 데이터를 보여주는 DHTMLX Grid 생성
+    // selection을 cell로 설정해 셀 단위 스타일 변경과 셀 값 삭제 기능을 사용할 수 있게 한다.
     grid = new dhx.Grid(null, {
 
         columns: [
@@ -581,6 +619,8 @@ function uploadFail() {
     })
 }
 
+// 잘못된 확장자 안내
+// 프론트에서 dbfile이 아닌 파일을 선택했을 때 서버 요청 전에 보여주는 메시지이다.
 function wrongFile() {
     dhx.alert({
         header: ".dbfile만 업로드 가능합니다.",
@@ -589,6 +629,8 @@ function wrongFile() {
     })
 }
 
+// 선택한 셀의 스타일 제거
+// bold, italic, underline, align 관련 CSS 클래스를 모두 제거해 기본 표시로 되돌린다.
 function clearStyle(){
     grid.removeCellCss(rowId, colId, "cell-bold");
     grid.removeCellCss(rowId, colId, "cell-italic");
@@ -599,6 +641,8 @@ function clearStyle(){
     return;
 }
 
+// 선택한 셀 값 삭제
+// 서버에는 rowId와 colId를 보내 DB 값을 비우고, 성공하면 그리드를 다시 조회한다.
 function clearValue(onSuccess){
     $.ajax({
         type: "DELETE",
@@ -636,6 +680,8 @@ function clearValue(onSuccess){
 }
 
 
+// DHTMLX Menu 데이터
+// 메뉴 항목 id는 클릭 이벤트에서 스타일 변경, 값 삭제, 전체 초기화 기능을 구분하는 기준으로 사용한다.
 const dataset = [{
     "id": "edit",
     "value": "Edit",

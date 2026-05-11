@@ -2,13 +2,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
     <title>FileTask</title>
     <link rel="stylesheet" type="text/css" href="/dhtmlx8/codebase/suite.css">
     <link rel="stylesheet" type="text/css" href="/css/custom_suite.css">
     <link rel="stylesheet" type="text/css" href="/css/upload/upload.css">
-
 
     <script src="/webjars/jquery/3.6.2/jquery.js"></script>
     <script src="/dhtmlx8/codebase/suite.js"></script>
@@ -21,12 +20,9 @@
     <script type="text/javascript">
         language = ${empty language ? 0 : language};
     </script>
+</head>
 
-    </head>
-
-    <body onload ="boardManager()">
-
+<body onload="boardManager()">
     <div id="layout" style="height: 100%;"></div>
-
-    </body>
-    </html>
+</body>
+</html>

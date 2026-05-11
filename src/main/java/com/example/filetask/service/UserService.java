@@ -2,11 +2,15 @@ package com.example.filetask.service;
 
 import com.example.filetask.entity.User;
 import com.example.filetask.entity.Info;
+import com.example.filetask.exception.DuplicateUserException;
+import com.example.filetask.exception.InvalidColumnException;
+import com.example.filetask.exception.InvalidFileException;
+import com.example.filetask.exception.LoginFailedException;
+import com.example.filetask.exception.UserNotFoundException;
 import com.example.filetask.repository.InfoRepository;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile; // HTML에서 파일 올리면 Spring이 MultipartFile 형태로 전달해주는 역할
 
@@ -26,8 +30,6 @@ public class UserService {
     private final RedisTemplate<String, String> redisTemplate;
     private final UserQueryRepository userQueryRepository;
 
-
-
     public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, InfoRepository infoRepository) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
@@ -35,20 +37,21 @@ public class UserService {
         this.infoRepository = infoRepository;
     }
 
-
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
-
         Map<String, Object> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
 
         if (fileName == null || !fileName.endsWith(".dbfile")) {
-            throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
+            // 업로드 가능한 확장자는 과제 조건 4번 .dbfile만 허용한다.
+            // 잘못된 확장자는 비즈니스 처리 대상이 아니므로 InvalidFileException을 던지고,
+            // GlobalExceptionHandler가 400 Bad Request 응답으로 변환한다.
+            throw new InvalidFileException("dbfile 파일만 업로드할 수 있습니다.");
         }
 
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
-        if(Boolean.TRUE.equals(duplicated) && !force){
+        if (Boolean.TRUE.equals(duplicated) && !force) {
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             result.put("duplicated", true);
             result.put("forced", false);
@@ -59,13 +62,14 @@ public class UserService {
             return result;
         }
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
-
         List<String> lines = new ArrayList<>();
 
-        String line;
-        while ((line = br.readLine()) != null) {
-            lines.add(line);
+        // 파일 입력 스트림은 사용 후 닫아야 하므로 try-with-resources로 자동 close 처리한다.
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
         }
 
         int successCount = 0;
@@ -75,10 +79,18 @@ public class UserService {
 
         for (int i = 0; i < lines.size(); i++) {
             String oneLine = lines.get(i);
-
             try {
                 String[] data = oneLine.split("/", -1);
-                // split이 limit 기준으로 >0이면 갯수대로, 0이면 빈값은 제외하고 출력, limit<0이면 빈값도 모두 출력함 즉 홍길동/B//5432 이런게 가능해진다는 뜻
+                // split("/", -1)는 빈 컬럼도 보존하므로, 저장 전에 컬럼 수와 필수값을 검증한다.
+                // 검증 실패 예외는 아래 catch에서 라인 단위로 처리하여 다음 라인 업로드를 계속 진행한다.
+                if (data.length != 6) {
+                    throw new IllegalArgumentException("데이터 컬럼 수가 올바르지 않습니다.");
+                }
+
+                if (data[0].isBlank() || data[1].isBlank() || data[2].isBlank()
+                        || data[3].isBlank() || data[5].isBlank()) {
+                    throw new IllegalArgumentException("필수값이 비어 있습니다.");
+                }
                 User user = new User(
                         data[0],
                         data[1],
@@ -92,7 +104,7 @@ public class UserService {
                 successCount++;
 
             } catch (Exception e) {
-                failList.add((i + 1) + "번 줄 실패 : " + oneLine);
+                failList.add((i + 1) + "번째 줄 실패 : " + e.getMessage() + " / " + oneLine);
                 failCount++;
             }
         }
@@ -109,82 +121,90 @@ public class UserService {
         result.put("failCount", failCount);
         result.put("ttlSeconds", 300);
 
-
         return result;
     }
 
-
-
-
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userQueryRepository.findAllUsers();
     }
 
-    public List<User> searchUsers(String field, String keyword){
+    public List<User> searchUsers(String field, String keyword) {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
     public void signup(Info user) {
-        if(infoRepository.existsById(user.getId())){
-            throw new RuntimeException("존재하는 아이디입니다.");
+        if (infoRepository.existsById(user.getId())) {
+            // 회원가입 ID는 중복될 수 없으므로 저장 전에 Repository로 존재 여부를 확인한다.
+            // 중복 ID는 서버 오류가 아니라 현재 데이터와 충돌한 요청이므로 409 Conflict로 처리한다.
+            throw new DuplicateUserException("존재하는 아이디입니다.");
         }
+
         Info signupUser = Info.signup(user.getId(), user.getPwd(), user.getName());
         infoRepository.save(signupUser);
     }
 
     public Info login(String id, String pwd) {
-        Info user = infoRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 없습니다."));
+        Info user = infoRepository.findById(id).orElseThrow(() -> {
+            // 로그인은 아이디가 존재해야 비밀번호 검증을 진행할 수 있다.
+            // 존재하지 않는 아이디는 인증 실패로 보고 GlobalExceptionHandler에서 401로 응답한다.
+            return new LoginFailedException("아이디가 없습니다.");
+        });
 
-        if(!user.getPwd().equals(pwd)){
-            throw new RuntimeException("비밀번호가 없습니다");
+        if (!user.getPwd().equals(pwd)) {
+            // 비밀번호 불일치도 인증 실패 상황이므로 LoginFailedException으로 통일한다.
+            // Controller에 try-catch를 두지 않고 공통 예외 처리기가 401 응답을 만든다.
+            throw new LoginFailedException("비밀번호가 일치하지 않습니다.");
         }
 
         return user;
     }
 
-    public ResponseEntity<String> deleteAllUsers() {
+    public void deleteAllUsers() {
         userRepository.deleteAll();
-        return ResponseEntity.ok("전체 삭제");
-
     }
 
-
-    //ResponseEntity
-    public ResponseEntity<String> deleteById(String id) {
+    public void deleteById(String id) {
+        // Service는 HTTP 상태코드를 직접 만들지 않고, 삭제 가능 여부를 예외로 표현한다.
+        // 404 같은 응답 표현은 GlobalExceptionHandler가 담당해야 계층 역할이 분리된다.
         if (!userRepository.existsById(id)) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body("NOT_FOUND");
+            // 삭제 대상이 없으면 정상 삭제로 볼 수 없으므로 UserNotFoundException을 던진다.
+            // 이 예외는 GlobalExceptionHandler에서 404 Not Found 응답으로 변환된다.
+            throw new UserNotFoundException("삭제할 사용자를 찾을 수 없습니다.");
         }
 
         userRepository.deleteById(id);
-        return ResponseEntity.ok("삭제");
     }
 
-
-    public ResponseEntity<String> deleteCell(String rowId, String colId) {
-        User user = userRepository.findById(rowId).orElseThrow(()->new RuntimeException("값을 찾을 수 없습니다."));
-        switch(colId){
-            case "name" :
+    public void deleteCell(String rowId, String colId) {
+        // 이 메서드는 셀 삭제 비즈니스 규칙만 처리하고 실제 HTTP 응답은 GlobalExceptionHandler가 만든다.
+        // 대상 행이 없거나 컬럼명이 잘못된 경우에는 각각 의미가 분명한 custom exception을 던진다.
+        User user = userRepository.findById(rowId).orElseThrow(() -> {
+            // 셀 삭제는 먼저 rowId에 해당하는 사용자가 있어야 수행할 수 있다.
+            // 대상 행이 없으면 GlobalExceptionHandler에서 404로 처리한다.
+            return new UserNotFoundException("값을 찾을 수 없습니다.");
+        });
+        switch (colId) {
+            case "name":
                 user.clearName();
                 break;
-            case "level" :
+            case "level":
                 user.clearLevel();
                 break;
-            case "desc" :
+            case "desc":
                 user.clearDesc();
                 break;
-            default :
-                return ResponseEntity.badRequest().body("삭제할 수 없습니다.");
+            default:
+                // 셀 삭제는 name, level, desc만 허용한다.
+                // 그 외 컬럼 요청은 클라이언트가 잘못된 컬럼명을 보낸 것이므로 400으로 처리한다.
+                throw new InvalidColumnException("삭제할 수 없는 컬럼입니다.");
         }
+
         userRepository.save(user);
-        return ResponseEntity.ok("셀 삭제");
     }
 
-
-    //Swagger용
-    public Optional<User> findById(String id){
+//Swagger용
+    public Optional<User> findById(String id) {
         return userQueryRepository.findById(id);
     }
 
 }
-
-
