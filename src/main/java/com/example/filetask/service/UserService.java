@@ -159,9 +159,7 @@ public class UserService {
         return ResponseEntity.ok("삭제");
     }
 
-    public Optional<User> findById(String id){
-        return userQueryRepository.findById(id);
-    }
+
 
     public ResponseEntity<String> deleteCell(String rowId, String colId) {
         User user = userRepository.findById(rowId).orElseThrow(()->new RuntimeException("값을 찾을 수 없습니다."));
@@ -183,7 +181,7 @@ public class UserService {
     }
 
 
-    //Swagger용
+    //Swagger 테스트용
     public Optional<User> findById(String id){
         return userQueryRepository.findById(id);
     }
