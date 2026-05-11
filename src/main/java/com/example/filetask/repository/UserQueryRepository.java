@@ -2,14 +2,16 @@ package com.example.filetask.repository;
 
 import com.example.filetask.entity.QUser;
 import com.example.filetask.entity.User;
-import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
+//import com.querydsl.core.BooleanBuilder;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.querydsl.jpa.JPAExpressions.selectFrom;
 
 @Repository
 public class UserQueryRepository{
@@ -31,37 +33,33 @@ public class UserQueryRepository{
     //콤보박스로 특정 조회
     public List<User> searchUsers(String field, String keyword){
         QUser user = QUser.user;
-        BooleanBuilder builder = new BooleanBuilder();
 
-        if(keyword == null || keyword.isBlank()){
-            return List.of();
-        }
+        BooleanExpression condition = searchCondition(field, keyword);
 
-        //대소 무시하고 문자열 있는지 확인
-        if("id".equals(field)){
-            builder.and(user.id.containsIgnoreCase(keyword));
-        }
-
-        if("name".equals(field)){
-            builder.and(user.name.containsIgnoreCase(keyword));
-        }
-
-        if("level".equals(field)){
-            builder.and(user.level.containsIgnoreCase(keyword));
-        }
-
-        if("desc".equals(field)){
-            builder.and(user.desc.containsIgnoreCase(keyword));
-        }
-
-        if(!builder.hasValue()){
+        if(condition == null){
             return List.of();
         }
 
         return jpaQueryFactory
                 .selectFrom(user)
-                .where(builder)
+                .where(searchCondition(field, keyword))
                 .fetch();
+    }
+
+    private BooleanExpression searchCondition(String field, String keyword){
+        QUser user = QUser.user;
+
+        if(field == null || keyword == null || keyword.isBlank()){
+            return null;
+        }
+
+        return switch (field){
+            case "id" -> user.id.containsIgnoreCase(keyword);
+            case "name" -> user.name.containsIgnoreCase(keyword);
+            case "level" -> user.level.containsIgnoreCase(keyword);
+            case "desc" -> user.desc.containsIgnoreCase(keyword);
+            default -> null;
+        };
     }
 
 
@@ -77,3 +75,38 @@ public class UserQueryRepository{
     }
 
 }
+
+//    public List<User> searchUsers(String field, String keyword){
+//        QUser user = QUser.user;
+//        BooleanBuilder builder = new BooleanBuilder();
+//
+//        if(keyword == null || keyword.isBlank()){
+//            return List.of();
+//        }
+//
+//        //대소 무시하고 문자열 있는지 확인
+//        if("id".equals(field)){
+//            builder.and(user.id.containsIgnoreCase(keyword));
+//        }
+//
+//        if("name".equals(field)){
+//            builder.and(user.name.containsIgnoreCase(keyword));
+//        }
+//
+//        if("level".equals(field)){
+//            builder.and(user.level.containsIgnoreCase(keyword));
+//        }
+//
+//        if("desc".equals(field)){
+//            builder.and(user.desc.containsIgnoreCase(keyword));
+//        }
+//
+//        if(!builder.hasValue()){
+//            return List.of();
+//        }
+//
+//        return jpaQueryFactory
+//                .selectFrom(user)
+//                .where(builder)
+//                .fetch();
+//    }
