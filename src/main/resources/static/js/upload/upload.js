@@ -4,6 +4,8 @@ var grid;
 var uploadForm;
 var contentLayout;
 var menuDetail;
+var rowId;
+var colId;
 
 const boardManager = () => {
     createLayout(); //레이아웃 생성
@@ -342,6 +344,11 @@ const searchFile = () => {
             field: field,
             keyword: keyword
         },
+        success: function(users){
+            renderUsers(users);
+
+            // uploadForm.setValue({"keyword" : ""});
+        },
         error:function(err){
             console.log(err);
             dhx.alert({
@@ -349,9 +356,6 @@ const searchFile = () => {
                 buttonsAlignment: "center",
                 buttons: ["ok"]
             });
-        },
-        success: function(users){
-            renderUsers(users);
         }
     });
 };
@@ -412,6 +416,7 @@ const deleteById = () => {
                 buttons: ["ok"],
             });
             loadFile();
+            uploadForm.setValue({"deleted": ""});
         },
         error: function(err){
             console.log(err);
@@ -433,10 +438,10 @@ const deleteById = () => {
 
 
 const deleteAll = () => {
-
     $.ajax({
         type: "DELETE",
         url: "/users",
+        contentType: "application/json",
         success: function(){
             dhx.alert({
                 header: "전체 삭제",
@@ -487,9 +492,9 @@ const createGrid =() => {
             })
             return;
         }
-
-        const rowId = cell.row.id;
-        const colId = cell.column.id;
+        console.log(id);
+        rowId = cell.row.id;
+        colId = cell.column.id;
 
         if(id == "font-weight-bold"){
             grid.addCellCss(rowId, colId, "cell-bold");
@@ -517,7 +522,23 @@ const createGrid =() => {
             grid.addCellCss(rowId, colId, "cell-align-center");
         }
 
+        if (id === "clear-styles") {
+            clearStyle();
+            dhx.alert({
+                header: "셀 스타일 삭제",
+                buttons: ["ok"],
+            })
+        }
 
+        if(id === "clear-value"){
+            clearValue();
+        }
+
+        if(id === "clear-all"){
+            clearValue(function() {
+                clearStyle();
+            });
+        }
 
     });
 
@@ -541,6 +562,7 @@ const createGrid =() => {
     contentLayout.getCell("contentGrid").attach(grid);
 };
 
+// dhx.menu 적용 전
 // columns: [
 //     {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
 //     {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
@@ -549,6 +571,7 @@ const createGrid =() => {
 //     {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
 //     {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
 // ],
+
 
 function uploadFail() {
     dhx.alert({
@@ -566,6 +589,52 @@ function wrongFile() {
     })
 }
 
+function clearStyle(){
+    grid.removeCellCss(rowId, colId, "cell-bold");
+    grid.removeCellCss(rowId, colId, "cell-italic");
+    grid.removeCellCss(rowId, colId, "cell-underline");
+    grid.removeCellCss(rowId, colId, "cell-align-left");
+    grid.removeCellCss(rowId, colId, "cell-align-center");
+    grid.removeCellCss(rowId, colId, "cell-align-right");
+    return;
+}
+
+function clearValue(onSuccess){
+    $.ajax({
+        type: "DELETE",
+        url: "/users/cell",
+        data: {
+            rowId: rowId,
+            colId: colId
+        },
+        success: function(){
+            loadFile();
+            if(onSuccess){
+                onSuccess();
+            }
+            dhx.alert({
+                header: "셀 삭제 성공",
+                buttons:["ok"]
+            })
+        },
+        error: function(e){
+            console.log(e);
+            if(e.status==400){
+                dhx.alert({
+                    header: "셀 삭제 실패",
+                    buttons:["ok"]
+                });
+                return;
+            }
+
+            dhx.alert({
+                header: "셀 삭제 중 오류 발생",
+                buttons:["ok"]
+            })
+        }
+    })
+}
+
 
 const dataset = [{
     "id": "edit",
@@ -574,42 +643,6 @@ const dataset = [{
     "count": 25,
     "countColor": "success",
     "items": [{
-        "id": "undo",
-        "value": "Undo",
-        "icon": "dxi dxi-undo",
-        "hotKey": "Ctrl-z",
-        "count": 25,
-        "countColor": "danger",
-        "items": [{
-            "id": "redo1",
-            "value": "Redo",
-            "icon": "dxi dxi-redo",
-            "disabled": "true"
-        },
-            {
-                "type": "separator"
-            },
-            {
-                "id": "lock1",
-                "value": "Lock cell",
-                "icon": "dxi dxi-key"
-            }
-        ]
-    },
-        {
-            "id": "redo",
-            "value": "Redo",
-            "icon": "dxi dxi-redo"
-        },
-        {
-            "type": "separator"
-        },
-        {
-            "id": "lock",
-            "value": "Lock cell",
-            "icon": "dxi dxi-key"
-        },
-        {
             "id": "clear",
             "value": "Clear",
             "icon": "dxi dxi-eraser",
@@ -627,8 +660,7 @@ const dataset = [{
                 }
             ]
         }
-    ]
-},
+    ]},
     {
         "type": "separator"
     },
@@ -675,5 +707,5 @@ const dataset = [{
                 ]
             }
         ]
-    },
+    }
 ];

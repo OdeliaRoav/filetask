@@ -224,3 +224,11 @@ html, body {
 	text-align: right;
 	width: 100%;
 }
+
+.contentGrid.dhx_grid-cell.-clear-value {
+	all:unset;
+}
+
+.contentGrid.dhx_grid-cell.-clear-styles .dhx_grid-cell__content {
+	all:unset;
+}

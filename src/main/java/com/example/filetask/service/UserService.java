@@ -114,9 +114,7 @@ public class UserService {
     }
 
 
-    public Optional<User> findById(String id){
-        return userQueryRepository.findById(id);
-    }
+
 
     public List<User> getAllUsers(){
         return userQueryRepository.findAllUsers();
@@ -145,7 +143,7 @@ public class UserService {
     }
 
 
-    //Swagger용
+
     //ResponseEntity
     public ResponseEntity<String> deleteById(String id) {
         if (!userRepository.existsById(id)) {
@@ -161,6 +159,32 @@ public class UserService {
         return ResponseEntity.ok("전체 삭제");
 
     }
+
+    public ResponseEntity<String> deleteCell(String rowId, String colId) {
+        User user = userRepository.findById(rowId).orElseThrow(()->new RuntimeException("값을 찾을 수 없습니다."));
+        switch(colId){
+            case "name" :
+                user.clearName();
+                break;
+            case "level" :
+                user.clearLevel();
+                break;
+            case "desc" :
+                user.clearDesc();
+                break;
+            default :
+                return ResponseEntity.badRequest().body("삭제할 수 없습니다.");
+        }
+        userRepository.save(user);
+        return ResponseEntity.ok("셀 삭제");
+    }
+
+
+    //Swagger용
+    public Optional<User> findById(String id){
+        return userQueryRepository.findById(id);
+    }
+
 }
 
 
