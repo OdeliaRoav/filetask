@@ -10,17 +10,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-import static com.example.filetask.entity.QUser.user;
-
 @Repository
 public class UserQueryRepository{
     private final JPAQueryFactory jpaQueryFactory;
-    private final QueryFactory queryFactory;
 
     //생성자 생성
-    public UserQueryRepository(JPAQueryFactory jpaQueryFactory, QueryFactory queryFactory){
+    public UserQueryRepository(JPAQueryFactory jpaQueryFactory){
         this.jpaQueryFactory = jpaQueryFactory;
-        this.queryFactory = queryFactory;
     }
 
     //조회 버튼
