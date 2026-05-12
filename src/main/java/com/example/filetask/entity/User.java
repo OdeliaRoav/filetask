@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,9 +35,6 @@ public class User {
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
-    public void clearPwd() {
-        this.pwd = "";
-    }
 
     public void clearName() {
         this.name = "";

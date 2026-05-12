@@ -47,7 +47,7 @@ public class UserController {
     }
 
     // 로그인 요청
-    // 아이디 없음, 비밀번호 불일치는 Service에서 LoginFailedException으로 처리한다.
+    // 아이디 없음, 비밀번호 불일치는 Service에서 LOGIN_FAILED ErrorCode로 처리한다.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Info user) {
         Info loginUser = userService.login(user.getId(), user.getPwd());
@@ -79,7 +79,7 @@ public class UserController {
     }
 
     // 셀 값 삭제 요청
-    // rowId 없음, 잘못된 colId 같은 실패 상황은 Service가 custom exception으로 표현한다.
+    // rowId 없음, 잘못된 colId 같은 실패 상황은 Service가 BusinessException과 ErrorCode로 표현한다.
     @DeleteMapping("/cell")
     public ResponseEntity<String> deleteCell(@RequestParam("rowId") String rowId, @RequestParam("colId") String colId) {
         // Controller는 성공 응답만 담당하고, 실패 응답 형식은 GlobalExceptionHandler에서 일관되게 관리한다.

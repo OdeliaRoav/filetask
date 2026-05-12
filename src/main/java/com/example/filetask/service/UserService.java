@@ -2,11 +2,8 @@ package com.example.filetask.service;
 
 import com.example.filetask.entity.User;
 import com.example.filetask.entity.Info;
-import com.example.filetask.exception.DuplicateUserException;
-import com.example.filetask.exception.InvalidColumnException;
-import com.example.filetask.exception.InvalidFileException;
-import com.example.filetask.exception.LoginFailedException;
-import com.example.filetask.exception.UserNotFoundException;
+import com.example.filetask.exception.BusinessException;
+import com.example.filetask.exception.ErrorCode;
 import com.example.filetask.repository.InfoRepository;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
@@ -43,9 +40,8 @@ public class UserService {
 
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             // 업로드 가능한 확장자는 과제 조건 4번 .dbfile만 허용한다.
-            // 잘못된 확장자는 비즈니스 처리 대상이 아니므로 InvalidFileException을 던지고,
-            // GlobalExceptionHandler가 400 Bad Request 응답으로 변환한다.
-            throw new InvalidFileException("dbfile 파일만 업로드할 수 있습니다.");
+            // 잘못된 확장자는 INVALID_FILE 코드로 표현하고, GlobalExceptionHandler가 400 응답으로 변환한다.
+            throw new BusinessException(ErrorCode.INVALID_FILE);
         }
 
         String redisKey = "recent:" + fileName;
@@ -135,8 +131,8 @@ public class UserService {
     public void signup(Info user) {
         if (infoRepository.existsById(user.getId())) {
             // 회원가입 ID는 중복될 수 없으므로 저장 전에 Repository로 존재 여부를 확인한다.
-            // 중복 ID는 서버 오류가 아니라 현재 데이터와 충돌한 요청이므로 409 Conflict로 처리한다.
-            throw new DuplicateUserException("존재하는 아이디입니다.");
+            // 중복 ID는 서버 오류가 아니라 현재 데이터와 충돌한 요청이므로 DUPLICATE_USER 코드로 처리한다.
+            throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
 
         Info signupUser = Info.signup(user.getId(), user.getPwd(), user.getName());
@@ -146,14 +142,14 @@ public class UserService {
     public Info login(String id, String pwd) {
         Info user = infoRepository.findById(id).orElseThrow(() -> {
             // 로그인은 아이디가 존재해야 비밀번호 검증을 진행할 수 있다.
-            // 존재하지 않는 아이디는 인증 실패로 보고 GlobalExceptionHandler에서 401로 응답한다.
-            return new LoginFailedException("아이디가 없습니다.");
+            // 존재하지 않는 아이디는 인증 실패로 보고 LOGIN_FAILED 코드의 401 응답으로 변환한다.
+            return new BusinessException(ErrorCode.LOGIN_FAILED, "아이디가 없습니다.");
         });
 
         if (!user.getPwd().equals(pwd)) {
-            // 비밀번호 불일치도 인증 실패 상황이므로 LoginFailedException으로 통일한다.
+            // 비밀번호 불일치도 인증 실패 상황이므로 LOGIN_FAILED 코드로 통일한다.
             // Controller에 try-catch를 두지 않고 공통 예외 처리기가 401 응답을 만든다.
-            throw new LoginFailedException("비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.LOGIN_FAILED, "비밀번호가 일치하지 않습니다.");
         }
 
         return user;
@@ -166,22 +162,24 @@ public class UserService {
     public void deleteById(String id) {
         // Service는 HTTP 상태코드를 직접 만들지 않고, 삭제 가능 여부를 예외로 표현한다.
         // 404 같은 응답 표현은 GlobalExceptionHandler가 담당해야 계층 역할이 분리된다.
-        if (!userRepository.existsById(id)) {
-            // 삭제 대상이 없으면 정상 삭제로 볼 수 없으므로 UserNotFoundException을 던진다.
+        User user = userRepository.findById(id).orElseThrow(() -> {
+            // 삭제 대상이 없으면 정상 삭제로 볼 수 없으므로 USER_NOT_FOUND 코드로 표현한다.
             // 이 예외는 GlobalExceptionHandler에서 404 Not Found 응답으로 변환된다.
-            throw new UserNotFoundException("삭제할 사용자를 찾을 수 없습니다.");
-        }
+            return new BusinessException(ErrorCode.USER_NOT_FOUND, "삭제할 사용자를 찾을 수 없습니다.");
+        });
 
-        userRepository.deleteById(id);
+        // existsById로 확인하고 deleteById를 다시 호출하면 DB 접근이 두 번 발생할 수 있다.
+        // 이미 조회한 엔티티를 그대로 삭제해 불필요한 조회를 줄인다.
+        userRepository.delete(user);
     }
 
     public void deleteCell(String rowId, String colId) {
         // 이 메서드는 셀 삭제 비즈니스 규칙만 처리하고 실제 HTTP 응답은 GlobalExceptionHandler가 만든다.
-        // 대상 행이 없거나 컬럼명이 잘못된 경우에는 각각 의미가 분명한 custom exception을 던진다.
+        // 대상 행이 없거나 컬럼명이 잘못된 경우에는 각각 의미가 분명한 ErrorCode를 선택해 던진다.
         User user = userRepository.findById(rowId).orElseThrow(() -> {
             // 셀 삭제는 먼저 rowId에 해당하는 사용자가 있어야 수행할 수 있다.
             // 대상 행이 없으면 GlobalExceptionHandler에서 404로 처리한다.
-            return new UserNotFoundException("값을 찾을 수 없습니다.");
+            return new BusinessException(ErrorCode.USER_NOT_FOUND, "값을 찾을 수 없습니다.");
         });
         switch (colId) {
             case "name":
@@ -196,7 +194,7 @@ public class UserService {
             default:
                 // 셀 삭제는 name, level, desc만 허용한다.
                 // 그 외 컬럼 요청은 클라이언트가 잘못된 컬럼명을 보낸 것이므로 400으로 처리한다.
-                throw new InvalidColumnException("삭제할 수 없는 컬럼입니다.");
+                throw new BusinessException(ErrorCode.INVALID_COLUMN);
         }
 
         userRepository.save(user);
