@@ -2,15 +2,16 @@ package com.example.filetask.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class BusinessException extends RuntimeException{
+public class BusinessException extends RuntimeException {
+
     private final HttpStatus status;
 
-    public BusinessException(HttpStatus status, String message){
+    public BusinessException(HttpStatus status, String message) {
         super(message);
         this.status = status;
     }
 
-    public HttpStatus getStatus(){
+    public HttpStatus getStatus() {
         return status;
     }
 }

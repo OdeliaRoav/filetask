@@ -1,8 +1,11 @@
 package com.example.filetask.exception;
 
-public class InvalidColumnException extends RuntimeException{
+import org.springframework.http.HttpStatus;
 
-    public InvalidColumnException(String message){
-        super(message);
+public class InvalidColumnException extends BusinessException {
+
+    public InvalidColumnException(String message) {
+        //400에러
+        super(HttpStatus.BAD_REQUEST, message);
     }
 }

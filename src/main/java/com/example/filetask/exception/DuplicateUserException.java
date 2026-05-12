@@ -1,10 +1,12 @@
 package com.example.filetask.exception;
 
-public class DuplicateUserException extends RuntimeException{
+import org.springframework.http.HttpStatus;
 
-    public DuplicateUserException(String message){
-        super(message);
+public class DuplicateUserException extends BusinessException {
 
+    public DuplicateUserException(String message) {
+        //409에러
+        super(HttpStatus.CONFLICT, message);
     }
 
 }
