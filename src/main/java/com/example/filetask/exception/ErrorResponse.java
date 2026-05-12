@@ -2,20 +2,22 @@ package com.example.filetask.exception;
 
 
 
+import org.springframework.http.HttpStatus;
+
 import java.time.LocalDateTime;
-
-public class ErrorResponse {
-    private final LocalDateTime timestamp;
-    private final int status;
-    private final String error;
-    private final String message;
-
-
-    public ErrorResponse(LocalDateTime timestamp, int status, String error, String message){
-        this.timestamp = timestamp;
-        this.status = status;
-        this.error = error;
-        this.message = message;
-    }
+    //record를 사용하면 필드를 선언하면서 자동으로 생성되는 메서드들을 통해 코드를 간결하게 작성할 수 있다.
+public record ErrorResponse(
+        LocalDateTime timestamp,
+        int status,
+        String error,
+        String message )
+{   //of -> 메서드의 파라미터로 넘어온 값들을 검증하여 인스턴스를 생성할 때 사용한다.
+    public static ErrorResponse of(HttpStatus status,String message){
+        return new ErrorResponse(
+                LocalDateTime.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                message
+        );
+    };
 }
-
