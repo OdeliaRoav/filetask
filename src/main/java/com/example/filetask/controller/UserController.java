@@ -51,22 +51,21 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable String id) {
-        return userService.deleteById(id);
+        userService.deleteById(id);
+        return ResponseEntity.ok("검색 삭제");
     }
 
     @DeleteMapping
-    public ResponseEntity<String>  deleteAllUsers() { return userService.deleteAllUsers(); };
+    public ResponseEntity<String>  deleteAllUsers() {
+        userService.deleteAllUsers();
+        return ResponseEntity.ok("전체 삭제");
+    };
 
     @DeleteMapping("/cell")
-    public ResponseEntity<String> deleteCell(@RequestParam("rowId") String rowId, @RequestParam("colId") String colId) throws IOException {
-        return userService.deleteCell(rowId, colId);
+    public ResponseEntity<String> deleteCell(@RequestParam("rowId") String rowId, @RequestParam("colId") String colId) {
+        userService.deleteCell(rowId, colId);
+        return ResponseEntity.ok("셀 삭제");
     }
 
-
-    //Swagger 테스트 용
-    @GetMapping("/{id}")
-    public Optional<User> getUser(@PathVariable String id){
-        return userService.findById(id);
-    }
 }
 

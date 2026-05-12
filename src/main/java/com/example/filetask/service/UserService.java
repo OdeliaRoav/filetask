@@ -2,6 +2,7 @@ package com.example.filetask.service;
 
 import com.example.filetask.entity.User;
 import com.example.filetask.entity.Info;
+import com.example.filetask.exception.*;
 import com.example.filetask.repository.InfoRepository;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
@@ -42,7 +43,7 @@ public class UserService {
         String fileName = file.getOriginalFilename();
 
         if (fileName == null || !fileName.endsWith(".dbfile")) {
-            throw new RuntimeException("dbfile 파일만 업로드할 수 있습니다.");
+            throw new InvalidFileException("dbfile 파일만 업로드할 수 있습니다.");
         }
 
         String redisKey = "recent:" + fileName;
@@ -59,13 +60,16 @@ public class UserService {
             return result;
         }
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()));
-
         List<String> lines = new ArrayList<>();
 
-        String line;
-        while ((line = br.readLine()) != null) {
-            lines.add(line);
+
+        //try-with-resources 자바7부터 자원을 자동으로 반납해주는 문법 -> BUfferedReader 사용 후 반납
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))){
+            String line;
+            while((line = br.readLine()) != null){
+                lines.add(line);
+            }
+
         }
 
         int successCount = 0;
@@ -78,7 +82,13 @@ public class UserService {
 
             try {
                 String[] data = oneLine.split("/", -1);
-                // split이 limit 기준으로 >0이면 갯수대로, 0이면 빈값은 제외하고 출력, limit<0이면 빈값도 모두 출력함 즉 홍길동/B//5432 이런게 가능해진다는 뜻
+                // split("/", -1) 빈 컬럼도 보존
+                if(data.length != 6){
+                    throw new InvalidFileException("데이터 컬럼 수가 맞지 않습니다.");
+                }
+                if(data[0].isBlank() || data[1].isBlank() || data[2].isBlank() || data[3].isBlank() || data[5].isBlank()){
+                    throw new InvalidFileException("필수값이 비어있습니다.");
+                }
                 User user = new User(
                         data[0],
                         data[1],
@@ -126,42 +136,49 @@ public class UserService {
 
     public void signup(Info user) {
         if(infoRepository.existsById(user.getId())){
-            throw new RuntimeException("존재하는 아이디입니다.");
+            throw new DuplicateUserException("존재하는 아이디입니다.");
         }
+
         Info signupUser = Info.signup(user.getId(), user.getPwd(), user.getName());
         infoRepository.save(signupUser);
     }
 
     public Info login(String id, String pwd) {
-        Info user = infoRepository.findById(id).orElseThrow(()-> new RuntimeException("아이디가 없습니다."));
+        Info user = infoRepository.findById(id).orElseThrow(()->{
+            throw new LoginFailedException("아이디가 없습니다.");
+        });
 
         if(!user.getPwd().equals(pwd)){
-            throw new RuntimeException("비밀번호가 없습니다");
+            throw new LoginFailedException("비밀번호가 없습니다.");
         }
 
         return user;
     }
 
-    public ResponseEntity<String> deleteAllUsers() {
-        userRepository.deleteAll();
-        return ResponseEntity.ok("전체 삭제");
 
+
+    // 수정해야할 부분 -> ResponseEntity로 서비스단의 활용을 막고 있음, 왜? 사용을 서비스 단에서 계속 해야하지만
+    // return ResponseEntity.ok로 재활용성이 떨어짐 즉 서바스단에서는 일회용에 불과
+
+    public void deleteAllUsers(){
+        userRepository.deleteAll();
     }
 
 
     //ResponseEntity
-    public ResponseEntity<String> deleteById(String id) {
-        if (!userRepository.existsById(id)) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body("NOT_FOUND");
+    public void deleteById(String id){
+        if(!userRepository.existsById(id)){
+            throw new UserNotFoundException("삭제할 사용자를 찾을 수 없습니다.");
         }
-
         userRepository.deleteById(id);
-        return ResponseEntity.ok("삭제");
     }
 
 
-    public ResponseEntity<String> deleteCell(String rowId, String colId) {
-        User user = userRepository.findById(rowId).orElseThrow(()->new RuntimeException("값을 찾을 수 없습니다."));
+    public void deleteCell(String rowId, String colId){
+        User user = userRepository.findById(rowId).orElseThrow(()->{
+            throw new UserNotFoundException("값을 찾을 수 없습니다.");
+        });
+
         switch(colId){
             case "name" :
                 user.clearName();
@@ -173,16 +190,9 @@ public class UserService {
                 user.clearDesc();
                 break;
             default :
-                return ResponseEntity.badRequest().body("삭제할 수 없습니다.");
+                throw new InvalidColumnException("삭제할 수 없는 컬럼입니다.");
         }
         userRepository.save(user);
-        return ResponseEntity.ok("셀 삭제");
-    }
-
-
-    //Swagger용
-    public Optional<User> findById(String id){
-        return userQueryRepository.findById(id);
     }
 
 }
