@@ -137,7 +137,8 @@ const loginButton = () => {
         },
         error: function (err) {
             console.log(err);
-            loginFail();
+            const message = getErrorMessage(err, "로그인 실패");
+            loginFail(message);
         }
     });
 };
@@ -171,11 +172,21 @@ function loginSuccess() {
     });
 }
 
+// 서버 예외 응답 메시지 추출
+// GlobalExceptionHandler가 내려준 JSON이 있으면 message를 사용하고, 없으면 기존 기본 문구를 사용한다.
+function getErrorMessage(err, fallbackMessage) {
+    if (err.responseJSON && err.responseJSON.message) {
+        return err.responseJSON.message;
+    }
+
+    return fallbackMessage;
+}
+
 // 로그인 실패 안내
-// 아이디 없음, 비밀번호 불일치, 서버 오류 등 로그인 요청이 실패했을 때 보여준다.
-function loginFail() {
+// 아이디 없음, 비밀번호 불일치처럼 서버가 알려준 실패 이유가 있으면 그 메시지를 그대로 보여준다.
+function loginFail(message) {
     dhx.alert({
-        header: "로그인 실패",
+        header: message,
         buttonsAlignment: "center",
         buttons: ["ok"],
     })

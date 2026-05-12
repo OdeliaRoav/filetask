@@ -270,7 +270,8 @@ const uploadFile =() =>{
         },
         error: function (err) {
             console.log(err);
-            uploadFail();
+            const message = getErrorMessage(err, "파일 업로드 중 오류가 발생했습니다.");
+            uploadFail(message);
         }
 
     });
@@ -333,8 +334,9 @@ const loadFile = () => {
         },
         error:function(err){
             console.log(err);
+            const message = getErrorMessage(err, "오류가 발생했습니다.");
             dhx.alert({
-                header: "오류가 발생했습니다.",
+                header: message,
                 buttonsAlignment: "center",
                 buttons: ["ok"]
             });
@@ -374,8 +376,9 @@ const searchFile = () => {
         },
         error:function(err){
             console.log(err);
+            const message = getErrorMessage(err, "조회 중 오류가 발생했습니다.");
             dhx.alert({
-                header: "조회 중 오류가 발생했습니다.",
+                header: message,
                 buttonsAlignment: "center",
                 buttons: ["ok"]
             });
@@ -451,16 +454,10 @@ const deleteById = () => {
         },
         error: function(err){
             console.log(err);
-            //404로 보내는거 확인
-            if(err.status === 404){
-                dhx.alert({
-                    header:"조회되지 않습니다.",
-                    buttons: ["ok"]
-                });
-                return;
-            }
+            const fallbackMessage = err.status === 404 ? "조회되지 않습니다." : "삭제 중 오류가 발생했습니다.";
+            const message = getErrorMessage(err, fallbackMessage);
             dhx.alert({
-                header:"삭제 중 오류가 발생했습니다.",
+                header: message,
                 buttons: ["ok"]
             });
         }
@@ -483,8 +480,9 @@ const deleteAll = () => {
         },
         error: function(err){
             console.log(err);
+            const message = getErrorMessage(err, "삭제 중 오류가 발생했습니다.");
             dhx.alert({
-                header: "삭제 중 오류가 발생했습니다.",
+                header: message,
                 buttons: ["ok"]
             });
         }
@@ -611,9 +609,19 @@ const createGrid =() => {
 // ],
 
 
-function uploadFail() {
+// 서버 예외 응답 메시지 추출
+// GlobalExceptionHandler가 내려준 JSON이 있으면 message를 사용하고, 없으면 기존 기본 문구를 사용한다.
+function getErrorMessage(err, fallbackMessage) {
+    if (err.responseJSON && err.responseJSON.message) {
+        return err.responseJSON.message;
+    }
+
+    return fallbackMessage;
+}
+
+function uploadFail(message) {
     dhx.alert({
-        header: "파일을 선택하세요.",
+        header: message || "파일을 선택하세요.",
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
@@ -663,16 +671,11 @@ function clearValue(onSuccess){
         },
         error: function(e){
             console.log(e);
-            if(e.status==400){
-                dhx.alert({
-                    header: "셀 삭제 실패",
-                    buttons:["ok"]
-                });
-                return;
-            }
+            const fallbackMessage = e.status == 400 ? "셀 삭제 실패" : "셀 삭제 중 오류 발생";
+            const message = getErrorMessage(e, fallbackMessage);
 
             dhx.alert({
-                header: "셀 삭제 중 오류 발생",
+                header: message,
                 buttons:["ok"]
             })
         }

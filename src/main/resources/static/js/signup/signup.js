@@ -131,7 +131,8 @@ const signupButton = () =>{
         },
         error: function(err){
             console.log(err);
-            signupFail();
+            const message = getErrorMessage(err, "회원가입 실패");
+            signupFail(message);
         }
     });
 };
@@ -147,11 +148,21 @@ function signupSuccess() {
     })
 };
 
+// 서버 예외 응답 메시지 추출
+// GlobalExceptionHandler가 내려준 JSON이 있으면 message를 사용하고, 없으면 기존 기본 문구를 사용한다.
+function getErrorMessage(err, fallbackMessage) {
+    if (err.responseJSON && err.responseJSON.message) {
+        return err.responseJSON.message;
+    }
+
+    return fallbackMessage;
+}
+
 // 회원가입 실패 안내
-// 중복 아이디나 서버 오류처럼 회원가입 요청이 실패했을 때 보여준다.
-function signupFail() {
+// 중복 아이디처럼 서버가 알려준 실패 이유가 있으면 그 메시지를 그대로 보여준다.
+function signupFail(message) {
     dhx.alert({
-        header: "회원가입 실패",
+        header: message,
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
