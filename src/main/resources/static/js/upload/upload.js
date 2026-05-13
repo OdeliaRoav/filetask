@@ -226,14 +226,8 @@ const uploadFile =() =>{
         return;
     }
 
-
     const file = files[0].file;
     console.log("fileName : " + file.name);
-
-    if(!file.name.endsWith(".dbfile")){
-        wrongFile();
-        return;
-    }
 
     formData.append("file", file);
 
@@ -257,7 +251,7 @@ const uploadFile =() =>{
         },
         error: function (err) {
             console.log(err);
-            uploadFail();
+            showAlert(getErrorMessage(err));
         }
 
     });
@@ -314,7 +308,7 @@ const loadFile = () => {
         error:function(err){
             console.log(err);
             dhx.alert({
-                header: "오류가 발생했습니다.",
+                header: getErrorMessage(err),
                 buttonsAlignment: "center",
                 buttons: ["ok"]
             });
@@ -352,7 +346,7 @@ const searchFile = () => {
         error:function(err){
             console.log(err);
             dhx.alert({
-                header: "조회 중 오류가 발생했습니다.",
+                header: getErrorMessage(err),
                 buttonsAlignment: "center",
                 buttons: ["ok"]
             });
@@ -362,7 +356,7 @@ const searchFile = () => {
 
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
-        return fail;
+        return "";
     }
 
     const date = new Date(regDate);
@@ -389,6 +383,7 @@ const renderUsers = (users) => {
 
     grid.data.removeAll(); //기존 삭제하고
     grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
+
 };
 
 
@@ -401,7 +396,7 @@ const deleteById = () => {
 
     if(!id){
         dhx.alert({
-            header: "삭제할 ID를 입력하세요",
+            header: getErrorMessage(err),
             buttons: ["ok"],
         });
         return;
@@ -421,17 +416,10 @@ const deleteById = () => {
         error: function(err){
             console.log(err);
             //404로 보내는거 확인
-            if(err.status === 404){
                 dhx.alert({
-                    header:"조회되지 않습니다.",
+                    header:getErrorMessage(err),
                     buttons: ["ok"]
                 });
-                return;
-            }
-            dhx.alert({
-                header:"삭제 중 오류가 발생했습니다.",
-                buttons: ["ok"]
-            });
         }
     });
 };
@@ -452,7 +440,7 @@ const deleteAll = () => {
         error: function(err){
             console.log(err);
             dhx.alert({
-                header: "삭제 중 오류가 발생했습니다.",
+                header: getErrorMessage(err),
                 buttons: ["ok"]
             });
         }
@@ -562,31 +550,22 @@ const createGrid =() => {
     contentLayout.getCell("contentGrid").attach(grid);
 };
 
-// dhx.menu 적용 전
-// columns: [
-//     {id: "id", align:"center", header:[{text:"ID", align: "center"}]},
-//     {id: "pwd", align: "center", header:[{text: "PWD", align: "center"}]},
-//     {id: "name", align: "center", header:[{text:"NAME", align: "center"}]},
-//     {id: "level", align: "center", header:[{text:"LEVEL", align: "center"}]},
-//     {id: "desc", align: "center", header:[{text:"DESC", align: "center"}]},
-//     {id: "regDate", align: "center", header:[{text:"REG_DATE", align: "center"}]}
-// ],
 
+function uploadFail(message = "파일을 선택하세요.") {
+    showAlert(message);
+}
 
-function uploadFail() {
+function showAlert(message) {
     dhx.alert({
-        header: "파일을 선택하세요.",
+        header: message,
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
 }
 
-function wrongFile() {
-    dhx.alert({
-        header: ".dbfile만 업로드 가능합니다.",
-        buttonsAlignment: "center",
-        buttons: ["ok"],
-    })
+//3개나 대비하는 이유는 서버가 꺼져있을 시 서버로 부터 받을 JSON이 없기 때문에 3번째까지 준비한다. (3번째는 서버 꺼졌을 때 응답 용도로)
+function getErrorMessage(err) {
+    return err.responseJSON?.message || err.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
 }
 
 function clearStyle(){
@@ -621,14 +600,14 @@ function clearValue(onSuccess){
             console.log(e);
             if(e.status==400){
                 dhx.alert({
-                    header: "셀 삭제 실패",
+                    header: getErrorMessage(e),
                     buttons:["ok"]
                 });
                 return;
             }
 
             dhx.alert({
-                header: "셀 삭제 중 오류 발생",
+                header: getErrorMessage(e),
                 buttons:["ok"]
             })
         }

@@ -36,9 +36,6 @@ public class User {
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
-    public void clearPwd(){
-        this.pwd ="";
-    }
 
     public void clearName(){
         this.name = "";

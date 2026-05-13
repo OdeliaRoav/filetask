@@ -120,7 +120,7 @@ const signupButton = () =>{
         },
         error: function(err){
             console.log(err);
-            signupFail();
+            signupFail(getErrorMessage(err));
         }
     });
 };
@@ -134,9 +134,9 @@ function signupSuccess() {
     })
 };
 
-function signupFail() {
+function signupFail(message) {
     dhx.alert({
-        header: "회원가입 실패",
+        header: message,
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
@@ -149,5 +149,9 @@ function noInfo() {
         buttons: ["ok"],
     })
 };
+
+function getErrorMessage(err) {
+    return err.responseJSON?.message || err.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
+}
 
 

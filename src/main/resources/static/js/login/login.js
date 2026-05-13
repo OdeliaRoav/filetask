@@ -125,7 +125,7 @@ const loginButton = () => {
         },
         error: function (err) {
             console.log(err);
-            loginFail();
+            loginFail(getErrorMessage(err));
         }
     });
 };
@@ -153,13 +153,17 @@ function loginSuccess() {
     });
 }
 
-function loginFail() {
+function loginFail(message) {
     dhx.alert({
-        header: "로그인 실패",
+        header: message,
         buttonsAlignment: "center",
         buttons: ["ok"],
     })
 };
+
+function getErrorMessage(err) {
+    return err.responseJSON?.message || err.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
+}
 
 
 
