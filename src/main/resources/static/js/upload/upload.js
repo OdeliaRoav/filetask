@@ -222,7 +222,7 @@ const uploadFile =() =>{
     console.log("files : ", files);
 
     if(!files || files.length === 0){
-        uploadFail();
+        showAlert("파일을 선택하세요.");
         return;
     }
 
@@ -340,6 +340,7 @@ const searchFile = () => {
         },
         success: function(users){
             if(users.length === 0){
+                renderUsers([]);
                 dhx.alert({
                     header: "조회 결과가 없습니다.",
                     buttonsAlignment: "center",
@@ -478,7 +479,7 @@ const createGrid =() => {
         data: dataset
     });
 
-    menuDetail.events.on("click", function(id,e){
+    menuDetail.events.on("click", function(id){
         const cell = grid.selection.getCell();
         if(!cell){
             dhx.alert({
@@ -557,11 +558,6 @@ const createGrid =() => {
     contentLayout.getCell("contentGrid").attach(grid);
 };
 
-
-function uploadFail(message = "파일을 선택하세요.") {
-    showAlert(message);
-}
-
 function showAlert(message) {
     dhx.alert({
         header: message,
@@ -583,7 +579,6 @@ function clearStyle(){
     grid.removeCellCss(rowId, colId, "cell-align-left");
     grid.removeCellCss(rowId, colId, "cell-align-center");
     grid.removeCellCss(rowId, colId, "cell-align-right");
-    return;
 }
 
 function clearValue(onSuccess){
