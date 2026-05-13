@@ -35,14 +35,14 @@ html, body {
 	width: 100% !important;
 	height: 100% !important;
 	box-sizing: border-box;
-	background-color: #30333d;
+	background-color: #ffffff;
 }
 
 .contentGrid .dhx_layout-cell-content,
 .contentGrid .dhx_grid-body,
 .contentGrid .dhx_data-wrap,
 .contentGrid .dhx_grid_data {
-	background-color: #30333d;
+	background-color: #ffffff;
 	margin-left: 0;
 	margin-right: 0;
 	overflow: hidden;
@@ -52,15 +52,32 @@ html, body {
 .contentGrid .dhx_header-wrapper,
 .contentGrid .dhx_grid-header-cell,
 .contentGrid .dhx_grid-header-cell-text_content {
-	background-color: #30333d;
-	color: #fff;
-	border-color: white;
+	background-color: #f2f3f5;
+	color: #30333d;
+	border-color: #e1e4e8;
 }
 
 .contentGrid .dhx_grid-cell {
-	background-color: #30333d;
-	color: white;
-	border-color: white;
+	background-color: #ffffff;
+	color: #30333d;
+	border-color: #e5e7eb;
+}
+
+.contentGrid .grid-row-checkbox,
+.contentGrid .grid-select-all-checkbox {
+	width: 15px;
+	height: 15px;
+	margin: 0;
+	padding: 0;
+	appearance: auto;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+.contentGrid .dhx_grid-cell[data-dhx-col-id="select"],
+.contentGrid .dhx_grid-header-cell[data-dhx-id="select"] {
+	justify-content: center;
+	text-align: center;
 }
 
 .dhx_data-wrap {
@@ -81,10 +98,21 @@ html, body {
 	border-color: #FFFFFF1F;
 }
 
+.tabArea .contentGrid,
+.tabArea .contentGrid .dhx_layout-cell,
+.tabArea .contentGrid .dhx_layout-cell-content,
+.tabArea .contentGrid .dhx_layout-cell-header,
+.tabArea .contentGrid .dhx_layout-cell-header__title {
+	background-color: #ffffff;
+	color: #30333d;
+	border-color: #e5e7eb;
+}
+
 .content_menu,
 .content_menu--popup-menu {
-	background-color: #30333d;
-	color: #fff;
+	background-color: #ffffff;
+	color: #30333d;
+	border-color: #e5e7eb;
 }
 
 .content_menu .dhx_button,
@@ -93,67 +121,74 @@ html, body {
 .content_menu--popup-menu .dhx_button,
 .content_menu--popup-menu .dhx_button__text,
 .content_menu--popup-menu .dxi {
-	color: #fff;
+	color: #30333d;
 }
 
-/* toolbarArea 색 지정 */
-.toolbarArea,
-.toolbarArea .dhx_layout-cell-content,
-.toolbarArea .dhx_form,
-.toolbarArea .dhx_form-group,
-.toolbarArea .dhx_form-element,
-.toolbarArea .dhx_form-element__control,
-.toolbarArea .dhx_form-group__item {
-	background-color: #30333d;
-	color: #fff;
-	border-color: rgba(255, 255, 255, 0.12);
+/* Grid 위 기능 영역 색 지정 */
+.contentToolArea,
+.contentToolArea .dhx_layout-cell-content,
+.contentToolArea .dhx_form,
+.contentToolArea .dhx_form-group,
+.contentToolArea .dhx_form-element,
+.contentToolArea .dhx_form-element__control,
+.contentToolArea .dhx_form-group__item {
+	background-color: #ffffff;
+	color: #30333d;
+	border-color: #e5e7eb;
 }
 
-.toolbarArea,
-.toolbarArea .dhx_layout-cell-content {
+.contentToolArea,
+.contentToolArea .dhx_layout-cell-content {
 	overflow: hidden !important;
 }
 
-.toolbarArea .dhx_layout-cell-content {
+.contentToolArea .dhx_layout-cell-content {
 	height: 100%;
+	padding-top: 0;
+	box-sizing: border-box;
 }
 
-.toolbarArea .dhx_layout-cell-header,
-.toolbarArea .dhx_layout-cell-header__title {
-	background-color: #5d6071;
-	color: #fff;
-	border-color: #5d6071;
+.contentToolArea .dhx_layout-cell-header,
+.contentToolArea .dhx_layout-cell-header__title {
+	background-color: #ffffff;
+	color: #30333d;
+	border-color: #e5e7eb;
 }
 
 /* 업로드, 검색, 삭제 영역을 한 줄 도구 영역 안에서 일정한 높이로 맞춘다. */
 .upload_form {
-	height: 230px !important;
-	padding: 12px 18px !important;
+	height: 76px !important;
+	padding: 0 18px !important;
 	overflow: hidden;
 	box-sizing: border-box;
 }
 
 .upload_form .dhx_form-group {
-	align-items: flex-start;
-	gap: 24px;
+	align-items: center;
+	gap: 18px;
+	flex-wrap: nowrap;
 }
 
 .upload_form .dhx_form-group__item {
 	box-sizing: border-box;
 }
 
-.upload_form .dhx_form-group__item.toolbar_section {
-	padding: 0 22px;
+.upload_form > .dhx_form-group > .dhx_form-group__item:not(:last-child) {
+	margin-right: 18px !important;
 }
 
-.upload_form .dhx_form-group__item.upload_section {
+.upload_form .dhx_form-group__item.tool_section {
+	padding: 0;
+}
+
+.upload_form .dhx_form-group__item.upload_open_section {
 	padding-left: 6px;
 }
 
 .upload_form .dhx_form-group__item.search_section,
 .upload_form .dhx_form-group__item.delete_section {
-	border-left: 1px solid rgba(255, 255, 255, 0.14);
-	padding-left: 26px;
+	border-left: none;
+	padding-left: 0;
 }
 
 .upload_form .dhx_form-group__item.delete_section {
@@ -161,16 +196,43 @@ html, body {
 }
 
 .upload_form .button_row {
+	margin-top: 0;
+}
+
+/* 파일 업로드 팝업 안에서는 simpleVault와 업로드 실행 버튼만 표시한다. */
+.upload_popup_alert {
+	width: 560px;
+	max-width: calc(100vw - 40px);
+}
+
+.upload_popup_alert .dhx_alert__content {
+	padding: 14px 20px 4px;
+}
+
+.uploadPopupContent {
+	background-color: #ffffff;
+	box-sizing: border-box;
+	min-height: 176px;
+}
+
+.upload_popup_form {
+	height: 176px !important;
+	padding: 0 !important;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+.upload_popup_form .button_row {
 	margin-top: 14px;
 }
 
-.toolbarArea .dhx_label,
-.toolbarArea .dhx_checkbox,
-.toolbarArea .dhx_checkbox .dhx_text {
-	color: #fff;
+.contentToolArea .dhx_label,
+.contentToolArea .dhx_checkbox,
+.contentToolArea .dhx_checkbox .dhx_text {
+	color: #30333d;
 }
 
-.toolbarArea .dhx_label {
+.contentToolArea .dhx_label {
 	height: 18px;
 	margin-bottom: 6px;
 	font-size: 13px;
@@ -178,55 +240,68 @@ html, body {
 	line-height: 18px;
 }
 
-.toolbarArea .dhx_input,
-.toolbarArea .dhx_input--textinput,
-.toolbarArea .dhx_combobox,
-.toolbarArea .dhx_combobox-input,
-.toolbarArea .dhx_button {
-	height: 36px;
-	min-height: 36px;
+.contentToolArea .dhx_input,
+.contentToolArea .dhx_input--textinput,
+.contentToolArea .dhx_combobox,
+.contentToolArea .dhx_combobox-input,
+.contentToolArea .dhx_button {
+	height: 32px;
+	min-height: 32px;
 	box-sizing: border-box;
 }
 
-.toolbarArea .dhx_input--textinput {
+.contentToolArea .dhx_input--textinput {
 	display: flex;
 	align-items: center;
 	margin: 0;
 	padding: 0 10px;
+	background-color: #ffffff;
+	color: #30333d;
+	border-color: #d9dde3;
 }
 
-.toolbarArea .dhx_input--textinput input,
-.toolbarArea .dhx_input input {
-	height: 34px;
-	line-height: 34px;
+.contentToolArea .dhx_input--textinput input,
+.contentToolArea .dhx_input input {
+	height: 30px;
+	line-height: 30px;
 	margin: 0;
 	padding-top: 0;
 	padding-bottom: 0;
 	box-sizing: border-box;
 }
 
-.toolbarArea .dhx_form-element {
+.contentToolArea .dhx_form-element {
 	margin: 0;
 }
 
-.toolbarArea .dhx_button {
+.contentToolArea .dhx_button {
 	margin: 0;
 	border-radius: 7px;
 	white-space: nowrap;
 }
 
 /* 버튼 너비를 고정해 텍스트 길이에 따라 도구 영역 레이아웃이 흔들리지 않게 한다. */
-.upload_form button[data-dhx-id="uploadbtn"],
+.upload_form button[data-dhx-id="openUploadPopup"] {
+	width: 96px !important;
+	min-width: 96px;
+}
+
+.upload_popup_form button[data-dhx-id="uploadbtn"],
 .upload_form button[data-dhx-id="select"],
 .upload_form button[data-dhx-id="deleteIdBtn"] {
-	width: 86px !important;
-	min-width: 86px;
+	width: 60px !important;
+	min-width: 60px;
 }
 
 .upload_form button[data-dhx-id="loadbtn"],
 .upload_form button[data-dhx-id="deleteAllBtn"] {
-	width: 108px !important;
-	min-width: 108px;
+	width: 82px !important;
+	min-width: 82px;
+}
+
+.upload_form button[data-dhx-id="loadbtn"] {
+	width: 78px !important;
+	min-width: 78px;
 }
 
 .upload_form button[data-dhx-id="deleteAllBtn"],
@@ -235,28 +310,28 @@ html, body {
 	background-color: #8f4e56;
 }
 
-.toolbarArea .dhx_checkbox {
+.contentToolArea .dhx_checkbox {
 	height: 36px;
 	display: flex;
 	align-items: center;
 	margin-bottom: 0;
 }
 
-.toolbarArea .dhx_widget--bg_white {
-	background-color: #30333d !important;
+.contentToolArea .dhx_widget--bg_white {
+	background-color: #ffffff !important;
 }
 
 /* DHTMLX simpleVault를 파일명 입력칸처럼 보이도록 커스터마이징한다. */
-.toolbarArea .dhx_simplevault,
-.toolbarArea .dhx_simplevault *,
-.toolbarArea .dhx_simplevault-files,
-.toolbarArea .dhx_simplevault-files *,
-.toolbarArea .dhx_simplevault-file,
-.toolbarArea .dhx_simplevault-file * {
+.contentToolArea .dhx_simplevault,
+.contentToolArea .dhx_simplevault *,
+.contentToolArea .dhx_simplevault-files,
+.contentToolArea .dhx_simplevault-files *,
+.contentToolArea .dhx_simplevault-file,
+.contentToolArea .dhx_simplevault-file * {
 	color: #000;
 }
 
-.toolbarArea .dhx_simplevault {
+.contentToolArea .dhx_simplevault {
 	width: 480px !important;
 	min-height: 118px;
 	max-height: 118px;
@@ -267,10 +342,11 @@ html, body {
 	display: flex;
 	align-items: flex-start;
 	gap: 10px;
+	background-color: #ffffff;
 }
 
-.toolbarArea .dhx_simplevault__label,
-.toolbarArea .dhx_simplevault-label {
+.contentToolArea .dhx_simplevault__label,
+.contentToolArea .dhx_simplevault-label {
 	position: relative;
 	display: flex;
 	align-items: center;
@@ -284,8 +360,8 @@ html, body {
 	box-sizing: border-box;
 }
 
-.toolbarArea .dhx_simplevault__label::before,
-.toolbarArea .dhx_simplevault-label::before {
+.contentToolArea .dhx_simplevault__label::before,
+.contentToolArea .dhx_simplevault-label::before {
 	content: attr(data-file-name);
 	display: block;
 	flex: 0 0 100%;
@@ -303,13 +379,13 @@ html, body {
 	white-space: nowrap;
 }
 
-.toolbarArea .dhx_simplevault__label::after,
-.toolbarArea .dhx_simplevault-label::after {
+.contentToolArea .dhx_simplevault__label::after,
+.contentToolArea .dhx_simplevault-label::after {
 	content: none !important;
 	display: none !important;
 }
 
-.toolbarArea .simplevault-clear-button {
+.contentToolArea .simplevault-clear-button {
 	display: none;
 	position: absolute;
 	top: 4px;
@@ -328,11 +404,11 @@ html, body {
 	box-sizing: border-box;
 }
 
-.toolbarArea .dhx_simplevault.has-file .simplevault-clear-button {
+.contentToolArea .dhx_simplevault.has-file .simplevault-clear-button {
 	display: block;
 }
 
-.toolbarArea .simplevault-find-button {
+.contentToolArea .simplevault-find-button {
 	display: block;
 	flex: 0 0 96px;
 	width: 96px;
@@ -351,14 +427,14 @@ html, body {
 	white-space: nowrap;
 }
 
-.toolbarArea .dhx_simplevault-files {
+.contentToolArea .dhx_simplevault-files {
 	display: none;
 	max-height: 0;
 	overflow: hidden;
 }
 
-.toolbarArea .dhx_simplevault-files__item,
-.toolbarArea .dhx_simplevault-file {
+.contentToolArea .dhx_simplevault-files__item,
+.contentToolArea .dhx_simplevault-file {
 	display: none !important;
 }
 
