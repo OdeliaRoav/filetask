@@ -3,14 +3,14 @@ var layout;
 var loginPlatform;
 
 // 로그인 화면 초기화
-// login.jsp가 로드될 때 호출되며, 화면 레이아웃을 만든 뒤 로그인 폼을 붙인다.
+// login.jsp가 로드될 때 호출되며, 레이아웃을 만든 뒤 로그인 폼을 content 영역에 붙인다.
 const init = () => {
     createLayout(); //레이아웃 생성
     form();
 }
 
 // 로그인 페이지 레이아웃 생성
-// 상단에는 제목 영역을 두고, content 영역에는 로그인 폼을 배치한다.
+// 상단에는 FileTask 제목 영역을 두고, 가운데 content 영역에는 로그인 폼을 배치한다.
 const createLayout = () => {
     layout = new dhx.Layout("layout", {
         type: "line",
@@ -94,7 +94,6 @@ const form = ()=> {
         ]
     });
 
-    // 로그인/회원가입 버튼 클릭 이벤트
     // DHTMLX Form 버튼의 name 값으로 로그인 요청과 회원가입 페이지 이동을 구분한다.
     loginPlatform.events.on("click", function (name) {
         if (name === "loginBtn") {
@@ -137,8 +136,7 @@ const loginButton = () => {
         },
         error: function (err) {
             console.log(err);
-            const message = getErrorMessage(err, "로그인 실패");
-            loginFail(message);
+            loginFail(getErrorMessage(err));
         }
     });
 };
@@ -172,18 +170,8 @@ function loginSuccess() {
     });
 }
 
-// 서버 예외 응답 메시지 추출
-// GlobalExceptionHandler가 내려준 JSON이 있으면 message를 사용하고, 없으면 기존 기본 문구를 사용한다.
-function getErrorMessage(err, fallbackMessage) {
-    if (err.responseJSON && err.responseJSON.message) {
-        return err.responseJSON.message;
-    }
-
-    return fallbackMessage;
-}
-
 // 로그인 실패 안내
-// 아이디 없음, 비밀번호 불일치처럼 서버가 알려준 실패 이유가 있으면 그 메시지를 그대로 보여준다.
+// GlobalExceptionHandler가 내려준 실패 메시지를 받아 사용자에게 보여준다.
 function loginFail(message) {
     dhx.alert({
         header: message,
@@ -191,6 +179,12 @@ function loginFail(message) {
         buttons: ["ok"],
     })
 };
+
+// 서버 예외 응답 메시지 추출
+// code 기반 응답이 내려오더라도 화면에서는 message를 우선 사용하고, 없으면 기본 문구를 사용한다.
+function getErrorMessage(err) {
+    return err?.responseJSON?.message || err?.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
+}
 
 
 

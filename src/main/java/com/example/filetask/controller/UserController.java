@@ -47,7 +47,7 @@ public class UserController {
     }
 
     // 로그인 요청
-    // 아이디 없음, 비밀번호 불일치는 Service에서 LOGIN_FAILED ErrorCode로 처리한다.
+    // 아이디 없음, 비밀번호 불일치는 Service에서 각각 LOGIN_ID_NOT_FOUND, INVALID_PASSWORD ErrorCode로 처리한다.
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Info user) {
         Info loginUser = userService.login(user.getId(), user.getPwd());

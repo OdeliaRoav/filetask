@@ -2,14 +2,14 @@ var layout;
 var loginPlatform;
 
 // 회원가입 화면 초기화
-// signup.jsp가 로드될 때 호출되며, 화면 레이아웃을 만든 뒤 회원가입 폼을 붙인다.
+// signup.jsp가 로드될 때 호출되며, 레이아웃을 만든 뒤 회원가입 폼을 content 영역에 붙인다.
 const init = () => {
     createLayout(); //레이아웃 생성
     form();
 }
 
 // 회원가입 페이지 레이아웃 생성
-// 상단에는 제목 영역을 두고, content 영역에는 실제 회원가입 폼을 배치한다.
+// 로그인 화면과 같은 구조를 사용하고, content 영역 제목만 회원가입으로 표시한다.
 const createLayout = () => {
     layout = new dhx.Layout("layout", {
         type: "line",
@@ -131,8 +131,7 @@ const signupButton = () =>{
         },
         error: function(err){
             console.log(err);
-            const message = getErrorMessage(err, "회원가입 실패");
-            signupFail(message);
+            signupFail(getErrorMessage(err));
         }
     });
 };
@@ -147,16 +146,6 @@ function signupSuccess() {
         buttons: ["ok"],
     })
 };
-
-// 서버 예외 응답 메시지 추출
-// GlobalExceptionHandler가 내려준 JSON이 있으면 message를 사용하고, 없으면 기존 기본 문구를 사용한다.
-function getErrorMessage(err, fallbackMessage) {
-    if (err.responseJSON && err.responseJSON.message) {
-        return err.responseJSON.message;
-    }
-
-    return fallbackMessage;
-}
 
 // 회원가입 실패 안내
 // 중복 아이디처럼 서버가 알려준 실패 이유가 있으면 그 메시지를 그대로 보여준다.
@@ -177,5 +166,11 @@ function noInfo() {
         buttons: ["ok"],
     })
 };
+
+// 서버 예외 응답 메시지 추출
+// GlobalExceptionHandler의 message를 우선 사용하고, 응답 형식이 다르면 기본 문구를 사용한다.
+function getErrorMessage(err) {
+    return err?.responseJSON?.message || err?.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
+}
 
 

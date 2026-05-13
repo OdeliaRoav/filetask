@@ -1,35 +1,30 @@
 package com.example.filetask.exception;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+// RestControllerAdvice는 프로젝트 전역에서 발생한 예외를 잡고 JSON 응답으로 변환한다.
+// Controller마다 try-catch를 반복하지 않도록 실패 응답 생성 책임을 이 클래스에 모은다.
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // BusinessException은 Service에서 의도적으로 던지는 업무 예외이다.
-    // 실패 상황의 종류와 상태코드는 ErrorCode가 가지고 있고,
-    // 여기서는 예외별 메서드를 늘리지 않고 공통 JSON 응답 형식만 만들어서 내려준다.
+    // Service에서 던진 업무 예외는 ErrorCode에 정의된 상태코드와 메시지로 응답한다.
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
-        return createErrorResponse(e.getStatus(), e.getMessage());
+        return createErrorResponse(e.getErrorCode());
     }
 
-    // 예상하지 못한 예외는 마지막 안전망에서 500으로 응답해 서버 내부 오류임을 명확히 한다.
+    // 예상하지 못한 예외는 마지막 안전망에서 INTERNAL_SERVER_ERROR 코드로 응답한다.
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        return createErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR,
-                "서버 처리 중 오류가 발생했습니다."
-        );
+    public ResponseEntity<ErrorResponse> handleGlobalException(Exception e) {
+        return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ErrorResponse> createErrorResponse(HttpStatus status, String message) {
-        // ErrorResponse.of를 통해 timestamp, status, error, message 구조를 매번 동일하게 맞춘다.
-        // 이렇게 해두면 프론트나 API 사용자는 어떤 예외가 발생해도 같은 형식의 JSON을 받을 수 있다.
+    private ResponseEntity<ErrorResponse> createErrorResponse(ErrorCode errorCode) {
+        // ErrorCode 하나만 넘기면 status, code, message가 같은 규칙으로 내려가도록 맞춘다.
         return ResponseEntity
-                .status(status)
-                .body(ErrorResponse.of(status, message));
+                .status(errorCode.getStatus())
+                .body(ErrorResponse.of(errorCode));
     }
 }

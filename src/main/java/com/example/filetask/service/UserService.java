@@ -40,8 +40,8 @@ public class UserService {
 
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             // 업로드 가능한 확장자는 과제 조건 4번 .dbfile만 허용한다.
-            // 잘못된 확장자는 INVALID_FILE 코드로 표현하고, GlobalExceptionHandler가 400 응답으로 변환한다.
-            throw new BusinessException(ErrorCode.INVALID_FILE);
+            // 잘못된 확장자는 INVALID_FILE_EXTENSION 코드로 표현하고, GlobalExceptionHandler가 400 응답으로 변환한다.
+            throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
         }
 
         String redisKey = "recent:" + fileName;
@@ -80,12 +80,12 @@ public class UserService {
                 // split("/", -1)는 빈 컬럼도 보존하므로, 저장 전에 컬럼 수와 필수값을 검증한다.
                 // 검증 실패 예외는 아래 catch에서 라인 단위로 처리하여 다음 라인 업로드를 계속 진행한다.
                 if (data.length != 6) {
-                    throw new IllegalArgumentException("데이터 컬럼 수가 올바르지 않습니다.");
+                    throw new BusinessException(ErrorCode.INVALID_FILE_COLUMN_COUNT);
                 }
 
                 if (data[0].isBlank() || data[1].isBlank() || data[2].isBlank()
                         || data[3].isBlank() || data[5].isBlank()) {
-                    throw new IllegalArgumentException("필수값이 비어 있습니다.");
+                    throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
                 }
                 User user = new User(
                         data[0],
@@ -142,14 +142,14 @@ public class UserService {
     public Info login(String id, String pwd) {
         Info user = infoRepository.findById(id).orElseThrow(() -> {
             // 로그인은 아이디가 존재해야 비밀번호 검증을 진행할 수 있다.
-            // 존재하지 않는 아이디는 인증 실패로 보고 LOGIN_FAILED 코드의 401 응답으로 변환한다.
-            return new BusinessException(ErrorCode.LOGIN_FAILED, "아이디가 없습니다.");
+            // 존재하지 않는 아이디는 LOGIN_ID_NOT_FOUND 코드의 401 응답으로 변환한다.
+            return new BusinessException(ErrorCode.LOGIN_ID_NOT_FOUND);
         });
 
         if (!user.getPwd().equals(pwd)) {
-            // 비밀번호 불일치도 인증 실패 상황이므로 LOGIN_FAILED 코드로 통일한다.
+            // 비밀번호 불일치는 INVALID_PASSWORD 코드로 구분해 응답한다.
             // Controller에 try-catch를 두지 않고 공통 예외 처리기가 401 응답을 만든다.
-            throw new BusinessException(ErrorCode.LOGIN_FAILED, "비밀번호가 일치하지 않습니다.");
+            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
 
         return user;
@@ -163,9 +163,9 @@ public class UserService {
         // Service는 HTTP 상태코드를 직접 만들지 않고, 삭제 가능 여부를 예외로 표현한다.
         // 404 같은 응답 표현은 GlobalExceptionHandler가 담당해야 계층 역할이 분리된다.
         User user = userRepository.findById(id).orElseThrow(() -> {
-            // 삭제 대상이 없으면 정상 삭제로 볼 수 없으므로 USER_NOT_FOUND 코드로 표현한다.
+            // 삭제 대상이 없으면 정상 삭제로 볼 수 없으므로 DELETE_USER_NOT_FOUND 코드로 표현한다.
             // 이 예외는 GlobalExceptionHandler에서 404 Not Found 응답으로 변환된다.
-            return new BusinessException(ErrorCode.USER_NOT_FOUND, "삭제할 사용자를 찾을 수 없습니다.");
+            return new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND);
         });
 
         // existsById로 확인하고 deleteById를 다시 호출하면 DB 접근이 두 번 발생할 수 있다.
@@ -179,7 +179,7 @@ public class UserService {
         User user = userRepository.findById(rowId).orElseThrow(() -> {
             // 셀 삭제는 먼저 rowId에 해당하는 사용자가 있어야 수행할 수 있다.
             // 대상 행이 없으면 GlobalExceptionHandler에서 404로 처리한다.
-            return new BusinessException(ErrorCode.USER_NOT_FOUND, "값을 찾을 수 없습니다.");
+            return new BusinessException(ErrorCode.USER_NOT_FOUND);
         });
         switch (colId) {
             case "name":

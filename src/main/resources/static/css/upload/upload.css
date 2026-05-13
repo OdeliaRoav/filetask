@@ -6,6 +6,13 @@ html, body {
 	overflow: hidden;
 }
 
+.dhx_layout,
+.dhx_layout-cell,
+.dhx_layout-cell-content,
+.dhx_form-element__control {
+	background-color: #30333d;
+}
+
 .dhx_layout-line.dhx_layout-rows > .dhx_layout-cell {
 	border-bottom: none;
 }
@@ -22,14 +29,56 @@ html, body {
 	margin-right: auto;
 }
 
-.contentGrid .dhx_grid_data {
-	border-color: white;
+.contentGrid,
+.contentGrid .dhx_grid,
+.contentGrid .dhx_grid-content {
+	width: 100% !important;
+	height: 100% !important;
+	box-sizing: border-box;
+	background-color: #30333d;
 }
 
+.contentGrid .dhx_layout-cell-content,
 .contentGrid .dhx_grid-body,
 .contentGrid .dhx_data-wrap,
 .contentGrid .dhx_grid_data {
 	background-color: #30333d;
+	margin-left: 0;
+	margin-right: 0;
+	overflow: hidden;
+}
+
+.contentGrid .dhx_grid-header,
+.contentGrid .dhx_header-wrapper,
+.contentGrid .dhx_grid-header-cell,
+.contentGrid .dhx_grid-header-cell-text_content {
+	background-color: #30333d;
+	color: #fff;
+	border-color: white;
+}
+
+.contentGrid .dhx_grid-cell {
+	background-color: #30333d;
+	color: white;
+	border-color: white;
+}
+
+.dhx_data-wrap {
+	border-top: none;
+}
+
+.dhx_header-wrapper {
+	margin-right: 0;
+}
+
+.tabArea,
+.tabArea .dhx_layout-cell,
+.tabArea .dhx_layout-cell-content,
+.tabArea .dhx_layout-cell-header,
+.tabArea .dhx_layout-cell-header__title {
+	background-color: #5d6071;
+	color: #fff;
+	border-color: #FFFFFF1F;
 }
 
 .content_menu,
@@ -47,33 +96,7 @@ html, body {
 	color: #fff;
 }
 
-/*지금 테스트 중이라 text-align : center 빼둠*/
-.contentGrid .dhx_grid-cell {
-	background-color: #30333d;
-	color: white;
-	border-color: white;
-}
-
-.dhx_data-wrap {
-	border-top: none;
-}
-
-.dhx_header-wrapper {
-	margin-right: 40px;
-}
-
-.tabArea,
-.tabArea .dhx_layout-cell,
-.tabArea .dhx_layout-cell-content,
-.tabArea .dhx_layout-cell-header,
-.tabArea .dhx_layout-cell-header__title {
-	background-color: #5d6071;
-	color: #fff;
-	border-color: #FFFFFF1F;
-}
-
-
-/*toolbarArea 색 지정*/
+/* toolbarArea 색 지정 */
 .toolbarArea,
 .toolbarArea .dhx_layout-cell-content,
 .toolbarArea .dhx_form,
@@ -86,6 +109,14 @@ html, body {
 	border-color: rgba(255, 255, 255, 0.12);
 }
 
+.toolbarArea,
+.toolbarArea .dhx_layout-cell-content {
+	overflow: hidden !important;
+}
+
+.toolbarArea .dhx_layout-cell-content {
+	height: 100%;
+}
 
 .toolbarArea .dhx_layout-cell-header,
 .toolbarArea .dhx_layout-cell-header__title {
@@ -94,71 +125,305 @@ html, body {
 	border-color: #5d6071;
 }
 
+/* 업로드, 검색, 삭제 영역을 한 줄 도구 영역 안에서 일정한 높이로 맞춘다. */
+.upload_form {
+	height: 230px !important;
+	padding: 12px 18px !important;
+	overflow: hidden;
+	box-sizing: border-box;
+}
+
+.upload_form .dhx_form-group {
+	align-items: flex-start;
+	gap: 24px;
+}
+
+.upload_form .dhx_form-group__item {
+	box-sizing: border-box;
+}
+
+.upload_form .dhx_form-group__item.toolbar_section {
+	padding: 0 22px;
+}
+
+.upload_form .dhx_form-group__item.upload_section {
+	padding-left: 6px;
+}
+
+.upload_form .dhx_form-group__item.search_section,
+.upload_form .dhx_form-group__item.delete_section {
+	border-left: 1px solid rgba(255, 255, 255, 0.14);
+	padding-left: 26px;
+}
+
+.upload_form .dhx_form-group__item.delete_section {
+	padding-right: 0;
+}
+
+.upload_form .button_row {
+	margin-top: 14px;
+}
 
 .toolbarArea .dhx_label,
-.toolbarArea .dhx_text,
 .toolbarArea .dhx_checkbox,
-.toolbarArea .dhx_checkbox .dhx_text,
-.upload_form .dhx_label,
-.upload_form .dhx_text,
-.upload_form .dhx_checkbox,
-.upload_form .dhx_checkbox .dhx_text {
+.toolbarArea .dhx_checkbox .dhx_text {
 	color: #fff;
 }
 
-.upload_form button[data-dhx-id="uploadbtn"],
-.upload_form button[data-dhx-id="loadbtn"],
-.upload_form button[data-dhx-id="select"],
-.upload_form button[data-dhx-id="deleteIdBtn"],
-.upload_form button[data-dhx-id="deleteAllBtn"] {
-	border-radius: 10px;
-	background-color: #7379d5;
+.toolbarArea .dhx_label {
+	height: 18px;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 18px;
 }
 
-.upload_form .dhx_input__container {
-
+.toolbarArea .dhx_input,
+.toolbarArea .dhx_input--textinput,
+.toolbarArea .dhx_combobox,
+.toolbarArea .dhx_combobox-input,
+.toolbarArea .dhx_button {
+	height: 36px;
+	min-height: 36px;
+	box-sizing: border-box;
 }
 
-.upload_form .dhx_combobox-input-list {
-	width: 120px;
-}
-
-
-
-.upload_form .dhx_form-group {
-	gap: 12px;
-	background-color: #30333d;
+.toolbarArea .dhx_input--textinput {
+	display: flex;
 	align-items: center;
+	margin: 0;
+	padding: 0 10px;
 }
 
-.upload_form .dhx_form-group__item,
-.upload_form .dhx_form-element,
-.upload_form .dhx_form-element__control {
-	background-color: #30333d;
+.toolbarArea .dhx_input--textinput input,
+.toolbarArea .dhx_input input {
+	height: 34px;
+	line-height: 34px;
+	margin: 0;
+	padding-top: 0;
+	padding-bottom: 0;
+	box-sizing: border-box;
 }
 
-.toolbarArea .dhx_widget--bg_white,
-.upload_form .dhx_widget--bg_white {
+.toolbarArea .dhx_form-element {
+	margin: 0;
+}
+
+.toolbarArea .dhx_button {
+	margin: 0;
+	border-radius: 7px;
+	white-space: nowrap;
+}
+
+/* 버튼 너비를 고정해 텍스트 길이에 따라 도구 영역 레이아웃이 흔들리지 않게 한다. */
+.upload_form button[data-dhx-id="uploadbtn"],
+.upload_form button[data-dhx-id="select"],
+.upload_form button[data-dhx-id="deleteIdBtn"] {
+	width: 86px !important;
+	min-width: 86px;
+}
+
+.upload_form button[data-dhx-id="loadbtn"],
+.upload_form button[data-dhx-id="deleteAllBtn"] {
+	width: 108px !important;
+	min-width: 108px;
+}
+
+.upload_form button[data-dhx-id="deleteAllBtn"],
+.upload_form .danger_action .dhx_button,
+.upload_form .danger_action button {
+	background-color: #8f4e56;
+}
+
+.toolbarArea .dhx_checkbox {
+	height: 36px;
+	display: flex;
+	align-items: center;
+	margin-bottom: 0;
+}
+
+.toolbarArea .dhx_widget--bg_white {
 	background-color: #30333d !important;
 }
 
-.upload_form .toolbar_spacer {
-	background-color: #30333d;
-}
-
-.upload_form .dhx_layout-cell,
-.upload_form .toolbar_spacer > div {
-	background-color: #30333d;
-}
-
+/* DHTMLX simpleVault를 파일명 입력칸처럼 보이도록 커스터마이징한다. */
 .toolbarArea .dhx_simplevault,
 .toolbarArea .dhx_simplevault *,
 .toolbarArea .dhx_simplevault-files,
 .toolbarArea .dhx_simplevault-files *,
 .toolbarArea .dhx_simplevault-file,
-.toolbarArea .dhx_simplevault-file *
- {
+.toolbarArea .dhx_simplevault-file * {
 	color: #000;
+}
+
+.toolbarArea .dhx_simplevault {
+	width: 480px !important;
+	min-height: 118px;
+	max-height: 118px;
+	margin-left: 0;
+	overflow: hidden;
+	box-sizing: border-box;
+	position: relative;
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+}
+
+.toolbarArea .dhx_simplevault__label,
+.toolbarArea .dhx_simplevault-label {
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex: 1 1 auto;
+	min-width: 0;
+	height: 36px;
+	margin: 0;
+	padding: 0;
+	color: transparent !important;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.toolbarArea .dhx_simplevault__label::before,
+.toolbarArea .dhx_simplevault-label::before {
+	content: attr(data-file-name);
+	display: block;
+	flex: 0 0 100%;
+	width: 100%;
+	height: 36px;
+	line-height: 36px;
+	padding: 0 46px 0 12px;
+	border: 1px solid #dddddd;
+	border-radius: 6px;
+	background-color: #ffffff;
+	color: #999999;
+	box-sizing: border-box;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.toolbarArea .dhx_simplevault__label::after,
+.toolbarArea .dhx_simplevault-label::after {
+	content: none !important;
+	display: none !important;
+}
+
+.toolbarArea .simplevault-clear-button {
+	display: none;
+	position: absolute;
+	top: 4px;
+	right: 6px;
+	width: 34px;
+	height: 28px;
+	padding: 0;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: 5px;
+	background-color: #5d6071;
+	color: #ffffff;
+	font-size: 12px;
+	line-height: 26px;
+	text-align: center;
+	cursor: pointer;
+	box-sizing: border-box;
+}
+
+.toolbarArea .dhx_simplevault.has-file .simplevault-clear-button {
+	display: block;
+}
+
+.toolbarArea .simplevault-find-button {
+	display: block;
+	flex: 0 0 96px;
+	width: 96px;
+	height: 36px;
+	padding: 0;
+	border: none;
+	border-radius: 7px;
+	background-color: #7379d5;
+	color: #ffffff;
+	font-size: 13px;
+	line-height: 36px;
+	text-align: center;
+	cursor: pointer;
+	box-sizing: border-box;
+	margin-top: -55px;
+	white-space: nowrap;
+}
+
+.toolbarArea .dhx_simplevault-files {
+	display: none;
+	max-height: 0;
+	overflow: hidden;
+}
+
+.toolbarArea .dhx_simplevault-files__item,
+.toolbarArea .dhx_simplevault-file {
+	display: none !important;
+}
+
+/* 왼쪽 결과 영역에 업로드/조회/삭제 결과를 같은 형태로 보여준다. */
+.result-panel {
+	background-color: #30333d;
+	border: none;
+	border-radius: 0;
+	padding: 0;
+}
+
+.result-title {
+	font-size: 15px;
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+
+.result-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 7px 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.result-row:last-child {
+	border-bottom: none;
+}
+
+.result-row span {
+	color: rgba(255, 255, 255, 0.72);
+}
+
+.result-row strong {
+	text-align: right;
+	font-weight: 600;
+}
+
+.result-empty {
+	margin: 0 0 6px;
+	font-weight: 600;
+}
+
+.result-help {
+	margin: 0;
+	color: rgba(255, 255, 255, 0.7);
+	font-size: 13px;
+	line-height: 1.4;
+}
+
+.fail-list {
+	margin-top: 10px;
+}
+
+.fail-list p {
+	margin: 0 0 6px;
+	font-weight: 600;
+}
+
+.fail-list ul {
+	margin: 0;
+	padding-left: 18px;
+	line-height: 1.55;
+	max-height: 160px;
+	overflow: auto;
 }
 
 .dhx_grid-body {
@@ -166,7 +431,6 @@ html, body {
 	margin-left: auto;
 	margin-right: auto;
 }
-
 
 #resultArea {
 	height: 100%;
@@ -178,10 +442,10 @@ html, body {
 }
 
 #resultArea p {
-	background-color: #30333d;
 	color: #fff;
 }
 
+/* 메뉴에서 선택한 셀 서식을 Grid 셀 CSS 클래스로 적용한다. */
 .contentGrid .dhx_grid-cell.cell-bold {
 	font-weight: 700;
 }
@@ -225,9 +489,9 @@ html, body {
 }
 
 .contentGrid.dhx_grid-cell.-clear-value {
-	all:unset;
+	all: unset;
 }
 
 .contentGrid.dhx_grid-cell.-clear-styles .dhx_grid-cell__content {
-	all:unset;
+	all: unset;
 }
