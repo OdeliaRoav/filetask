@@ -339,6 +339,15 @@ const searchFile = () => {
             keyword: keyword
         },
         success: function(users){
+            if(users.length === 0){
+                dhx.alert({
+                    header: "조회 결과가 없습니다.",
+                    buttonsAlignment: "center",
+                    buttons: ["ok"]
+                });
+                return;
+            }
+
             renderUsers(users);
 
             // uploadForm.setValue({"keyword" : ""});
@@ -386,8 +395,6 @@ const renderUsers = (users) => {
 
 };
 
-
-
 const deleteById = () => {
     const values = uploadForm.getValue();
     console.log(values);
@@ -396,7 +403,7 @@ const deleteById = () => {
 
     if(!id){
         dhx.alert({
-            header: getErrorMessage(err),
+            header: "삭제할 ID를 입력하세요",
             buttons: ["ok"],
         });
         return;
@@ -564,8 +571,9 @@ function showAlert(message) {
 }
 
 //3개나 대비하는 이유는 서버가 꺼져있을 시 서버로 부터 받을 JSON이 없기 때문에 3번째까지 준비한다. (3번째는 서버 꺼졌을 때 응답 용도로)
+// "?" -> 값이 없어도 멈추지 않고 undefined로 넘겨준다.
 function getErrorMessage(err) {
-    return err.responseJSON?.message || err.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
+    return err?.responseJSON?.message || err?.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
 }
 
 function clearStyle(){
