@@ -1,4 +1,3 @@
-
 var layout;
 var grid;
 var uploadForm;
@@ -8,9 +7,9 @@ var rowId;
 var colId;
 
 const boardManager = () => {
-    createLayout(); //레이아웃 생성
-    createUploadForm(); //버튼 생성
-    createGrid(); //그리드 생성
+    createLayout();
+    createUploadForm();
+    createGrid();
 }
 
 const createLayout = () => {
@@ -22,7 +21,7 @@ const createLayout = () => {
                 css: "toolbarArea",
                 header: "FileTask",
                 collapsable: true,
-                height: "240px",
+                height: "250px",
                 resizable: true
             },
             {
@@ -32,13 +31,12 @@ const createLayout = () => {
                         id: "sidebar",
                         header: "결과",
                         collapsable: true,
-                        width: "300px",
+                        width: "370px",
                         resizable: true,
                         align: "center"
-
                     },
                     {
-                        id: "content", //그리드 영역으로
+                        id: "content",
                         css:"contentGrid",
                         header: "User 테이블 전체 등록 데이터",
                         resizable: true
@@ -50,141 +48,178 @@ const createLayout = () => {
 
     layout.getCell("sidebar").attachHTML(`
         <div id="resultArea">
-            <p align = "center">업로드 결과가 없습니다.</p>
+            <div class="result-panel">
+                <div class="result-title">처리 결과</div>
+                <p class="result-empty">아직 처리 결과가 없습니다.</p>
+                <p class="result-help">파일 업로드 또는 삭제 작업 후 결과가 표시됩니다.</p>
+            </div>
         </div>
     `);
-
 };
 
 const createUploadForm = () => {
-    uploadForm =new dhx.Form("form", {
+    uploadForm = new dhx.Form(null, {
         css: "upload_form",
-        height: 200,
-        padding: 20,
+        height: 230,
+        padding: 12,
         cols:[
+            {
+                width: "520px",
+                css: "toolbar_section upload_section",
+                rows: [
                     {
                         type: "simpleVault",
                         name:"simplevault",
                         label: "파일",
                         labelWidth: "80px",
-                        labelHeight: "200px",
-                        labelPosition: "left",
+                        labelPosition: "top",
                         disabled: false,
                         required: false,
-                        $vaultHeight: 150,
-                        width: "390px"
+                        $vaultHeight: 130,
+                        width: "480px",
+                        css: "simplevault-box"
                     },
                     {
-                        width: "210px",
-                        rows: [
-                    {
-                        type: "checkbox",
-                        name: "force",
-                        text: "중복 업로드 진행",
-                        width: "180px"
-                    },
-                    {
+                        css: "button_row",
                         cols: [
-                    {
-                        type: "button",
-                        name: "uploadbtn",
-                        text: "업로드",
-                        height: 40,
-                        width: 70,
-                        size: "medium",
-                        view: "flat",
-                        color: "primary"
-                    },
-                    {
-                        type: "button",
-                        name: "loadbtn",
-                        css: "loadbtn",
-                        text: "조회",
-                        height: 40,
-                        width: 56,
-                        size: "medium",
-                        view: "flat",
-                        color: "primary"
-                    },
-                        ]
-                    }
-                        ]
-                    },
-                    {
-                        width: "430px",
-                        rows: [
                             {
-                                cols: [
-                                    {
-                                        type: "combo",
-                                        name: "combobox",
-                                        placeholder: "검색 기준",
-                                        width: "120px",
-                                        disabled: false,
-                                        required: false,
-                                        data: [
-                                            {id: "id", value: "ID"},
-                                            {id: "name", value: "NAME"},
-                                            {id: "level", value: "LEVEL"},
-                                            {id: "desc", value: "DESCRIPTION"}
-                                        ]
-                                    },
-                                    {
-                                        type: "input",
-                                        name: "keyword",
-                                        placeholder: "검색어 입력",
-                                        width: ""
-                                    },
-                                    {
-                                        type: "button",
-                                        name: "select",
-                                        text: "검색",
-                                        height: 40,
-                                        width: 56,
-                                        size: "medium",
-                                        view: "flat",
-                                        color: "primary"
-                                    },
-                                                ]
+                                type: "checkbox",
+                                name: "force",
+                                text: "중복 업로드 진행",
+                                width: "180px"
                             },
                             {
-                                cols: [
-                                {
-                                    type: "input",
-                                    name : "deleted",
-                                    placeholder: "삭제할 ID 입력",
-                                    width: "120px"
-                                },
-                                {
-                                    type: "button",
-                                    name: "deleteIdBtn",
-                                    text: "삭제 행",
-                                    height: 40,
-                                    width: 74,
-                                    size: "medium",
-                                    view: "flat",
-                                    color: "primary"
-                                },
-                                {
-                                    type: "button",
-                                    name: "deleteAllBtn",
-                                    text: "전체 삭제",
-                                    height: 40,
-                                    width: 86,
-                                    size: "medium",
-                                    view: "flat",
-                                    color: "primary"
-                                },
-                                ],
+                                type: "spacer"
+                            },
+                            {
+                                type: "button",
+                                name: "uploadbtn",
+                                text: "업로드",
+                                height: 36,
+                                width: 96,
+                                size: "medium",
+                                view: "flat",
+                                color: "primary"
                             }
-                            ]
-                    },
-                    {
-                        type: "spacer",
-                        css: "toolbar_spacer"
+                        ]
                     }
                 ]
-
+            },
+            {
+                width: "430px",
+                css: "toolbar_section search_section",
+                rows: [
+                    {
+                        cols: [
+                            {
+                                type: "combo",
+                                name: "combobox",
+                                label: "조회 기준",
+                                labelPosition: "top",
+                                placeholder: "검색 기준",
+                                width: "130px",
+                                disabled: false,
+                                required: false,
+                                data: [
+                                    {id: "id", value: "ID"},
+                                    {id: "name", value: "NAME"},
+                                    {id: "level", value: "LEVEL"},
+                                    {id: "desc", value: "DESCRIPTION"}
+                                ]
+                            },
+                            {
+                                type: "input",
+                                name: "keyword",
+                                label: "검색어",
+                                labelPosition: "top",
+                                placeholder: "검색어 입력",
+                                width: "230px"
+                            }
+                        ]
+                    },
+                    {
+                        css: "button_row",
+                        cols: [
+                            {
+                                type: "spacer"
+                            },
+                            {
+                                type: "button",
+                                name: "select",
+                                text: "검색",
+                                height: 36,
+                                width: 86,
+                                size: "medium",
+                                view: "flat",
+                                color: "primary"
+                            },
+                            {
+                                type: "button",
+                                name: "loadbtn",
+                                css: "loadbtn",
+                                text: "전체 조회",
+                                height: 36,
+                                width: 108,
+                                size: "medium",
+                                view: "flat",
+                                color: "primary"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                width: "340px",
+                css: "toolbar_section delete_section",
+                rows: [
+                    {
+                        cols: [
+                            {
+                                type: "input",
+                                name : "deleted",
+                                label: "삭제 ID",
+                                labelPosition: "top",
+                                placeholder: "삭제할 ID 입력",
+                                width: "250px"
+                            }
+                        ]
+                    },
+                    {
+                        css: "button_row",
+                        cols: [
+                            {
+                                type: "spacer"
+                            },
+                            {
+                                type: "button",
+                                name: "deleteIdBtn",
+                                text: "삭제",
+                                height: 36,
+                                width: 86,
+                                size: "medium",
+                                view: "flat",
+                                color: "primary"
+                            },
+                            {
+                                type: "button",
+                                name: "deleteAllBtn",
+                                css: "danger_action",
+                                text: "전체 삭제",
+                                height: 36,
+                                width: 108,
+                                size: "medium",
+                                view: "flat",
+                                color: "primary"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "spacer",
+                css: "toolbar_spacer"
+            }
+        ]
     });
 
     uploadForm.events.on("click", function(name) {
@@ -209,8 +244,14 @@ const createUploadForm = () => {
         }
     });
 
-    layout.getCell("toolbar").attach(uploadForm);
+    uploadForm.events.on("change", function(name) {
+        if(name === "simplevault"){
+            updateSimpleVaultFileName();
+        }
+    });
 
+    layout.getCell("toolbar").attach(uploadForm);
+    initSimpleVaultFileNameSync();
 };
 
 const uploadFile =() =>{
@@ -218,82 +259,169 @@ const uploadFile =() =>{
     const values = uploadForm.getValue();
     const files = values.simplevault;
 
-    console.log("values : ", values);
-    console.log("files : ", files);
-
     if(!files || files.length === 0){
         showAlert("파일을 선택하세요.");
         return;
     }
 
     const file = files[0].file;
-    console.log("fileName : " + file.name);
-
     formData.append("file", file);
 
-    if(values.force == true){
+    if(values.force === true){
         formData.append("force", "true");
     }
 
-    //JQuery AJAX
     $.ajax({
         type: "POST",
-        url: "/users/upload", //계속 /upload로만 보내서 오류 발생 -> /users/upload로 정정
+        url: "/users/upload",
         data: formData,
         processData: false,
         contentType: false,
         dataType: "json",
         success: function (res) {
-            console.log("응답", res);
-            console.log("파일명", res.fileName);
             showUploadResult(res);
-
+            if(res.successCount != null){
+                clearSimpleVault();
+            } else {
+                updateSimpleVaultFileName();
+            }
         },
         error: function (err) {
-            console.log(err);
             showAlert(getErrorMessage(err));
         }
-
     });
-
 };
+
+function initSimpleVaultFileNameSync() {
+    requestAnimationFrame(function() {
+        updateSimpleVaultFileName();
+
+        const simpleVault = document.querySelector(".toolbarArea .dhx_simplevault");
+        if(!simpleVault){
+            return;
+        }
+
+        const simpleVaultLabel = document.querySelector(".toolbarArea .dhx_simplevault__label, .toolbarArea .dhx_simplevault-label");
+
+        if(simpleVaultLabel && !simpleVaultLabel.querySelector(".simplevault-clear-button")){
+            const clearButton = document.createElement("button");
+            clearButton.type = "button";
+            clearButton.className = "simplevault-clear-button";
+            clearButton.textContent = "삭제";
+            clearButton.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                clearSimpleVault();
+            });
+            simpleVaultLabel.appendChild(clearButton);
+        }
+
+        if(!simpleVault.querySelector(".simplevault-find-button")){
+            const findButton = document.createElement("button");
+            findButton.type = "button";
+            findButton.className = "simplevault-find-button";
+            findButton.textContent = "파일찾기";
+            findButton.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const label = document.querySelector(".toolbarArea .dhx_simplevault__label, .toolbarArea .dhx_simplevault-label");
+                if(label){
+                    label.click();
+                }
+            });
+            simpleVault.appendChild(findButton);
+        }
+
+        const observer = new MutationObserver(function() {
+            updateSimpleVaultFileName();
+        });
+
+        observer.observe(simpleVault, {
+            childList: true,
+            subtree: true,
+            characterData: true
+        });
+    });
+}
+
+function updateSimpleVaultFileName() {
+    const label = document.querySelector(".toolbarArea .dhx_simplevault__label, .toolbarArea .dhx_simplevault-label");
+    if(!label || !uploadForm){
+        return;
+    }
+
+    const values = uploadForm.getValue();
+    const files = values.simplevault || [];
+    const hasFile = files.length > 0 && files[0].file;
+    const displayFileName = hasFile ? files[0].file.name : "첨부파일";
+    const simpleVault = document.querySelector(".toolbarArea .dhx_simplevault");
+
+    label.setAttribute("data-file-name", displayFileName);
+    if(simpleVault){
+        simpleVault.classList.toggle("has-file", !!hasFile);
+    }
+}
+
+function clearSimpleVault() {
+    try {
+        const simpleVault = uploadForm.getItem("simplevault");
+        if(simpleVault && typeof simpleVault.clear === "function"){
+            simpleVault.clear();
+        }
+        if(simpleVault && simpleVault.data && typeof simpleVault.data.removeAll === "function"){
+            simpleVault.data.removeAll();
+        }
+        uploadForm.setValue({simplevault: []});
+    } catch (e) {
+        console.log(e);
+    }
+
+    updateSimpleVaultFileName();
+}
 
 const showUploadResult = (result) => {
     const area = document.getElementById("resultArea");
 
     if(result.successCount == null){
         area.innerHTML = `
-        <div id = "result", align = "center">
-            <p> ${result.message}</p>
-            <p> 파일명 : ${result.fileName}</p>
-            <p> 남은 시간 : ${result.ttlSeconds}</p>   
+        <div class="result-panel">
+            <div class="result-title">처리 결과</div>
+            <div class="result-row"><span>상태</span><strong>확인 필요</strong></div>
+            <div class="result-row"><span>파일명</span><strong>${escapeHtml(result.fileName || "-")}</strong></div>
+            <div class="result-row"><span>처리 결과</span><strong>${escapeHtml(result.message || "중복 파일입니다.")}</strong></div>
+            <div class="result-row"><span>남은 시간</span><strong>${result.ttlSeconds || 0}초</strong></div>
         </div>    
         `;
-        console.log(result.ttlSeconds);
         return;
     }
 
     if(result.failCount == 0 ){
         area.innerHTML = `
-        <div id = "result", align = "center">
-            <p>전체 성공</p>
-            <p>파일명 : ${result.fileName}</p>
-            <p>${result.successCount}건 입력 성공</p>
+        <div class="result-panel">
+            <div class="result-title">처리 결과</div>
+            <div class="result-row"><span>상태</span><strong>전체 성공</strong></div>
+            <div class="result-row"><span>파일명</span><strong>${escapeHtml(result.fileName || "-")}</strong></div>
+            <div class="result-row"><span>성공 건수</span><strong>${result.successCount}건</strong></div>
+            <div class="result-row"><span>실패 건수</span><strong>${result.failCount}건</strong></div>
         </div>
         `;
         return;
     }
 
-    const failListHTML = (result.failList || []).map(fail => `<li>${fail}</li>`).join("");
+    const failListHTML = (result.failList || []).map(fail => `<li>${escapeHtml(fail)}</li>`).join("");
 
     area.innerHTML = `
-        <div id = "result" align = "center">
-            <p>전체/일부 실패</p>
-            <p>파일명 : ${result.fileName}</p>
-            <p>성공 : ${result.successCount}, 실패 : ${result.failCount}건</p>
-         
-            <p>실패한 라인</p>
-            <ul>${failListHTML}</ul>
+        <div class="result-panel">
+            <div class="result-title">처리 결과</div>
+            <div class="result-row"><span>상태</span><strong>일부 실패</strong></div>
+            <div class="result-row"><span>파일명</span><strong>${escapeHtml(result.fileName || "-")}</strong></div>
+            <div class="result-row"><span>성공 건수</span><strong>${result.successCount}건</strong></div>
+            <div class="result-row"><span>실패 건수</span><strong>${result.failCount}건</strong></div>
+            <div class="fail-list">
+                <p>실패한 라인</p>
+                <ul>${failListHTML}</ul>
+            </div>
         </div>
         `;
 };
@@ -306,7 +434,6 @@ const loadFile = () => {
             renderUsers(users);
         },
         error:function(err){
-            console.log(err);
             dhx.alert({
                 header: getErrorMessage(err),
                 buttonsAlignment: "center",
@@ -318,9 +445,8 @@ const loadFile = () => {
 
 const searchFile = () => {
     const values = uploadForm.getValue();
-    console.log(values);
     const field = values.combobox;
-    const keyword = values.keyword;
+    const keyword = (values.keyword || "").trim();
 
     if(!field || !keyword){
         dhx.alert({
@@ -350,11 +476,8 @@ const searchFile = () => {
             }
 
             renderUsers(users);
-
-            // uploadForm.setValue({"keyword" : ""});
         },
         error:function(err){
-            console.log(err);
             dhx.alert({
                 header: getErrorMessage(err),
                 buttonsAlignment: "center",
@@ -380,7 +503,6 @@ const formatRegDate = (regDate) => {
     return `${year}년${month}월${day}일 ${hour}시${minute}분`
 }
 
-
 const renderUsers = (users) => {
     const gridData = users.map(user => ({
         id: user.id,
@@ -391,16 +513,17 @@ const renderUsers = (users) => {
         regDate : formatRegDate(user.regDate)
     }));
 
-    grid.data.removeAll(); //기존 삭제하고
-    grid.data.parse(gridData); //API 호출해서 받은 JSON을 gridData로 넣기
+    grid.data.removeAll();
+    grid.data.parse(gridData);
 
+    if(gridData.length === 0){
+        showEmptyDataResult();
+    }
 };
 
 const deleteById = () => {
     const values = uploadForm.getValue();
-    console.log(values);
-    const id = values.deleted;
-    console.log(values.deleted);
+    const id = (values.deleted || "").trim();
 
     if(!id){
         dhx.alert({
@@ -422,46 +545,52 @@ const deleteById = () => {
             uploadForm.setValue({"deleted": ""});
         },
         error: function(err){
-            console.log(err);
-            //404로 보내는거 확인
-                dhx.alert({
-                    header:getErrorMessage(err),
-                    buttons: ["ok"]
-                });
-        }
-    });
-};
-
-
-const deleteAll = () => {
-    $.ajax({
-        type: "DELETE",
-        url: "/users",
-        contentType: "application/json",
-        success: function(){
             dhx.alert({
-                header: "전체 삭제",
-                buttons: ["ok"],
-            });
-            loadFile();
-        },
-        error: function(err){
-            console.log(err);
-            dhx.alert({
-                header: getErrorMessage(err),
+                header:getErrorMessage(err),
                 buttons: ["ok"]
             });
         }
     });
 };
 
+const deleteAll = () => {
+    dhx.confirm({
+        header: "전체 삭제",
+        text: "전체 고객 데이터를 삭제하시겠습니까?",
+        buttons: ["취소", "삭제"],
+        buttonsAlignment: "center"
+    }).then(function(result) {
+        if (!result) {
+            return;
+        }
 
-
+        $.ajax({
+            type: "DELETE",
+            url: "/users",
+            contentType: "application/json",
+            success: function() {
+                dhx.alert({
+                    header: "전체 삭제 완료",
+                    text: "전체 고객 데이터가 삭제되었습니다.",
+                    buttons: ["ok"],
+                });
+                loadFile();
+            },
+            error: function(err) {
+                dhx.alert({
+                    header: getErrorMessage(err),
+                    buttons: ["ok"]
+                });
+            }
+        });
+    });
+};
 
 const createGrid =() => {
     contentLayout = new dhx.Layout(null, {
         type: "none",
-        height: 500,
+        height: "100%",
+        width: "100%",
         rows:[
             {
                 id:"contentMenu",
@@ -488,7 +617,6 @@ const createGrid =() => {
             })
             return;
         }
-        console.log(id);
         rowId = cell.row.id;
         colId = cell.column.id;
 
@@ -512,8 +640,6 @@ const createGrid =() => {
             grid.addCellCss(rowId, colId, "cell-align-right");
         }
 
-
-        //Grid 메소드 addCellCss() -> row, column 지정해서 css적용
         if(id == "align-center"){
             grid.addCellCss(rowId, colId, "cell-align-center");
         }
@@ -535,22 +661,22 @@ const createGrid =() => {
                 clearStyle();
             });
         }
-
     });
 
     contentLayout.getCell("contentMenu").attach(menuDetail);
 
     grid = new dhx.Grid(null, {
-
         columns: [
-            {id: "id", header:[{text:"ID", align: "center"}]},
-            {id: "pwd", header:[{text: "PWD", align: "center"}]},
-            {id: "name", header:[{text:"NAME", align: "center"}]},
-            {id: "level", header:[{text:"LEVEL", align: "center"}]},
-            {id: "desc", header:[{text:"DESC", align: "center"}]},
-            {id: "regDate", header:[{text:"REG_DATE", align: "center"}]}
+            {id: "id", width: 160, header:[{text:"ID", align: "center"}]},
+            {id: "pwd", width: 180, header:[{text: "PWD", align: "center"}]},
+            {id: "name", width: 180, header:[{text:"NAME", align: "center"}]},
+            {id: "level", width: 120, header:[{text:"LEVEL", align: "center"}]},
+            {id: "desc", width: 320, header:[{text:"DESC", align: "center"}]},
+            {id: "regDate", width: 220, header:[{text:"REG_DATE", align: "center"}]}
         ],
-        autoWidth: true,
+        height: "100%",
+        width: "100%",
+        autoWidth: false,
         selection: "cell",
         data:[]
     });
@@ -566,10 +692,28 @@ function showAlert(message) {
     })
 }
 
-//3개나 대비하는 이유는 서버가 꺼져있을 시 서버로 부터 받을 JSON이 없기 때문에 3번째까지 준비한다. (3번째는 서버 꺼졌을 때 응답 용도로)
-// "?" -> 값이 없어도 멈추지 않고 undefined로 넘겨준다.
 function getErrorMessage(err) {
     return err?.responseJSON?.message || err?.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+function showEmptyDataResult() {
+    const area = document.getElementById("resultArea");
+    area.innerHTML = `
+        <div class="result-panel">
+            <div class="result-title">조회 결과</div>
+            <p class="result-empty">조회된 고객 데이터가 없습니다.</p>
+            <p class="result-help">전체 조회 또는 조건 검색으로 고객 데이터를 확인하세요.</p>
+        </div>
+    `;
 }
 
 function clearStyle(){
@@ -600,15 +744,6 @@ function clearValue(onSuccess){
             })
         },
         error: function(e){
-            console.log(e);
-            if(e.status==400){
-                dhx.alert({
-                    header: getErrorMessage(e),
-                    buttons:["ok"]
-                });
-                return;
-            }
-
             dhx.alert({
                 header: getErrorMessage(e),
                 buttons:["ok"]
@@ -616,7 +751,6 @@ function clearValue(onSuccess){
         }
     })
 }
-
 
 const dataset = [{
     "id": "edit",

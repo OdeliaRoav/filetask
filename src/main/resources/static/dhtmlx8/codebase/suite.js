@@ -16909,7 +16909,7 @@ exports.Checkbox = Checkbox;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
-    simpleVaultText: "Drag & drop files or folders here or",
+    simpleVaultText: "파일을 선택해주세요.",
     simpleVaultLabel: "browse files",
 };
 
