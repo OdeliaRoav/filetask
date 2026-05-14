@@ -65,7 +65,6 @@ const form = ()=> {
     });
     loginPlatform.events.on("click", function(name){
         if(name === "signup"){
-            console.log("signup");
             signupButton();
         }
     });
@@ -99,7 +98,6 @@ const signupButton = () =>{
                 },1000)
         },
         error: function(err){
-            console.log(err);
             signupFail(getErrorMessage(err));
         }
     });

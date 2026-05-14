@@ -431,8 +431,7 @@ function clearSimpleVault() {
             simpleVault.data.removeAll();
         }
         uploadPopupForm.setValue({simplevault: []});
-    } catch (e) {
-        console.log(e);
+    } catch {
     }
 
     updateSimpleVaultFileName();
@@ -471,11 +470,12 @@ const showUploadResult = (result) => {
 
     // 실패 목록은 서버에서 내려온 라인별 실패 정보를 HTML로 안전하게 변환해 표시한다.
     const failListHTML = (result.failList || []).map(fail => `<li>${escapeHtml(fail)}</li>`).join("");
+    const statusText = result.successCount == 0 ? "전체 실패" : "일부 실패";
 
     area.innerHTML = `
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
-            <div class="result-row"><span>상태</span><strong>일부 실패</strong></div>
+            <div class="result-row"><span>상태</span><strong>${statusText}</strong></div>
             <div class="result-row"><span>파일명</span><strong>${escapeHtml(result.fileName || "-")}</strong></div>
             <div class="result-row"><span>성공 건수</span><strong>${result.successCount}건</strong></div>
             <div class="result-row"><span>실패 건수</span><strong>${result.failCount}건</strong></div>

@@ -3,9 +3,7 @@ package com.example.filetask.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @Controller
-
 public class PageController {
 
     //로그인 페이지 로드
@@ -25,6 +23,4 @@ public class PageController {
     public String signupPage() {
         return "signup/signup";
     }
-
-
 }

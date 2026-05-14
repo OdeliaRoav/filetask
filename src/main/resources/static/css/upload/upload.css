@@ -363,7 +363,7 @@ html, body {
 	min-width: 78px;
 }
 
-.upload_form button[data-dhx-id="deleteAllBtn"],
+.upload_form button[data-dhx-id="deleteIdBtn"],
 .upload_form .danger_action .dhx_button,
 .upload_form .danger_action button {
 	background-color: #8f4e56;
@@ -601,8 +601,10 @@ html, body {
 	margin: 0;
 	padding-left: 18px;
 	line-height: 1.55;
-	max-height: 160px;
-	overflow: auto;
+}
+
+.fail-list li {
+	white-space: pre-line;
 }
 
 .dhx_grid-body {

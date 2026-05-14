@@ -9,7 +9,7 @@ public record ErrorResponse(
         String code,
         String message )
 {   //of -> 메서드의 파라미터로 넘어온 값들을 검증하여 인스턴스를 생성할 때 사용한다.
-    public static ErrorResponse of(ErrorCode errorCode){
+    public static ErrorResponse of(ErrorCode errorCode) {
         HttpStatus status = errorCode.getStatus();
 
         return new ErrorResponse(

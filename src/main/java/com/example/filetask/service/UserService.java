@@ -1,8 +1,9 @@
 package com.example.filetask.service;
 
-import com.example.filetask.entity.User;
 import com.example.filetask.entity.Info;
-import com.example.filetask.exception.*;
+import com.example.filetask.entity.User;
+import com.example.filetask.exception.BusinessException;
+import com.example.filetask.exception.ErrorCode;
 import com.example.filetask.repository.InfoRepository;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
@@ -16,7 +17,11 @@ import java.io.InputStreamReader;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class UserService {
@@ -26,8 +31,6 @@ public class UserService {
     private final RedisTemplate<String, String> redisTemplate;
     private final UserQueryRepository userQueryRepository;
 
-
-
     public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, InfoRepository infoRepository) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
@@ -35,9 +38,7 @@ public class UserService {
         this.infoRepository = infoRepository;
     }
 
-
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
-
         Map<String, Object> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
 
@@ -58,7 +59,7 @@ public class UserService {
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
-        if(duplicated && !force){
+        if (Boolean.TRUE.equals(duplicated) && !force) {
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             result.put("duplicated", true);
             result.put("forced", false);
@@ -71,14 +72,12 @@ public class UserService {
 
         List<String> lines = new ArrayList<>();
 
-
         //try-with-resources 자바7부터 자원을 자동으로 반납해주는 문법 -> BUfferedReader 사용 후 반납
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))){
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
-            while((line = br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
-
         }
 
         int successCount = 0;
@@ -92,11 +91,18 @@ public class UserService {
             try {
                 String[] data = oneLine.split("/", -1);
                 // split("/", -1) 빈 컬럼도 보존
-                if(data.length != 6){
+                if (data.length != 6) {
                     throw new BusinessException(ErrorCode.INVALID_FILE_COLUMN_COUNT);
                 }
-                if(data[0].isBlank() || data[1].isBlank() || data[2].isBlank() || data[3].isBlank() || data[5].isBlank()){
+                if (data[0].isBlank() || data[1].isBlank() || data[2].isBlank() || data[3].isBlank() || data[5].isBlank()) {
                     throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
+                }
+
+                LocalDateTime regDate;
+                try {
+                    regDate = LocalDateTime.parse(data[5], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                } catch (DateTimeParseException e) {
+                    throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
                 }
 
                 User user = new User(
@@ -105,14 +111,14 @@ public class UserService {
                         data[2],
                         data[3],
                         data[4],
-                        LocalDateTime.parse(data[5], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                        regDate
                 );
 
                 userRepository.save(user);
                 successCount++;
 
             } catch (Exception e) {
-                failList.add((i + 1) + "번 줄 실패 : " + oneLine);
+                failList.add((i + 1) + "번 줄 실패 : " + oneLine + "\n" + e.getMessage());
                 failCount++;
             }
         }
@@ -129,23 +135,19 @@ public class UserService {
         result.put("failCount", failCount);
         result.put("ttlSeconds", 300);
 
-
         return result;
     }
 
-
-
-
-    public List<User> getAllUsers(){
+    public List<User> getAllUsers() {
         return userQueryRepository.findAllUsers();
     }
 
-    public List<User> searchUsers(String field, String keyword){
+    public List<User> searchUsers(String field, String keyword) {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
     public void signup(String id, String pwd, String name) {
-        if(infoRepository.existsById(id)){
+        if (infoRepository.existsById(id)) {
             throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
 
@@ -153,25 +155,21 @@ public class UserService {
         infoRepository.save(signupUser);
     }
 
-    public Info login(String id, String pwd) {
-        Info user = infoRepository.findById(id).orElseThrow(()->{
-            throw new BusinessException(ErrorCode.LOGIN_ID_NOT_FOUND);
-        });
+    public void login(String id, String pwd) {
+        Info user = infoRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.LOGIN_ID_NOT_FOUND));
 
-        if(!user.getPwd().equals(pwd)){
+        if (!user.getPwd().equals(pwd)) {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
-
-        return user;
     }
 
     //함수 발생 시
     //return new Error는 함수를 멈추지 않는다.
     //throw new Error는 함수를 멈춘다.
-    public void deleteById(String id){
-        User user = userRepository.findById(id).orElseThrow(() ->{
-            return new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND);
-        });
+    public void deleteById(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND));
         userRepository.delete(user);
     }
 

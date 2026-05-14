@@ -97,15 +97,13 @@ const loginButton = () => {
             id: values.id,
             pwd: values.pwd
         }),
-        success: function (res) {
-            console.log(res);
+        success: function () {
             loginSuccess();
-            setTimeout(function(){
+            setTimeout(function () {
                 location.href = "/upload";
             }, 1000)
         },
         error: function (err) {
-            console.log(err);
             loginFail(getErrorMessage(err));
         }
     });

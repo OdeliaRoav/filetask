@@ -7,6 +7,7 @@ public enum ErrorCode {
 
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "dbfile 파일만 업로드할 수 있습니다."),
     INVALID_FILE_COLUMN_COUNT(HttpStatus.BAD_REQUEST, "데이터 컬럼 수가 맞지 않습니다."),
+    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 맞지 않습니다. yyyy-MM-dd HH:mm:ss 형식으로 입력하세요."),
     REQUIRED_VALUE_EMPTY(HttpStatus.BAD_REQUEST, "필수값이 비어있습니다."),
     DUPLICATE_USER(HttpStatus.CONFLICT, "존재하는 아이디입니다."),
     LOGIN_ID_NOT_FOUND(HttpStatus.UNAUTHORIZED, "아이디가 없습니다."),

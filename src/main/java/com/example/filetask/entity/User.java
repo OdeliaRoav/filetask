@@ -35,7 +35,6 @@ public class User {
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
-
     public User(String id, String pwd, String name, String level, String description, LocalDateTime reg_date) {
         this.id = id;
         this.pwd = pwd;
