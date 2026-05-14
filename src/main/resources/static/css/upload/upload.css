@@ -544,7 +544,8 @@ html, body {
 	background-color: #30333d;
 	color: #fff;
 	box-sizing: border-box;
-	padding: 16px;
+	padding:20px;
+	padding-top: 100px;
 }
 
 #resultArea p {

@@ -634,43 +634,6 @@ const deleteById = () => {
     });
 };
 
-// 전체 삭제
-// 실수로 전체 데이터를 지우는 상황을 줄이기 위해 확인창을 먼저 띄운 뒤 DELETE 요청을 보낸다.
-// const deleteAll = () => {
-//     dhx.confirm({
-//         header: "전체 삭제",
-//         text: "전체 고객 데이터를 삭제하시겠습니까?",
-//         buttons: ["취소", "삭제"],
-//         buttonsAlignment: "center"
-//     }).then(function(result) {
-//         if (!result) {
-//             return;
-//         }
-//
-//         $.ajax({
-//             type: "DELETE",
-//             url: "/users",
-//             contentType: "application/json",
-//             success: function() {
-//                 selectedUserIds.clear();
-//                 dhx.alert({
-//                     header: "전체 삭제 완료",
-//                     text: "전체 고객 데이터가 삭제되었습니다.",
-//                     buttons: ["ok"],
-//                     buttons
-//                 });
-//                 loadFile();
-//             },
-//             error: function(err) {
-//                 dhx.alert({
-//                     header: getErrorMessage(err),
-//                     buttons: ["ok"]
-//                 });
-//             }
-//         });
-//     });
-// };
-
 const createGrid =() => {
     contentLayout = new dhx.Layout(null, {
         type: "none",

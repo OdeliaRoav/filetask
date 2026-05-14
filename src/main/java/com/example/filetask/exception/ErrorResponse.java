@@ -2,7 +2,6 @@ package com.example.filetask.exception;
 
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDateTime;
     //record를 사용하면 필드를 선언하면서 자동으로 생성되는 메서드들을 통해 코드를 간결하게 작성할 수 있다.
 public record ErrorResponse(
         int status,

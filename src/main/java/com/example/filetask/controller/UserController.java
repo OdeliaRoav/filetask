@@ -2,6 +2,7 @@ package com.example.filetask.controller;
 
 import com.example.filetask.entity.Info;
 import com.example.filetask.entity.User;
+import com.example.filetask.dto.LoginResponse;
 import com.example.filetask.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,10 +39,16 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Info user){
+    public ResponseEntity<LoginResponse> login(@RequestBody Info user){
         Info loginUser = userService.login(user.getId(), user.getPwd());
-        return ResponseEntity.ok(loginUser);
+        return ResponseEntity.ok(new LoginResponse(loginUser.getId(), loginUser.getName()));
     }
+//
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody Info user){
+//        Info loginUser = userService.login(user.getId(), user.getPwd());
+//        return ResponseEntity.ok(loginUser);
+//    }
 
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
@@ -54,17 +61,6 @@ public class UserController {
         return ResponseEntity.ok("검색 삭제");
     }
 
-    @DeleteMapping
-    public ResponseEntity<String>  deleteAllUsers() {
-        userService.deleteAllUsers();
-        return ResponseEntity.ok("전체 삭제");
-    };
-
-    @DeleteMapping("/cell")
-    public ResponseEntity<String> deleteCell(@RequestParam("rowId") String rowId, @RequestParam("colId") String colId) {
-        userService.deleteCell(rowId, colId);
-        return ResponseEntity.ok("셀 삭제");
-    }
 
 }
 

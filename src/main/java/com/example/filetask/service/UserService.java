@@ -167,42 +167,11 @@ public class UserService {
 
 
 
-    // 수정해야할 부분 -> ResponseEntity로 서비스단의 활용을 막고 있음, 왜? 사용을 서비스 단에서 계속 해야하지만
-    // return ResponseEntity.ok로 재활용성이 떨어짐 즉 서바스단에서는 일회용에 불과
-
-    public void deleteAllUsers(){
-        userRepository.deleteAll();
-    }
-
-
-    //ResponseEntity
     public void deleteById(String id){
         if(!userRepository.existsById(id)){
             throw new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND);
-}
-        userRepository.deleteById(id);
-    }
-
-
-    public void deleteCell(String rowId, String colId){
-        User user = userRepository.findById(rowId).orElseThrow(()->{
-            throw new BusinessException(ErrorCode.USER_NOT_FOUND);
-        });
-
-        switch(colId){
-            case "name" :
-                user.clearName();
-                break;
-            case "level" :
-                user.clearLevel();
-                break;
-            case "desc" :
-                user.clearDesc();
-                break;
-            default :
-                throw new BusinessException(ErrorCode.INVALID_COLUMN);
         }
-        userRepository.save(user);
+        userRepository.deleteById(id);
     }
 
 }
