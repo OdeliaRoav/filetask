@@ -28,22 +28,8 @@ public class UserQueryRepository{
                 .fetch();
     }
 
-    //콤보박스로 특정 조회
-    public List<User> searchUsers(String field, String keyword){
-        QUser user = QUser.user;
-
-        BooleanExpression condition = searchCondition(field, keyword);
-
-        if(condition == null){
-            return List.of();
-        }
-        //searchCondition이 null을 리턴해서 바로 넣기보단 condition을 만들고 넣는 방식이 좋다.
-        return jpaQueryFactory
-                .selectFrom(user)
-                .where(condition)
-                .fetch();
-    }
     //조건 생성/조건 실행/조회 실행 분리
+    //검색 조건 생성
     private BooleanExpression searchCondition(String field, String keyword){
         QUser user = QUser.user;
 
@@ -58,6 +44,23 @@ public class UserQueryRepository{
             case "desc" -> user.desc.containsIgnoreCase(keyword);
             default -> null;
         };
+    }
+
+    //콤보박스로 특정 조회
+    //검색 실행
+    public List<User> searchUsers(String field, String keyword){
+        QUser user = QUser.user;
+
+        BooleanExpression condition = searchCondition(field, keyword);
+
+        if(condition == null){
+            return List.of();
+        }
+        //searchCondition이 null을 리턴해서 바로 넣기보단 condition을 만들고 넣는 방식이 좋다.
+        return jpaQueryFactory
+                .selectFrom(user)
+                .where(condition)
+                .fetch();
     }
 
 }

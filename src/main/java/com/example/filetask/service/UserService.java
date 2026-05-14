@@ -58,7 +58,7 @@ public class UserService {
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
-        if(Boolean.TRUE.equals(duplicated) && !force){
+        if(duplicated && !force){
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             result.put("duplicated", true);
             result.put("forced", false);
@@ -144,12 +144,12 @@ public class UserService {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
-    public void signup(Info user) {
-        if(infoRepository.existsById(user.getId())){
+    public void signup(String id, String pwd, String name) {
+        if(infoRepository.existsById(id)){
             throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
 
-        Info signupUser = Info.signup(user.getId(), user.getPwd(), user.getName());
+        Info signupUser = Info.signup(id, pwd, name);
         infoRepository.save(signupUser);
     }
 
@@ -165,13 +165,14 @@ public class UserService {
         return user;
     }
 
-
-
+    //함수 발생 시
+    //return new Error는 함수를 멈추지 않는다.
+    //throw new Error는 함수를 멈춘다.
     public void deleteById(String id){
-        if(!userRepository.existsById(id)){
-            throw new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND);
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id).orElseThrow(() ->{
+            return new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND);
+        });
+        userRepository.delete(user);
     }
 
 }
