@@ -9,7 +9,7 @@ import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile; // HTML에서 파일 올리면 Spring이 MultipartFile 형태로 전달해주는 역할
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,20 +38,13 @@ public class UserService {
         this.infoRepository = infoRepository;
     }
 
+    // dbfile 업로드 처리
+    // 파일 검증, 중복 업로드 확인, 라인별 저장 결과 집계를 수행하고 화면에서 사용할 결과 Map을 반환
     public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
         Map<String, Object> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
 
-        /*동작 : ErrorCode에서 INVALID_FILE_EXTENSION을 찾는다.
-        *       ErrorCode에서는 Status랑 Message를 전달해주고 있다. (409, 존재하는 아이디)
-        *       BusinessException 객체 생성 -> 즉 BusinessException에서 Status -> 409, Message -> 존재하는 아이디로 생성해서
-        *       throw로 메서드가 바로 중단된다. 컨트롤러도 멈추고 Service도 아래 전부 멈춤
-        *       이걸 GlobalExceptionHandler가 throw 발생한걸 확인하고 발생한 BusinessException을 잡음 -> BusinessException e
-        *       여기서 e에는 ErrorCode랑 Message가 들어있다.
-        *       즉 return createErrorResponse(e.getErrorCode()) -> ErrorCode.DUPLICATE_USER가 들어있다.
-        * */
-
-
+        // 업로드 가능한 파일은 과제 조건의 .dbfile로 제한하고, 실패 응답은 공통 ErrorCode로 표현
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
         }
@@ -59,6 +52,7 @@ public class UserService {
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
+        // 같은 파일명이 TTL 안에 다시 올라오면 저장하지 않고 확인용 응답을 내려 강제 업로드 여부를 받는다.
         if (Boolean.TRUE.equals(duplicated) && !force) {
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             result.put("duplicated", true);
@@ -72,7 +66,7 @@ public class UserService {
 
         List<String> lines = new ArrayList<>();
 
-        //try-with-resources 자바7부터 자원을 자동으로 반납해주는 문법 -> BUfferedReader 사용 후 반납
+        // MultipartFile 입력 스트림은 사용 후 닫혀야 하므로 try-with-resources(자바 7 이상부터 사용 가능)로 파일 읽기 자원을 관리
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -90,7 +84,7 @@ public class UserService {
 
             try {
                 String[] data = oneLine.split("/", -1);
-                // split("/", -1) 빈 컬럼도 보존
+                // 빈 컬럼도 보존[split("/", -1)]해야 컬럼 수 오류와 필수값 누락을 정확히 구분할 수 있다.
                 if (data.length != 6) {
                     throw new BusinessException(ErrorCode.INVALID_FILE_COLUMN_COUNT);
                 }
@@ -123,8 +117,10 @@ public class UserService {
             }
         }
 
-        //Redis에 저장
-        redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
+        // 실제 저장된 데이터가 있을 때만 파일명을 Redis에 저장해 중복 업로드를 감지한다.
+        if (successCount > 0) {
+            redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
+        }
 
         result.put("duplicated", Boolean.TRUE.equals(duplicated));
         result.put("forced", force);
@@ -133,20 +129,30 @@ public class UserService {
         result.put("successCount", successCount);
         result.put("failList", failList);
         result.put("failCount", failCount);
-        result.put("ttlSeconds", 300);
+        result.put("ttlSeconds", successCount > 0 ? 300 : 0);
 
         return result;
     }
 
+    // Grid 전체 조회
+    // Controller는 요청만 받고 실제 조회 방식은 QueryDSL Repository에 보낸다.
     public List<User> getAllUsers() {
         return userQueryRepository.findAllUsers();
     }
 
+    // Grid 조건 검색
+    // field/keyword를 그대로 Repository로 넘겨 검색 조건 생성 책임을 한 곳에 둔다.
     public List<User> searchUsers(String field, String keyword) {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
+    // 회원가입 처리
+    // 아이디 중복 여부를 먼저 확인한 뒤 Info 엔티티 생성 규칙을 통해 저장
     public void signup(String id, String pwd, String name) {
+        if (isBlank(id) || isBlank(pwd) || isBlank(name)) {
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
+        }
+
         if (infoRepository.existsById(id)) {
             throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
@@ -155,7 +161,13 @@ public class UserService {
         infoRepository.save(signupUser);
     }
 
+    // 로그인 처리
+    // 아이디 존재 여부와 비밀번호 불일치를 다른 ErrorCode로 구분해 화면 메시지를 표현
     public void login(String id, String pwd) {
+        if (isBlank(id) || isBlank(pwd)) {
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
+        }
+
         Info user = infoRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.LOGIN_ID_NOT_FOUND));
 
@@ -164,13 +176,16 @@ public class UserService {
         }
     }
 
-    //함수 발생 시
-    //return new Error는 함수를 멈추지 않는다.
-    //throw new Error는 함수를 멈춘다.
+    // ID 기준 삭제 처리
+    // 삭제 대상이 없으면 업무 예외로 표현하고, 응답 상태코드 변환은 GlobalExceptionHandler가 담당
     public void deleteById(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND));
         userRepository.delete(user);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.isBlank();
     }
 
 }

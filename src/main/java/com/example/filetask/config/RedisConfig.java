@@ -8,7 +8,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-//레디스 데이터에 접근
+// Redis 연결 설정
 @Configuration
 public class RedisConfig {
 
@@ -18,6 +18,7 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
+    // Spring Data Redis가 사용할 Lettuce 기반 연결 팩토리이다.
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         return new LettuceConnectionFactory(host, port);

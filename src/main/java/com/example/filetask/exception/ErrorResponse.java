@@ -2,13 +2,15 @@ package com.example.filetask.exception;
 
 import org.springframework.http.HttpStatus;
 
-    //record를 사용하면 필드를 선언하면서 자동으로 생성되는 메서드들을 통해 코드를 간결하게 작성할 수 있다.
+// 모든 API 예외 응답의 JSON 구조를 통일
+// 프론트는 message로 사용자 안내를 하고, code로 실패 종류를 구분할 수 있다.
 public record ErrorResponse(
         int status,
         String error,
         String code,
         String message )
-{   //of -> 메서드의 파라미터로 넘어온 값들을 검증하여 인스턴스를 생성할 때 사용한다.
+{
+    // ErrorCode 하나를 기준으로 status, code, message가 같은 규칙으로 내려가도록 변환
     public static ErrorResponse of(ErrorCode errorCode) {
         HttpStatus status = errorCode.getStatus();
 

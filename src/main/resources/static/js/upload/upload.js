@@ -1,12 +1,14 @@
 ﻿var layout;
 var grid;
 var uploadForm;
-var uploadPopupForm;
-var contentLayout;
+var popupForm;
+var mainLayout;
 var pagination;
-var selectedUserIds = new Set();
+var checkedIds = new Set();
 
 
+// 업로드 화면 초기화
+// upload.jsp 로드 시 레이아웃, Grid, 검색/업로드 도구, 초기 데이터를 순서대로 준비
 const boardManager = () => {
     createLayout();
     createGrid();
@@ -14,6 +16,8 @@ const boardManager = () => {
     loadFile();
 }
 
+// 전체 화면 레이아웃 생성
+// 왼쪽은 업로드/조회 결과, 오른쪽은 도구 영역과 사용자 데이터 Grid로 나눈다.
 const createLayout = () => {
     layout = new dhx.Layout("layout", {
         type: "line",
@@ -51,6 +55,8 @@ const createLayout = () => {
     `);
 };
 
+// 업로드, 검색, 초기화, 삭제 도구 폼 생성
+// Grid를 보면서 바로 조작할 수 있도록 상단 도구 영역에 주요 액션을 한 줄로 배치
 const createUploadForm = () => {
     uploadForm = new dhx.Form(null, {
         css: "upload_form",
@@ -159,7 +165,7 @@ const createUploadForm = () => {
         }
 
         if(name === "loadbtn"){
-            //폼 초기화
+            // 검색 조건을 지운 뒤 전체 데이터를 다시 불러와 Grid를 기본 상태로 되돌림
             resetSearchForm();
             loadFile();
         }
@@ -174,9 +180,11 @@ const createUploadForm = () => {
 
     });
 
-    contentLayout.getCell("contentTools").attach(uploadForm);
+    mainLayout.getCell("contentTools").attach(uploadForm);
 };
 
+// 검색 폼 초기화
+// 콤보박스와 검색어 입력값을 모두 비워, 다음 검색을 할 수 있게 세팅
 function resetSearchForm() {
     const combo = uploadForm.getItem("combobox");
     if(combo && typeof combo.clear === "function"){
@@ -188,37 +196,40 @@ function resetSearchForm() {
     });
 }
 
+// 파일 선택 팝업 열기
 function openUploadPopup() {
     if(document.querySelector(".upload_popup_alert")){
         return;
     }
 
-    const popupFormAreaId = "uploadPopupFormArea";
+    const popupBoxId = "popupBox";
 
     dhx.alert({
         header: "파일 업로드",
-        text: `<div class="contentToolArea uploadPopupContent"><div id="${popupFormAreaId}"></div></div>`,
+        text: `<div class="contentToolArea uploadPopupContent"><div id="${popupBoxId}"></div></div>`,
         htmlEnable: true,
         buttonsAlignment: "center",
         buttons: ["닫기"],
         css: "upload_popup_alert"
     }).then(function() {
-        uploadPopupForm = null;
+        popupForm = null;
         loadFile();
     });
 
-    requestAnimationFrame(function() {
-        createUploadPopupForm(popupFormAreaId);
-    });
+    setTimeout(function() {
+        createPopupForm(popupBoxId);
+    }, 0);
 }
 
-function createUploadPopupForm(popupFormAreaId) {
-    const popupFormArea = document.getElementById(popupFormAreaId);
-    if(!popupFormArea){
+// 팝업 내부 업로드 폼 생성
+// 파일 선택, 중복 업로드 체크, 업로드 버튼을 실제 /users/upload 요청 흐름에 연결
+function createPopupForm(popupBoxId) {
+    const popupBox = document.getElementById(popupBoxId);
+    if(!popupBox){
         return;
     }
 
-    uploadPopupForm = new dhx.Form(popupFormArea, {
+    popupForm = new dhx.Form(popupBox, {
         css: "upload_popup_form",
         height: 220,
         padding: 0,
@@ -232,7 +243,7 @@ function createUploadPopupForm(popupFormAreaId) {
                 disabled: false,
                 required: false,
                 $vaultHeight: 138,
-                width: "100%",
+                width: "400px",
                 css: "simplevault-box"
             },
             {
@@ -262,31 +273,35 @@ function createUploadPopupForm(popupFormAreaId) {
         ]
     });
 
-    uploadPopupForm.events.on("click", function(name) {
+    popupForm.events.on("click", function(name) {
         if(name === "uploadbtn"){
             uploadFile();
         }
     });
 
-    // simpleVault의 파일 목록이 바뀌면 CSS에서 사용하는 파일명 표시값도 같이 갱신한다.
-    uploadPopupForm.events.on("change", function(name) {
+    // simpleVault의 파일 목록이 바뀌면 CSS에서 사용하는 파일명 표시값도 같이 갱신
+    popupForm.events.on("change", function(name) {
         if(name === "simplevault"){
-            updateSimpleVaultFileName();
+            setTimeout(function() {
+                showFileName();
+            }, 0);
         }
     });
 
-    initSimpleVaultFileNameSync();
+    initFileName();
 }
 
+// 파일 업로드 요청 처리
+// 선택한 File 객체와 force 값을 FormData에 담아 multipart/form-data로 서버에 전송
 const uploadFile =() =>{
     const formData = new FormData();
-    if(!uploadPopupForm){
+    if(!popupForm){
         showAlert("파일 업로드 창을 다시 열어주세요.");
         return;
     }
 
-    const values = uploadPopupForm.getValue();
-    const files = values.simplevault;
+    const data = popupForm.getValue();
+    const files = data.simplevault;
 
     // 파일을 선택하지 않은 경우 서버 요청을 보내지 않고 사용자에게 먼저 알린다.
     if(!files || files.length === 0){
@@ -294,7 +309,7 @@ const uploadFile =() =>{
         return;
     }
 
-    const file = getSelectedUploadFile(files);
+    const file = getUploadFile(files);
     if(!file){
         showAlert("파일을 다시 선택하세요.");
         return;
@@ -302,7 +317,7 @@ const uploadFile =() =>{
 
     formData.append("file", file, file.name);
 
-    if(values.force === true){
+    if(data.force === true){
         formData.append("force", "true");
     }
 
@@ -317,9 +332,11 @@ const uploadFile =() =>{
         success: function (res) {
             showUploadResult(res);
             if(res.successCount != null){
-                clearSimpleVault();
+                clearFile();
+                closeUploadPopup();
             } else {
-                updateSimpleVaultFileName();
+                showAlert("중복 파일입니다.");
+                showFileName();
             }
         },
         error: function (err) {
@@ -328,14 +345,25 @@ const uploadFile =() =>{
     });
 };
 
-function getSelectedUploadFile(files) {
-    const selectedFile = files && files[0];
-    if(selectedFile && typeof File !== "undefined" && selectedFile instanceof File){
-        return selectedFile;
+// 업로드 팝업 닫기
+// 중복 확인 응답은 팝업을 유지하고, 실제 업로드가 끝난 경우에만 alert의 닫기 버튼을 눌러 후처리를 실행한다.
+function closeUploadPopup() {
+    const closeBtn = document.querySelector(".upload_popup_alert .dhx_alert__footer .dhx_button");
+    if(closeBtn){
+        closeBtn.click();
+    }
+}
+
+// simpleVault에서 실제 File 객체 추출
+// DHTMLX 값 구조가 달라져도 서버에는 MultipartFile로 받을 수 있는 File만 전달한다.
+function getUploadFile(files) {
+    const firstFile = files && files[0];
+    if(firstFile && typeof File !== "undefined" && firstFile instanceof File){
+        return firstFile;
     }
 
-    if(selectedFile && selectedFile.file && typeof File !== "undefined" && selectedFile.file instanceof File){
-        return selectedFile.file;
+    if(firstFile && firstFile.file && typeof File !== "undefined" && firstFile.file instanceof File){
+        return firstFile.file;
     }
 
     const fileInput = document.querySelector(".uploadPopupContent .dhx_simplevault__input");
@@ -346,36 +374,37 @@ function getSelectedUploadFile(files) {
     return null;
 }
 
-function initSimpleVaultFileNameSync() {
-    requestAnimationFrame(function() {
-        updateSimpleVaultFileName();
+// simpleVault UI 동기화
+function initFileName() {
+    setTimeout(function() {
+        showFileName();
 
-        const simpleVault = document.querySelector(".contentToolArea .dhx_simplevault");
-        if(!simpleVault){
+        const vault = document.querySelector(".contentToolArea .dhx_simplevault");
+        if(!vault){
             return;
         }
 
-        const simpleVaultLabel = document.querySelector(".contentToolArea .dhx_simplevault__label, .contentToolArea .dhx_simplevault-label");
+        const vaultLabel = document.querySelector(".contentToolArea .dhx_simplevault__label, .contentToolArea .dhx_simplevault-label");
 
-        if(simpleVaultLabel && !simpleVaultLabel.querySelector(".simplevault-clear-button")){
-            const clearButton = document.createElement("button");
-            clearButton.type = "button";
-            clearButton.className = "simplevault-clear-button";
-            clearButton.textContent = "삭제";
-            clearButton.addEventListener("click", function(e) {
+        if(vaultLabel && !vaultLabel.querySelector(".simplevault-clear-button")){
+            const clearBtn = document.createElement("button");
+            clearBtn.type = "button";
+            clearBtn.className = "simplevault-clear-button";
+            clearBtn.textContent = "삭제";
+            clearBtn.addEventListener("click", function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                clearSimpleVault();
+                clearFile();
             });
-            simpleVaultLabel.appendChild(clearButton);
+            vaultLabel.appendChild(clearBtn);
         }
 
-        if(!simpleVault.querySelector(".simplevault-find-button")){
-            const findButton = document.createElement("button");
-            findButton.type = "button";
-            findButton.className = "simplevault-find-button";
-            findButton.textContent = "파일찾기";
-            findButton.addEventListener("click", function(e) {
+        if(!vault.querySelector(".simplevault-find-button")){
+            const findBtn = document.createElement("button");
+            findBtn.type = "button";
+            findBtn.className = "simplevault-find-button";
+            findBtn.textContent = "파일찾기";
+            findBtn.addEventListener("click", function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
@@ -384,59 +413,55 @@ function initSimpleVaultFileNameSync() {
                     label.click();
                 }
             });
-            simpleVault.appendChild(findButton);
+            vault.appendChild(findBtn);
         }
-
-        const observer = new MutationObserver(function() {
-            updateSimpleVaultFileName();
-        });
-
-        observer.observe(simpleVault, {
-            childList: true,
-            subtree: true,
-            characterData: true
-        });
-    });
+    }, 0);
 }
 
-function updateSimpleVaultFileName() {
+// 선택된 파일명 표시 갱신
+// CSS의 content: attr(data-file-name)에서 사용할 값을 label 속성에 저장한다.
+function showFileName() {
     const label = document.querySelector(".contentToolArea .dhx_simplevault__label, .contentToolArea .dhx_simplevault-label");
-    if(!label || !uploadPopupForm){
+    if(!label || !popupForm){
         return;
     }
 
-    const values = uploadPopupForm.getValue();
-    const files = values.simplevault || [];
+    const data = popupForm.getValue();
+    const files = data.simplevault || [];
     const hasFile = files.length > 0 && files[0].file;
-    const displayFileName = hasFile ? files[0].file.name : "첨부파일";
-    const simpleVault = document.querySelector(".contentToolArea .dhx_simplevault");
+    const fileName = hasFile ? files[0].file.name : "첨부파일";
+    const vault = document.querySelector(".contentToolArea .dhx_simplevault");
 
-    label.setAttribute("data-file-name", displayFileName);
-    if(simpleVault){
-        simpleVault.classList.toggle("has-file", !!hasFile);
+    label.setAttribute("data-file-name", fileName);
+    if(vault){
+        vault.classList.toggle("has-file", !!hasFile);
     }
 }
 
-function clearSimpleVault() {
+// simpleVault 파일 목록 초기화
+// 업로드 후 선택된 파일 정보를 비워 다음 업로드를 준비한다.
+function clearFile() {
     try {
-        if(!uploadPopupForm){
+        if(!popupForm){
             return;
         }
 
-        const simpleVault = uploadPopupForm.getItem("simplevault");
-        if(simpleVault && typeof simpleVault.clear === "function"){
-            simpleVault.clear();
+        const vault = popupForm.getItem("simplevault");
+        if(vault && typeof vault.clear === "function"){
+            vault.clear();
         }
-        if(simpleVault && simpleVault.data && typeof simpleVault.data.removeAll === "function"){
-            simpleVault.data.removeAll();
+        if(vault && vault.data && typeof vault.data.removeAll === "function"){
+            vault.data.removeAll();
         }
-        uploadPopupForm.setValue({simplevault: []});
+        popupForm.setValue({simplevault: []});
     } catch {
     }
 
-    updateSimpleVaultFileName();
+    showFileName();
 }
 
+// 업로드 결과 표시
+// 서버 응답의 중복 여부, 성공/실패 건수, 라인별 실패 목록을 왼쪽 결과 영역에 보여준다.
 const showUploadResult = (result) => {
     const area = document.getElementById("resultArea");
 
@@ -468,25 +493,27 @@ const showUploadResult = (result) => {
         return;
     }
 
-    // 실패 목록은 서버에서 내려온 라인별 실패 정보를 HTML로 안전하게 변환해 표시한다.
-    const failListHTML = (result.failList || []).map(fail => `<li>${escapeHtml(fail)}</li>`).join("");
-    const statusText = result.successCount == 0 ? "전체 실패" : "일부 실패";
+    // 실패 목록은 서버에서 내려온 라인별 실패 정보를 HTML로 변환해 표시한다.
+    const failHtml = (result.failList || []).map(fail => `<li>${escapeHtml(fail)}</li>`).join("");
+    const uploadStatus = result.successCount == 0 ? "전체 실패" : "일부 실패";
 
     area.innerHTML = `
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
-            <div class="result-row"><span>상태</span><strong>${statusText}</strong></div>
+            <div class="result-row"><span>상태</span><strong>${uploadStatus}</strong></div>
             <div class="result-row"><span>파일명</span><strong>${escapeHtml(result.fileName || "-")}</strong></div>
             <div class="result-row"><span>성공 건수</span><strong>${result.successCount}건</strong></div>
             <div class="result-row"><span>실패 건수</span><strong>${result.failCount}건</strong></div>
             <div class="fail-list">
                 <p>실패한 라인</p>
-                <ul>${failListHTML}</ul>
+                <ul>${failHtml}</ul>
             </div>
         </div>
         `;
 };
 
+// 전체 데이터 조회
+// 업로드 성공, 삭제 후 새로고침, 초기 진입 시 서버의 사용자 목록을 Grid에 반영한다.
 const loadFile = () => {
     $.ajax({
         type: "GET",
@@ -504,6 +531,8 @@ const loadFile = () => {
     });
 };
 
+// 조건 검색 조회
+// 콤보박스의 field와 입력 keyword를 /users/search로 보내 조건에 맞는 사용자만 표시
 const searchFile = () => {
     const values = uploadForm.getValue();
     const field = values.combobox;
@@ -549,6 +578,8 @@ const searchFile = () => {
     });
 };
 
+// 등록일 표시 형식 변환
+// 서버의 regDate 값을 Grid에서 읽기 쉬운 yyyy-MM-dd HH:mm 형태로 바꾼다.
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
         return "";
@@ -565,6 +596,8 @@ const formatRegDate = (regDate) => {
     return `${year}-${month}-${day} ${hour}:${minute}`;
 }
 
+// Grid 데이터 렌더링
+// 서버 JSON 배열을 DHTMLX Grid 데이터 구조로 매핑하고 선택 상태를 초기화
 const renderUsers = (users) => {
     const gridData = users.map(user => ({
         id: user.id,
@@ -575,7 +608,7 @@ const renderUsers = (users) => {
         regDate : formatRegDate(user.regDate)
     }));
 
-    selectedUserIds.clear();
+    checkedIds.clear();
     grid.data.removeAll();
     grid.data.parse(gridData);
 
@@ -586,8 +619,10 @@ const renderUsers = (users) => {
     updateSelectAllCheckbox();
 };
 
+// 선택 사용자 삭제
+// Grid 체크박스로 선택한 ID 목록을 삭제 요청으로 보내고, 완료 후 목록을 다시 조회
 const deleteById = () => {
-    const ids = Array.from(selectedUserIds);
+    const ids = Array.from(checkedIds);
 
     if(ids.length === 0){
         dhx.alert({
@@ -608,14 +643,14 @@ const deleteById = () => {
             return;
         }
 
-        const deleteRequests = ids.map(id => $.ajax({
+        const deleteList = ids.map(id => $.ajax({
             type: "DELETE",
             url: "/users/" + encodeURIComponent(id)
         }));
 
-        Promise.all(deleteRequests)
+        Promise.all(deleteList)
             .then(function(){
-                selectedUserIds.clear();
+                checkedIds.clear();
                 loadFile();
 
                 dhx.alert({
@@ -634,8 +669,10 @@ const deleteById = () => {
     });
 };
 
+// Grid 생성
+// 오른쪽 content 영역에 도구, 데이터 Grid, pagination을 붙이고 체크박스 선택 기능을 연결한다.
 const createGrid =() => {
-    contentLayout = new dhx.Layout(null, {
+    mainLayout = new dhx.Layout(null, {
         type: "none",
         height: "100%",
         width: "100%",
@@ -654,7 +691,7 @@ const createGrid =() => {
             }
         ]
     });
-    layout.getCell("content").attach(contentLayout);
+    layout.getCell("content").attach(mainLayout);
 
     grid = new dhx.Grid(null, {
         columns: [
@@ -669,7 +706,7 @@ const createGrid =() => {
                     align: "center"
                 }],
                 template: function(value, row) {
-                    const checked = selectedUserIds.has(row.id) ? "checked" : "";
+                    const checked = checkedIds.has(row.id) ? "checked" : "";
                     return `<input type="checkbox" class="grid-row-checkbox" data-row-id="${escapeHtml(row.id)}" ${checked} aria-label="${escapeHtml(row.id)} 선택">`;
                 }
             },
@@ -696,7 +733,7 @@ const createGrid =() => {
         e.preventDefault();
         e.stopPropagation();
 
-        setRowSelected(row.id, !selectedUserIds.has(row.id));
+        setRowSelected(row.id, !checkedIds.has(row.id));
     });
 
     grid.events.on("headerCellClick", function(column, rowName, e) {
@@ -713,7 +750,7 @@ const createGrid =() => {
         setAllRowsSelected(!isAllRowsSelected());
     });
 
-    contentLayout.getCell("contentGrid").attach(grid);
+    mainLayout.getCell("contentGrid").attach(grid);
     bindSelectAllCheckbox();
 
     pagination = new dhx.Pagination(null, {
@@ -726,16 +763,18 @@ const createGrid =() => {
         updateSelectAllCheckbox();
     });
 
-    contentLayout.getCell("contentPagination").attach(pagination)
+    mainLayout.getCell("contentPagination").attach(pagination)
 
 
 };
 
+// Grid row 선택 상태 변경
+// 선택 Set을 갱신한 뒤 현재 화면 checkbox와 header checkbox 상태를 맞춘다.
 function setRowSelected(id, checked) {
     if(checked){
-        selectedUserIds.add(id);
+        checkedIds.add(id);
     } else {
-        selectedUserIds.delete(id);
+        checkedIds.delete(id);
     }
 
     const checkbox = document.querySelector(`.grid-row-checkbox[data-row-id="${cssEscape(id)}"]`);
@@ -745,6 +784,8 @@ function setRowSelected(id, checked) {
     updateSelectAllCheckbox();
 }
 
+// 현재 페이지 row 목록 조회
+// pagination이 있는 경우 현재 페이지 범위만 계산해 header 전체 선택 기준으로 사용한다.
 function getCurrentPageRows(){
     const rows = getCurrentGridRows();
 
@@ -761,12 +802,14 @@ function getCurrentPageRows(){
 
 }
 
+// 현재 페이지 전체 선택/해제
+// 보이는 row 기준으로만 선택 상태를 바꾸고 Grid checkbox 화면을 다시 렌더링한다.
 function setAllRowsSelected(checked) {
     getCurrentPageRows().forEach(row => {
         if(checked){
-            selectedUserIds.add(row.id);
+            checkedIds.add(row.id);
         } else {
-            selectedUserIds.delete(row.id);
+            checkedIds.delete(row.id);
         }
 
         if(grid && grid.data && typeof grid.data.update === "function"){
@@ -780,6 +823,8 @@ function setAllRowsSelected(checked) {
     updateSelectAllCheckbox();
 }
 
+// 현재 Grid 데이터 전체 조회
+// DHTMLX DataCollection serialize 결과를 기준으로 선택 상태와 빈 결과 처리를 판단한다.
 function getCurrentGridRows() {
     if(!grid || !grid.data || typeof grid.data.serialize !== "function"){
         return [];
@@ -788,41 +833,49 @@ function getCurrentGridRows() {
     return grid.data.serialize();
 }
 
+// 현재 페이지의 모든 row가 선택됐는지 확인
+// header checkbox의 checked/indeterminate 상태를 계산할 때 사용한다.
 function isAllRowsSelected() {
     const rows = getCurrentPageRows();
-    return rows.length > 0 && rows.every(row => selectedUserIds.has(row.id));
+    return rows.length > 0 && rows.every(row => checkedIds.has(row.id));
 }
 
+// header 전체 선택 checkbox 상태 갱신
+// 일부만 선택된 경우 indeterminate 상태로 표시해 선택 범위를 명확히 보여준다.
 function updateSelectAllCheckbox() {
-    requestAnimationFrame(function() {
-        const headerCheckbox = document.querySelector(".grid-select-all-checkbox");
-        if(!headerCheckbox){
+    setTimeout(function() {
+        const allCheckBox = document.querySelector(".grid-select-all-checkbox");
+        if(!allCheckBox){
             return;
         }
         bindSelectAllCheckbox();
 
         const rows = getCurrentPageRows();
-        const checkedCount = rows.filter(row => selectedUserIds.has(row.id)).length;
+        const checkedCnt = rows.filter(row => checkedIds.has(row.id)).length;
 
-        headerCheckbox.checked = rows.length > 0 && checkedCount === rows.length;
-        headerCheckbox.indeterminate = checkedCount > 0 && checkedCount < rows.length;
-    });
+        allCheckBox.checked = rows.length > 0 && checkedCnt === rows.length;
+        allCheckBox.indeterminate = checkedCnt > 0 && checkedCnt < rows.length;
+    }, 0);
 }
 
+// header checkbox 이벤트 바인딩
+// DHTMLX가 header DOM을 다시 만들 수 있으므로 중복 바인딩을 dataset 플래그로 막는다.
 function bindSelectAllCheckbox() {
-    const headerCheckbox = document.querySelector(".grid-select-all-checkbox");
-    if(!headerCheckbox || headerCheckbox.dataset.bound === "true"){
+    const allCheckBox = document.querySelector(".grid-select-all-checkbox");
+    if(!allCheckBox || allCheckBox.dataset.bound === "true"){
         return;
     }
 
-    headerCheckbox.dataset.bound = "true";
-    headerCheckbox.addEventListener("change", function(e) {
+    allCheckBox.dataset.bound = "true";
+    allCheckBox.addEventListener("change", function(e) {
         e.preventDefault();
         e.stopPropagation();
         setAllRowsSelected(e.target.checked);
     });
 }
 
+// CSS selector에 사용할 row id 변환
+// CSS.escape 지원이 없는 브라우저에서도 최소한의 특수문자 이스케이프를 수행한다.
 function cssEscape(value) {
     if(window.CSS && typeof window.CSS.escape === "function"){
         return window.CSS.escape(value);
@@ -831,6 +884,8 @@ function cssEscape(value) {
     return String(value).replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 }
 
+// 공통 알림창
+// 단순 안내 메시지를 같은 버튼 구성으로 표시한다.
 function showAlert(message) {
     dhx.alert({
         header: message,
@@ -839,10 +894,14 @@ function showAlert(message) {
     })
 }
 
+// 서버 예외 응답 메시지 추출
+// GlobalExceptionHandler의 message를 우선 사용하고, 없으면 기본 문구로 대체한다.
 function getErrorMessage(err) {
     return err?.responseJSON?.message || err?.responseJSON?.error || "요청 처리 중 오류가 발생했습니다.";
 }
 
+// HTML 이스케이프
+// 파일명이나 실패 라인을 innerHTML에 넣기 전에 변환해 결과 영역 구조가 깨지지 않게 한다.
 function escapeHtml(value) {
     return String(value)
         .replaceAll("&", "&amp;")
@@ -853,6 +912,8 @@ function escapeHtml(value) {
 }
 
 
+// 빈 조회 결과 표시
+// Grid만 비우면 사용자가 조회 완료 여부를 알기 어려워 왼쪽 결과 영역에도 안내를 남긴다.
 function showEmptyDataResult() {
     const area = document.getElementById("resultArea");
     area.innerHTML = `
@@ -863,4 +924,3 @@ function showEmptyDataResult() {
         </div>
     `;
 }
-

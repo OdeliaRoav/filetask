@@ -16,44 +16,52 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
 
-    //UserController가 동작하려면 UserService가 필요하고, Spring이 생성자를 통해 UserService를 자동으로 넣어주도록 한다.
+    // Controller는 HTTP 요청/응답 경계만 담당하고, 실제 검증과 저장 로직은 UserService에서 처리
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
+    // 전체 사용자 조회 API
+    // 업로드 화면 Grid 초기 로딩과 새로고침에서 사용하며 조회 결과를 JSON 배열로 반환
     @GetMapping
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
-    // RequestParam은 URL 파라미터나 FormData의 개별 값을 받아오는 방식
+    // 조건 검색 API
+    // field와 keyword는 URL query parameter(GET으로 전송 받음)로 받고, QueryDSL 조건 생성은 Repository 계층에서 처리
     @GetMapping("/search")
     public List<User> searchUsers(@RequestParam String field, @RequestParam String keyword) {
         return userService.searchUsers(field, keyword);
     }
 
-    // RequestBody는 HTTP 요청의 본문에 들어 있는 JSON 데이터를 자바 객체로 변환하는 방식
+    // 회원가입 API
+    // 요청 본문의 JSON을 SignupRequest로 받고, 중복 ID 같은 실패는 공통 예외 처리기로
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
         userService.signup(signupRequest.getId(), signupRequest.getPwd(), signupRequest.getName());
-        //객체를 돌려도 사용할 곳이 없기에 그냥 build사용해서 빈 JSON을 전송한다.
         return ResponseEntity.ok().build();
     }
 
+    // 로그인 API
+    // 인증 성공 여부만 필요하므로 성공 시 본문 없는 200 응답을 반환
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
         userService.login(request.getId(), request.getPwd());
-        //200 ok, 빈 JSON 전송
         return ResponseEntity.ok().build();
     }
 
+    // dbfile 업로드 API
+    // multipart/form-data 파일과 강제 업로드 여부를 Service에 전달하고 처리 결과 Map을 JSON으로 반환
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
         return userService.uploadFile(file, force);
     }
 
+    // ID 기준 사용자 삭제 API
+    // 삭제 대상 없음 같은 업무 실패는 Service가 BusinessException으로 표현하고 전역 예외 처리기가 응답
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable String id) {
         userService.deleteById(id);

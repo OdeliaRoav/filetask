@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
 	width: 100%;
 	height: 100%;
 	margin: 0;
@@ -10,7 +11,6 @@ html, body {
 .dhx_layout-cell,
 .dhx_layout-cell-content,
 .dhx_form-element__control {
-	background-color: #30333d;
 	border-color: white;
 }
 
@@ -110,8 +110,6 @@ html, body {
 	border-color: #e5e7eb;
 }
 
-
-
 .content_menu,
 .content_menu--popup-menu {
 	background-color: #ffffff;
@@ -134,29 +132,6 @@ html, body {
 	border-color: white;
 }
 
-/*.content_menu,*/
-/*.content_menu--popup-menu {*/
-/*	background-color: #ffffff;*/
-/*	color: #30333d;*/
-/*	border-color: #e5e7eb;*/
-/*}*/
-
-
-/*!**/
-/*	dxi -> 아이콘을 가리키는 것 같다.*/
-/**!*/
-/*.content_menu .dhx_button,*/
-/*.content_menu .dhx_button__text,*/
-/*.content_menu .dxi,*/
-/*.content_menu--popup-menu .dhx_button,*/
-/*.content_menu--popup-menu .dhx_button__text,*/
-/*.content_menu--popup-menu .dxi {*/
-/*	color: #fff;*/
-/*}*/
-
-
-
-/* Grid 위 기능 영역 색 지정 */
 .contentToolArea,
 .contentToolArea .dhx_layout-cell-content,
 .contentToolArea .dhx_form,
@@ -187,7 +162,6 @@ html, body {
 	border-color: #e5e7eb;
 }
 
-/* 업로드, 검색, 삭제 영역을 한 줄 도구 영역 안에서 일정한 높이로 맞춘다. */
 .upload_form {
 	height: 76px !important;
 	padding: 0 18px !important;
@@ -231,23 +205,46 @@ html, body {
 	margin-top: 0;
 }
 
-/* 파일 업로드 팝업 안에서는 simpleVault와 업로드 실행 버튼만 표시한다. */
 .upload_popup_alert {
-	width: 620px;
-	max-width: calc(100vw - 40px);
+	width: 420px;
+	max-width: 94vw;
 	box-sizing: border-box;
 }
 
-.upload_popup_alert .dhx_simplevault__drop-area{
+.upload_popup_alert .dhx_simplevault__drop-area {
+	width: 100% !important;
 	height: 100px;
+	box-sizing: border-box;
+}
+
+.upload_popup_form [data-cell-id="simplevault"],
+.upload_popup_form [data-cell-id="simplevault"] > .dhx_form-element,
+.upload_popup_form [data-cell-id="simplevault"] .dhx_input__wrapper,
+.upload_popup_form [data-cell-id="simplevault"] .dhx_simplevault {
+	width: 100% !important;
+	max-width: none !important;
+}
+
+.upload_popup_form .dhx_simplevault {
+	width: 100% !important;
+	max-width: none !important;
+	min-width: 100% !important;
+	height: 138px !important;
+	box-sizing: border-box;
+}
+
+.upload_popup_form .dhx_simplevault__drop-area {
+	width: 100% !important;
+	max-width: none !important;
+	height: 100px !important;
+	box-sizing: border-box;
 }
 
 .upload_popup_alert .dhx_alert__content,
 .upload_popup_alert .dhx_alert__body,
 .upload_popup_alert .dhx_alert__text {
 	padding: 16px 22px 8px;
-	overflow-x: hidden;
-	overflow-y: hidden;
+	overflow: hidden;
 	box-sizing: border-box;
 }
 
@@ -335,7 +332,6 @@ html, body {
 	white-space: nowrap;
 }
 
-/* 버튼 너비를 고정해 텍스트 길이에 따라 도구 영역 레이아웃이 흔들리지 않게 한다. */
 .upload_form button[data-dhx-id="openUploadPopup"] {
 	width: 96px !important;
 	min-width: 96px;
@@ -350,12 +346,6 @@ html, body {
 .upload_popup_form button[data-dhx-id="uploadbtn"] {
 	width: 96px !important;
 	min-width: 96px;
-}
-
-.upload_form button[data-dhx-id="loadbtn"],
-.upload_form button[data-dhx-id="deleteAllBtn"] {
-	width: 82px !important;
-	min-width: 82px;
 }
 
 .upload_form button[data-dhx-id="loadbtn"] {
@@ -380,7 +370,6 @@ html, body {
 	background-color: #ffffff !important;
 }
 
-/* DHTMLX simpleVault를 파일명 입력칸처럼 보이도록 커스터마이징한다. */
 .contentToolArea .dhx_simplevault,
 .contentToolArea .dhx_simplevault *,
 .contentToolArea .dhx_simplevault-files,
@@ -541,7 +530,6 @@ html, body {
 	display: none !important;
 }
 
-/* 왼쪽 결과 영역에 업로드/조회/삭제 결과를 같은 형태로 보여준다. */
 .result-panel {
 	background-color: #30333d;
 	border: none;
@@ -619,7 +607,7 @@ html, body {
 	background-color: #30333d;
 	color: #fff;
 	box-sizing: border-box;
-	padding:20px;
+	padding: 20px;
 	padding-top: 100px;
 }
 
@@ -627,7 +615,6 @@ html, body {
 	color: #fff;
 }
 
-/* 메뉴에서 선택한 셀 서식을 Grid 셀 CSS 클래스로 적용한다. */
 .contentGrid .dhx_grid-cell.cell-bold {
 	font-weight: 700;
 }
@@ -678,6 +665,6 @@ html, body {
 	all: unset;
 }
 
-.contentGrid .grid-row-checkbox{
+.contentGrid .grid-row-checkbox {
 	margin-left: 6px;
 }

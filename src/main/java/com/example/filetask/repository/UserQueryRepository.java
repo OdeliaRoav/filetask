@@ -12,12 +12,13 @@ import java.util.List;
 public class UserQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-    //생성자 생성
+    // QueryDSL 쿼리 생성을 위해 설정 클래스에서 만든 JPAQueryFactory를 주입받는다.
     public UserQueryRepository(JPAQueryFactory jpaQueryFactory) {
         this.jpaQueryFactory = jpaQueryFactory;
     }
 
-    //조회 버튼
+    // 전체 조회
+    // 업로드 화면의 Grid에 표시할 사용자 데이터를 QueryDSL로 조회한다.
     public List<User> findAllUsers() {
         QUser user = QUser.user;
 
@@ -26,8 +27,8 @@ public class UserQueryRepository {
                 .fetch();
     }
 
-    //조건 생성/조건 실행/조회 실행 분리
-    //검색 조건 생성
+    // 검색 조건 생성
+    // field 값에 따라 QueryDSL BooleanExpression을 만들고, 유효하지 않은 조건은 null로 반환
     private BooleanExpression searchCondition(String field, String keyword) {
         QUser user = QUser.user;
 
@@ -44,8 +45,8 @@ public class UserQueryRepository {
         };
     }
 
-    //콤보박스로 특정 조회
-    //검색 실행
+    // 조건 검색 실행
+    // 화면 콤보박스에서 선택한 검색 기준과 검색어를 받아 조건에 맞는 row만 조회
     public List<User> searchUsers(String field, String keyword) {
         QUser user = QUser.user;
 
@@ -54,7 +55,7 @@ public class UserQueryRepository {
         if (condition == null) {
             return List.of();
         }
-        //searchCondition이 null을 리턴해서 바로 넣기보단 condition을 만들고 넣는 방식이 좋다.
+        // 조건을 변수로 분리해 null 여부를 먼저 판단하면 where(null) 호출보다 검색 실패 흐름이 명확
         return jpaQueryFactory
                 .selectFrom(user)
                 .where(condition)
