@@ -36,19 +36,6 @@ public class User {
     private LocalDateTime regDate;
 
 
-    public void clearName(){
-        this.name = "";
-    }
-
-    public void clearLevel(){
-        this.level = "";
-    }
-
-    public void clearDesc(){
-        this.desc = "";
-    }
-
-
     public User(String id, String pwd, String name, String level, String description, LocalDateTime reg_date) {
         this.id = id;
         this.pwd = pwd;

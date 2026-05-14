@@ -117,7 +117,8 @@ const loginButton = () => {
             id: values.id,
             pwd: values.pwd
         }),
-        success: function () {
+        success: function (res) {
+            console.log(res);
             loginSuccess();
             setTimeout(function(){
                 location.href = "/upload";
