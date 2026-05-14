@@ -11,10 +11,12 @@ html, body {
 .dhx_layout-cell-content,
 .dhx_form-element__control {
 	background-color: #30333d;
+	border-color: white;
 }
 
 .dhx_layout-line.dhx_layout-rows > .dhx_layout-cell {
 	border-bottom: none;
+	border-color: white;
 }
 
 .dhx_widget--bordered,
@@ -231,22 +233,42 @@ html, body {
 
 /* 파일 업로드 팝업 안에서는 simpleVault와 업로드 실행 버튼만 표시한다. */
 .upload_popup_alert {
-	width: 560px;
+	width: 620px;
 	max-width: calc(100vw - 40px);
+	box-sizing: border-box;
 }
 
-.upload_popup_alert .dhx_alert__content {
-	padding: 14px 20px 4px;
+.upload_popup_alert .dhx_simplevault__drop-area{
+	height: 100px;
+}
+
+.upload_popup_alert .dhx_alert__content,
+.upload_popup_alert .dhx_alert__body,
+.upload_popup_alert .dhx_alert__text {
+	padding: 16px 22px 8px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	box-sizing: border-box;
+}
+
+.upload_popup_alert .dhx_alert__body,
+.upload_popup_alert .dhx_alert__text {
+	padding: 0;
 }
 
 .uploadPopupContent {
 	background-color: #ffffff;
+	width: 100%;
 	box-sizing: border-box;
-	min-height: 176px;
+	min-height: 220px;
+	max-height: 220px;
+	overflow: hidden;
 }
 
 .upload_popup_form {
-	height: 176px !important;
+	width: 100% !important;
+	height: 220px !important;
+	max-height: 220px;
 	padding: 0 !important;
 	overflow: hidden;
 	box-sizing: border-box;
@@ -254,6 +276,9 @@ html, body {
 
 .upload_popup_form .button_row {
 	margin-top: 14px;
+	width: 100%;
+	box-sizing: border-box;
+	background-color: #ffffff;
 }
 
 .contentToolArea .dhx_label,
@@ -316,11 +341,15 @@ html, body {
 	min-width: 96px;
 }
 
-.upload_popup_form button[data-dhx-id="uploadbtn"],
 .upload_form button[data-dhx-id="select"],
 .upload_form button[data-dhx-id="deleteIdBtn"] {
 	width: 60px !important;
 	min-width: 60px;
+}
+
+.upload_popup_form button[data-dhx-id="uploadbtn"] {
+	width: 96px !important;
+	min-width: 96px;
 }
 
 .upload_form button[data-dhx-id="loadbtn"],
@@ -362,9 +391,9 @@ html, body {
 }
 
 .contentToolArea .dhx_simplevault {
-	width: 480px !important;
-	min-height: 118px;
-	max-height: 118px;
+	width: 100% !important;
+	min-height: 138px;
+	max-height: 138px;
 	margin-left: 0;
 	overflow: hidden;
 	box-sizing: border-box;
@@ -373,6 +402,50 @@ html, body {
 	align-items: flex-start;
 	gap: 10px;
 	background-color: #ffffff;
+}
+
+.upload_popup_form .dhx_form-group,
+.upload_popup_form .dhx_form-group__item,
+.upload_popup_form .dhx_form-row,
+.upload_popup_form .dhx_form-element,
+.upload_popup_form .dhx_form-element__control,
+.upload_popup_form .simplevault-box {
+	width: 100%;
+	max-width: 100%;
+	min-height: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+	box-sizing: border-box;
+	overflow: hidden;
+	background-color: #ffffff !important;
+}
+
+.upload_popup_form .dhx_form-group--simplevault {
+	height: 138px !important;
+	max-height: 138px !important;
+	overflow: hidden !important;
+}
+
+.upload_popup_form .dhx_form-group--checkbox,
+.upload_popup_form .dhx_checkbox {
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.upload_popup_alert .dhx_layout-cell,
+.upload_popup_form .dhx_layout-cell,
+.upload_popup_form .dhx_form-element,
+.upload_popup_form .dhx_form-element__control,
+.upload_popup_form .dhx_form-group,
+.upload_popup_form .dhx_form-group__item {
+	border: none !important;
+	box-shadow: none !important;
+	background-image: none !important;
+	background-color: #ffffff !important;
+}
+
+.upload_popup_form > .dhx_form-group {
+	gap: 14px;
 }
 
 .contentToolArea .dhx_simplevault__label,

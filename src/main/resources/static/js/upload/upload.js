@@ -45,7 +45,7 @@ const createLayout = () => {
             <div class="result-panel">
                 <div class="result-title">처리 결과</div>
                 <p class="result-empty">아직 처리 결과가 없습니다.</p>
-                <p class="result-help">파일 업로드 또는 삭제 작업 후 결과가 표시됩니다.</p>
+                <p class="result-help">파일 업로드 후 결과가 표시됩니다.</p>
             </div>
         </div>
     `);
@@ -220,7 +220,7 @@ function createUploadPopupForm(popupFormAreaId) {
 
     uploadPopupForm = new dhx.Form(popupFormArea, {
         css: "upload_popup_form",
-        height: 176,
+        height: 220,
         padding: 0,
         rows: [
             {
@@ -231,8 +231,8 @@ function createUploadPopupForm(popupFormAreaId) {
                 labelPosition: "top",
                 disabled: false,
                 required: false,
-                $vaultHeight: 130,
-                width: "480px",
+                $vaultHeight: 138,
+                width: "100%",
                 css: "simplevault-box"
             },
             {

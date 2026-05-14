@@ -13,31 +13,10 @@ const createLayout = () => {
         type: "line",
         rows: [
             {
-                id: "toolbar",
-                css: "toolbarArea",
-                header: "FileTask",
-                collapsable: true,
-                height: "60px",
-                resizable: true
-            },
-            {
-                css: "tabArea",
-                cols: [
-                    {
-                        id: "sidebar",
-                        collapsable: true,
-                        width: "300px",
-                        resizable: true,
-                        align: "center"
-
-                    },
-                    {
-                        id: "content", //그리드 영역으로
-                        css:"contentGrid",
-                        header: "로그인",
-                        resizable: true
-                    },
-                ]
+                id: "content",
+                css:"contentGrid",
+                header: "로그인",
+                resizable: false
             },
         ]
     });
@@ -45,9 +24,10 @@ const createLayout = () => {
 
 }
 const form = ()=> {
-    loginPlatform = new dhx.Form("form", {
+    loginPlatform = new dhx.Form(null, {
         css: "dhx_widget--bg_white dhx_widget--bordered",
-        padding: 40,
+        padding: 36,
+        width: 420,
         rows: [
             {
                 type: "input",
