@@ -9,7 +9,7 @@ public enum ErrorCode {
     // 파일 업로드 요청값 검증 실패
     INVALID_FILE_EXTENSION(HttpStatus.BAD_REQUEST, "dbfile 파일만 업로드할 수 있습니다."),
     INVALID_FILE_COLUMN_COUNT(HttpStatus.BAD_REQUEST, "데이터 컬럼 수가 맞지 않습니다."),
-    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 맞지 않습니다. yyyy-MM-dd HH:mm:ss 형식으로 입력하세요."),
+    INVALID_DATE_FORMAT(HttpStatus.BAD_REQUEST, "날짜 형식이 맞지 않습니다."),
     REQUIRED_VALUE_EMPTY(HttpStatus.BAD_REQUEST, "필수값이 비어있습니다."),
 
     // 회원가입과 로그인 처리 중 발생하는 계정 관련 실패

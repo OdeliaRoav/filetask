@@ -11,6 +11,7 @@ public record ErrorResponse(
         String message )
 {
     // ErrorCode 하나를 기준으로 status, code, message가 같은 규칙으로 내려가도록 변환
+    // 에러 코드만 넣으면 ErrorResponse 객체가 생성 될 수 있게
     public static ErrorResponse of(ErrorCode errorCode) {
         HttpStatus status = errorCode.getStatus();
 
