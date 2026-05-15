@@ -41,7 +41,7 @@ public class UserController {
     // 요청 본문의 JSON을 SignupRequest로 받고, 중복 ID 같은 실패는 공통 예외 처리기로
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
-        userService.signup(signupRequest.getId(), signupRequest.getPwd(), signupRequest.getName());
+        userService.signup(signupRequest);
         return ResponseEntity.ok().build();
     }
 
@@ -49,7 +49,7 @@ public class UserController {
     // 인증 성공 여부만 필요하므로 성공 시 본문 없는 200 응답을 반환
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        userService.login(request.getId(), request.getPwd());
+        userService.login(request);
         return ResponseEntity.ok().build();
     }
 

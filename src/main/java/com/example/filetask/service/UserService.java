@@ -1,5 +1,7 @@
 package com.example.filetask.service;
 
+import com.example.filetask.dto.LoginRequest;
+import com.example.filetask.dto.SignupRequest;
 import com.example.filetask.entity.Info;
 import com.example.filetask.entity.User;
 import com.example.filetask.exception.BusinessException;
@@ -66,7 +68,7 @@ public class UserService {
 
         List<String> lines = new ArrayList<>();
 
-        // MultipartFile 입력 스트림은 사용 후 닫혀야 하므로 try-with-resources(자바 7 이상부터 사용 가능)로 파일 읽기 자원을 관리
+        // 자원 해제 try-with-resources(자바 7 이상부터 사용 가능)로 파일 읽기 자원을 관리
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -84,7 +86,7 @@ public class UserService {
 
             try {
                 String[] data = oneLine.split("/", -1);
-                // 빈 컬럼도 보존[split("/", -1)]해야 컬럼 수 오류와 필수값 누락을 정확히 구분할 수 있다.
+                // 빈 컬럼도 보존[split("/", -1)]해야 컬럼 수 누락을 구분할 수 있다.
                 if (data.length != 6) {
                     throw new BusinessException(ErrorCode.INVALID_FILE_COLUMN_COUNT);
                 }
@@ -148,30 +150,30 @@ public class UserService {
 
     // 회원가입 처리
     // 아이디 중복 여부를 먼저 확인한 뒤 Info 엔티티 생성 규칙을 통해 저장
-    public void signup(String id, String pwd, String name) {
-        if (isBlank(id) || isBlank(pwd) || isBlank(name)) {
+    public void signup(SignupRequest request) {
+        if (isBlank(request.getId()) || isBlank(request.getPwd()) || isBlank(request.getName())) {
             throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
         }
 
-        if (infoRepository.existsById(id)) {
+        if (infoRepository.existsById(request.getId())) {
             throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
 
-        Info signupUser = Info.signup(id, pwd, name);
+        Info signupUser = Info.signup(request.getId(), request.getPwd(), request.getName());
         infoRepository.save(signupUser);
     }
 
     // 로그인 처리
     // 아이디 존재 여부와 비밀번호 불일치를 다른 ErrorCode로 구분해 화면 메시지를 표현
-    public void login(String id, String pwd) {
-        if (isBlank(id) || isBlank(pwd)) {
+    public void login(LoginRequest request) {
+        if (isBlank(request.getId()) || isBlank(request.getPwd())) {
             throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
         }
 
-        Info user = infoRepository.findById(id)
+        Info user = infoRepository.findById(request.getId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.LOGIN_ID_NOT_FOUND));
 
-        if (!user.getPwd().equals(pwd)) {
+        if (!user.getPwd().equals(request.getPwd())) {
             throw new BusinessException(ErrorCode.INVALID_PASSWORD);
         }
     }

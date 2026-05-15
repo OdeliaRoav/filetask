@@ -90,6 +90,7 @@ const createUploadForm = () => {
                         width: "128px",
                         disabled: false,
                         required: false,
+                        css : "combobox_radius",
                         data: [
                             {id: "id", value: "ID"},
                             {id: "name", value: "NAME"},
@@ -282,9 +283,7 @@ function createPopupForm(popupBoxId) {
     // simpleVault의 파일 목록이 바뀌면 CSS에서 사용하는 파일명 표시값도 같이 갱신
     popupForm.events.on("change", function(name) {
         if(name === "simplevault"){
-            setTimeout(function() {
-                showFileName();
-            }, 0);
+            initFileName();
         }
     });
 
@@ -374,48 +373,40 @@ function getUploadFile(files) {
     return null;
 }
 
-// simpleVault UI 동기화
 function initFileName() {
-    setTimeout(function() {
-        showFileName();
-
+    setTimeout(function () {
         const vault = document.querySelector(".contentToolArea .dhx_simplevault");
-        if(!vault){
+        const vaultLabel =
+            document.querySelector(".contentToolArea .dhx_simplevault__label, .contentToolArea .dhx_simplevault-label");
+
+        if (!vault || !vaultLabel) {
             return;
         }
 
-        const vaultLabel = document.querySelector(".contentToolArea .dhx_simplevault__label, .contentToolArea .dhx_simplevault-label");
+        showFileName();
 
-        if(vaultLabel && !vaultLabel.querySelector(".simplevault-clear-button")){
+        if (!vaultLabel.querySelector(".simplevault-clear-button")) {
             const clearBtn = document.createElement("button");
             clearBtn.type = "button";
             clearBtn.className = "simplevault-clear-button";
             clearBtn.textContent = "삭제";
-            clearBtn.addEventListener("click", function(e) {
+
+            clearBtn.addEventListener("mousedown", function (e) {
+                //삭제 가능하게
+                e.preventDefault();
+                //vault안의 라벨은 건드리지 않게
+                e.stopPropagation();
+            });
+
+            clearBtn.addEventListener("click", function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 clearFile();
             });
+
             vaultLabel.appendChild(clearBtn);
         }
-
-        if(!vault.querySelector(".simplevault-find-button")){
-            const findBtn = document.createElement("button");
-            findBtn.type = "button";
-            findBtn.className = "simplevault-find-button";
-            findBtn.textContent = "파일찾기";
-            findBtn.addEventListener("click", function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const label = document.querySelector(".contentToolArea .dhx_simplevault__label, .contentToolArea .dhx_simplevault-label");
-                if(label){
-                    label.click();
-                }
-            });
-            vault.appendChild(findBtn);
-        }
-    }, 0);
+    }, 100);
 }
 
 // 선택된 파일명 표시 갱신
@@ -428,8 +419,9 @@ function showFileName() {
 
     const data = popupForm.getValue();
     const files = data.simplevault || [];
-    const hasFile = files.length > 0 && files[0].file;
-    const fileName = hasFile ? files[0].file.name : "첨부파일";
+    const file = getUploadFile(files);
+    const hasFile = !!file;
+    const fileName = hasFile ? file.name : "첨부파일";
     const vault = document.querySelector(".contentToolArea .dhx_simplevault");
 
     label.setAttribute("data-file-name", fileName);
@@ -450,14 +442,17 @@ function clearFile() {
         if(vault && typeof vault.clear === "function"){
             vault.clear();
         }
-        if(vault && vault.data && typeof vault.data.removeAll === "function"){
-            vault.data.removeAll();
-        }
+        vault.data.removeAll();
         popupForm.setValue({simplevault: []});
+
+        const fileInput = document.querySelector(".uploadPopupContent .dhx_simplevault__input");
+        if(fileInput){
+            fileInput.value = "";
+        }
     } catch {
     }
 
-    showFileName();
+    initFileName();
 }
 
 // 업로드 결과 표시
@@ -578,8 +573,8 @@ const searchFile = () => {
     });
 };
 
-// 등록일 표시 형식 변환
-// 서버의 regDate 값을 Grid에서 읽기 쉬운 yyyy-MM-dd HH:mm 형태로 바꾼다.
+// 등록일 표시 변환
+// 서버의 regDate 값을 Grid에서 yyyy-MM-dd HH:mm 형태로 바꾼다.
 const formatRegDate = (regDate) => {
     if(regDate == "" || regDate == null ){
         return "";
@@ -643,7 +638,8 @@ const deleteById = () => {
             return;
         }
 
-        const deleteList = ids.map(id => $.ajax({
+        const deleteList = ids.map(id =>
+            $.ajax({
             type: "DELETE",
             url: "/users/" + encodeURIComponent(id)
         }));
