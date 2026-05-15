@@ -296,10 +296,35 @@ body {
 .contentToolArea .dhx_input--textinput,
 .contentToolArea .dhx_combobox,
 .contentToolArea .dhx_combobox-input,
-.contentToolArea .dhx_button {
+.contentToolArea .dhx_button,
+.contentTollArea .dhx_combobox-input-list{
 	height: 32px;
 	min-height: 32px;
 	box-sizing: border-box;
+	border-color: #d8dde7;
+	border-radius: 8px;
+}
+.combobox_radius {
+	border-radius: 8px !important;
+	overflow: hidden; /* 내부 input 영역도 함께 잘리도록 처리 */
+}
+
+/* 실제 입력 영역(input wrapper) */
+.combobox_radius .dhx_input__wrapper,
+.combobox_radius .dhx_combo__input {
+	border-radius: 8px !important;
+}
+
+/* 드롭다운 버튼 영역까지 함께 둥글게 */
+.combobox_radius .dhx_input__icon {
+	border-top-right-radius: 8px !important;
+	border-bottom-right-radius: 8px !important;
+}
+
+/* 포커스 시에도 둥근 모서리 유지 */
+.combobox_radius.dhx_input--focused .dhx_input__wrapper,
+.combobox_radius.dhx_input--focused .dhx_combo__input {
+	border-radius: 8px !important;
 }
 
 .contentToolArea .dhx_input--textinput {
@@ -310,6 +335,8 @@ body {
 	background-color: #ffffff;
 	color: #30333d;
 	border-color: #d9dde3;
+	box-sizing: border-box;
+	border-radius: 8px;
 }
 
 .contentToolArea .dhx_input--textinput input,
@@ -320,6 +347,8 @@ body {
 	padding-top: 0;
 	padding-bottom: 0;
 	box-sizing: border-box;
+	border-color: #d8dde7;
+	border-radius: 8px;
 }
 
 .contentToolArea .dhx_form-element {

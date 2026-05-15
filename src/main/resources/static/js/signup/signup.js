@@ -30,7 +30,7 @@ const createLayout = () => {
 // 사용자가 입력한 id, password, name 값을 /users/signup 요청 데이터로 사용
 const form = ()=> {
     signupForm = new dhx.Form(null, {
-        css: "dhx_widget--bg_white dhx_widget--bordered",
+        css: "dhx_widget--bg_white",
         padding: 40,
         width: 460,
         rows: [
