@@ -27,7 +27,7 @@ const createLayout = () => {
 }
 
 // 회원가입 입력 폼 생성
-// 사용자가 입력한 id, password, name 값을 /users/signup 요청 데이터로 사용
+// 사용자가 입력한 id, pwd, name 값을 /users/signup 요청 데이터로 사용
 const form = ()=> {
     signupForm = new dhx.Form(null, {
         css: "dhx_widget--bg_white",
@@ -45,7 +45,7 @@ const form = ()=> {
                 inputType: "password",
                 label: "Password",
                 placeholder: "********",
-                name: "password"
+                name: "pwd"
             },
             {
                 type: "input",
@@ -86,7 +86,7 @@ const signupButton = () =>{
     const data = signupForm.getValue();
 
     // 필수값이 누락된 상태에서는 서버 요청을 보내지 않고 사용자에게 입력을 요구
-    if (!data.id || !data.password || !data.name) {
+    if (!data.id || !data.pwd || !data.name) {
         noInfo();
         return;
     }
@@ -98,7 +98,7 @@ const signupButton = () =>{
         // Spring Controller의 @RequestBody SignupRequest가 받을 수 있도록 JSON으로 전송
         data: JSON.stringify({
             id: data.id,
-            pwd: data.password,
+            pwd: data.pwd,
             name: data.name
         }),
         success: function(){
@@ -135,7 +135,7 @@ function signupFail(message) {
 };
 
 // 필수값 미입력 안내
-// id, password, name 중 하나라도 비어 있으면 회원가입 요청을 막는다.
+// id, pwd, name 중 하나라도 비어 있으면 회원가입 요청을 막는다.
 function noInfo() {
     dhx.alert({
         header: "아이디, 비밀번호, 이름을 모두 입력해주세요.",
