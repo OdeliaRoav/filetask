@@ -95,7 +95,7 @@ const signupButton = () =>{
         type: "POST",
         url: "/users/signup",
         contentType: "application/json",
-        // Spring Controller의 @RequestBody SignupRequest가 받을 수 있도록 JSON 문자열로 전송
+        // Spring Controller의 @RequestBody SignupRequest가 받을 수 있도록 JSON으로 전송
         data: JSON.stringify({
             id: data.id,
             pwd: data.password,

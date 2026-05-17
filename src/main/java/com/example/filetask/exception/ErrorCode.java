@@ -21,7 +21,9 @@ public enum ErrorCode {
     DELETE_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "삭제할 ID를 찾을 수 없습니다."),
 
     // 예상하지 못한 에러 발생 시
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
+
+    FILE_READ_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "파일을 읽는 중 오류가 발생했습니다.");
 
     private final HttpStatus status;
     private final String message;

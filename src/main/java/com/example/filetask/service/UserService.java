@@ -42,7 +42,7 @@ public class UserService {
 
     // dbfile 업로드 처리
     // 파일 검증, 중복 업로드 확인, 라인별 저장 결과 집계를 수행하고 화면에서 사용할 결과 Map을 반환
-    public Map<String, Object> uploadFile(MultipartFile file, boolean force) throws IOException {
+    public Map<String, Object> uploadFile(MultipartFile file, boolean force) {
         Map<String, Object> result = new HashMap<>();
         String fileName = file.getOriginalFilename();
 
@@ -74,6 +74,8 @@ public class UserService {
             while ((line = br.readLine()) != null) {
                 lines.add(line);
             }
+        } catch (IOException e) {
+            throw new BusinessException(ErrorCode.FILE_READ_ERROR);
         }
 
         int successCount = 0;

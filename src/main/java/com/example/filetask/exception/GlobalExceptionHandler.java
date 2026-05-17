@@ -1,9 +1,11 @@
 package com.example.filetask.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 // 전역 예외 처리기
 // Controller마다 try-catch를 반복하지 않고, 모든 REST 실패 응답을 ErrorResponse JSON으로 통일
 @RestControllerAdvice
@@ -17,6 +19,7 @@ public class GlobalExceptionHandler {
     // 예상하지 못한 예외는 서버 내부 오류로 숨겨 일관된 응답 형식을 유지
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception e) {
+        log.error("예상하지 못한 에러 : ", e);
         return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
