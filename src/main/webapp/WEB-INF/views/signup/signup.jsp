@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
 
     <title>FileTask</title>
+    <link rel="icon" href="data:,">
     <!-- DHMLTX5 SUITE LIBRARY -->
     <link rel="stylesheet" type="text/css" href="dhtmlx8/codebase/suite.css">
     <link rel="stylesheet" type="text/css" href="css/custom_suite.css">
@@ -18,8 +19,4 @@
 <body onload="init()" class="noBody">
 <div id="layout" style="height: 100%;"></div>
 </body>
-<script type="text/javascript">
-    var adminId = "${parameterAdminId }";
-    var language = ${empty language ? 0 : language};
-</script>
 </html>
