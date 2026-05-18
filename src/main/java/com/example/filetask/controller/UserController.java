@@ -3,6 +3,7 @@ package com.example.filetask.controller;
 import com.example.filetask.dto.LoginRequest;
 import com.example.filetask.dto.SignupRequest;
 import com.example.filetask.entity.FileUser;
+import com.example.filetask.service.InfoService;
 import com.example.filetask.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,11 @@ public class UserController {
 
     // Controller는 HTTP 요청/응답 경계만 담당하고, 실제 검증과 저장 로직은 UserService에서 처리
     private final UserService userService;
+    private final InfoService infoService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, InfoService infoService) {
         this.userService = userService;
+        this.infoService = infoService;
     }
 
     // 전체 사용자 조회 API
@@ -41,15 +44,15 @@ public class UserController {
     // 요청 본문의 JSON을 SignupRequest로 받고, 중복 ID 같은 실패는 공통 예외 처리기로
     @PostMapping("/signup")
     public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
-        userService.signup(signupRequest);
+        infoService.signup(signupRequest);
         return ResponseEntity.ok().build();
     }
 
     // 로그인 API
-    // 인증 성공 여부만 필요하므로 성공 시 본문 없는 200 응답을 반환
+    // 인증 성공 여부만 필요하므로(void) 성공 시 본문 없는 200 응답을 반환
     @PostMapping("/login")
     public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
-        userService.login(request);
+        infoService.login(request);
         return ResponseEntity.ok().build();
     }
 

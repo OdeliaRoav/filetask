@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
         return createErrorResponse(e.getErrorCode());
     }
 
-    // 예상하지 못한 예외는 서버 내부 오류로 숨겨 일관된 응답 형식을 유지
+    // 예상하지 못한 예외는 서버 내부 오류로 일관된 응답 형식을 유지
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception e) {
         log.error("예상하지 못한 에러 : ", e);
