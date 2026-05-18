@@ -3,7 +3,7 @@ package com.example.filetask.service;
 import com.example.filetask.dto.LoginRequest;
 import com.example.filetask.dto.SignupRequest;
 import com.example.filetask.entity.Info;
-import com.example.filetask.entity.User;
+import com.example.filetask.entity.FileUser;
 import com.example.filetask.exception.BusinessException;
 import com.example.filetask.exception.ErrorCode;
 import com.example.filetask.repository.InfoRepository;
@@ -68,7 +68,7 @@ public class UserService {
 
         List<String> lines = new ArrayList<>();
 
-        // 자원 해제 try-with-resources(자바 7 이상부터 사용 가능)로 파일 읽기 자원을 관리
+        // 자원 해제 try-with-resources로 파일 읽기 자원 관리
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -105,7 +105,7 @@ public class UserService {
                     throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
                 }
 
-                User user = new User(
+                FileUser fileUser = new FileUser(
                         data[0],
                         data[1],
                         data[2],
@@ -114,7 +114,7 @@ public class UserService {
                         regDate
                 );
 
-                userRepository.save(user);
+                userRepository.save(fileUser);
                 successCount++;
 
             } catch (Exception e) {
@@ -142,13 +142,13 @@ public class UserService {
 
     // Grid 전체 조회
     // Controller는 요청만 받고 실제 조회 방식은 QueryDSL Repository에 보낸다.
-    public List<User> getAllUsers() {
+    public List<FileUser> getAllUsers() {
         return userQueryRepository.findAllUsers();
     }
 
     // Grid 조건 검색
     // field/keyword를 그대로 Repository로 넘겨 검색 조건 생성 책임을 한 곳에 둔다.
-    public List<User> searchUsers(String field, String keyword) {
+    public List<FileUser> searchUsers(String field, String keyword) {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
@@ -163,7 +163,7 @@ public class UserService {
             throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
 
-        Info signupUser = Info.signup(request.getId(), request.getPwd(), request.getName());
+        Info signupUser = request.newInfo();
         infoRepository.save(signupUser);
     }
 
@@ -185,11 +185,12 @@ public class UserService {
     // ID 기준 삭제 처리
     // 삭제 대상이 없으면 업무 예외로 표현하고, 응답 상태코드 변환은 GlobalExceptionHandler가 담당
     public void deleteById(String id) {
-        User user = userRepository.findById(id)
+        FileUser fileUser = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND));
-        userRepository.delete(user);
+        userRepository.delete(fileUser);
     }
 
+    //값이 null이거나, 아예 없거나.
     private boolean isBlank(String value) {
         return value == null || value.isBlank();
     }

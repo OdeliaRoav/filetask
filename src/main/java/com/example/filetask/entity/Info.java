@@ -24,11 +24,11 @@ public class Info {
     @Column(length = 32, nullable = false)
     private String name;
 
-    public static Info signup(String id, String pwd, String name) {
-        Info info = new Info();
-        info.id = id;
-        info.pwd = pwd;
-        info.name = name;
-        return info;
+    public Info (String id, String pwd, String name) {
+        this.id = id;
+        this.pwd = pwd;
+        this.name = name;
     }
+
+
 }
