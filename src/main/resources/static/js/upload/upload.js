@@ -637,7 +637,7 @@ const deleteById = () => {
         if(!result){
             return;
         }
-
+        //userId 공백일 경우를 위해, encodeURIComponent
         const deleteList = ids.map(id =>
             $.ajax({
             type: "DELETE",
@@ -666,7 +666,6 @@ const deleteById = () => {
 };
 
 // Grid 생성
-// 오른쪽 content 영역에 도구, 데이터 Grid, pagination을 붙이고 체크박스 선택 기능을 연결한다.
 const createGrid =() => {
     mainLayout = new dhx.Layout(null, {
         type: "none",
@@ -698,20 +697,20 @@ const createGrid =() => {
                 sortable: false,
                 resizable: false,
                 header:[{
-                    text: `<input type="checkbox" class="grid-select-all-checkbox" aria-label="전체 선택">`,
+                    text: `<input type="checkbox" class="grid-select-all-checkbox">`,
                     align: "center"
                 }],
                 template: function(value, row) {
                     const checked = checkedIds.has(row.id) ? "checked" : "";
-                    return `<input type="checkbox" class="grid-row-checkbox" data-row-id="${escapeHtml(row.id)}" ${checked} aria-label="${escapeHtml(row.id)} 선택">`;
+                    return `<input type="checkbox" class="grid-row-checkbox" data-row-id="${escapeHtml(row.id)}" ${checked}>`;
                 }
             },
-            {id: "id", align: "center", gravity: 1.2, header:[{text:"ID", align: "center"}]},
-            {id: "pwd", align: "center", gravity: 1.25, header:[{text: "PWD", align: "center"}]},
-            {id: "name", align: "center", gravity: 1.2, header:[{text:"NAME", align: "center"}]},
-            {id: "level", align: "center", gravity: 0.8, header:[{text:"LEVEL", align: "center"}]},
-            {id: "desc", align: "center", gravity: 2.2, header:[{text:"DESC", align: "center"}]},
-            {id: "regDate", align: "center", gravity: 1.45, header:[{text:"REG_DATE", align: "center"}]}
+            {id: "id", align: "center", gravity: 1.0, header:[{text:"ID", align: "center"}]},
+            {id: "pwd", align: "center", gravity: 1.0, header:[{text: "PWD", align: "center"}]},
+            {id: "name", align: "center", gravity: 1.0, header:[{text:"NAME", align: "center"}]},
+            {id: "level", align: "center", gravity: 0.5, header:[{text:"LEVEL", align: "center"}]},
+            {id: "desc", align: "center", gravity: 2.5, header:[{text:"DESC", align: "center"}]},
+            {id: "regDate", align: "center", gravity: 1.5, header:[{text:"REG_DATE", align: "center"}]}
         ],
         height: "100%",
         width: "100%",
@@ -721,6 +720,7 @@ const createGrid =() => {
         data:[]
     });
 
+    //특정 행 체크박스 선택
     grid.events.on("cellClick", function(row, column, e) {
         if(column.id !== "select"){
             return;
@@ -785,15 +785,19 @@ function setRowSelected(id, checked) {
 function getCurrentPageRows(){
     const rows = getCurrentGridRows();
 
-    if(!pagination || !pagination.getPage || !pagination.config){
+    if(!pagination){
         return rows;
     }
 
     const pageSize = pagination.config.pageSize || 15;
+    //pagination 현재 페이지 숫자를 가져온다.
     const page = pagination.getPage();
+    //ex) page = 0, pageSize = 15 -> 0;
     const start = page * pageSize;
+    //ex) page = 0, pageSize= 15 ->15
     const end = start + pageSize;
 
+    // 0 ~ 14까지 가져온다.
     return rows.slice(start, end);
 
 }
@@ -855,7 +859,6 @@ function updateSelectAllCheckbox() {
 }
 
 // header checkbox 이벤트 바인딩
-// DHTMLX가 header DOM을 다시 만들 수 있으므로 중복 바인딩을 dataset 플래그로 막는다.
 function bindSelectAllCheckbox() {
     const allCheckBox = document.querySelector(".grid-select-all-checkbox");
     if(!allCheckBox || allCheckBox.dataset.bound === "true"){
@@ -871,7 +874,6 @@ function bindSelectAllCheckbox() {
 }
 
 // CSS selector에 사용할 row id 변환
-// CSS.escape 지원이 없는 브라우저에서도 최소한의 특수문자 이스케이프를 수행한다.
 function cssEscape(value) {
     if(window.CSS && typeof window.CSS.escape === "function"){
         return window.CSS.escape(value);

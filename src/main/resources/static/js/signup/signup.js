@@ -35,6 +35,17 @@ const form = ()=> {
         width: 460,
         rows: [
             {
+                type: "button",
+                name: "backBtn",
+                text: "뒤로가기",
+                name: "backBtn",
+                size: "small",
+                view: "flat",
+                width: 90,
+                height: 36,
+                css: "back-btn"
+            },
+            {
                 type: "input",
                 label: "Id",
                 placeholder: "ID를 입력해주세요.",
@@ -74,6 +85,11 @@ const form = ()=> {
         if(name === "signup"){
             signupButton();
         }
+
+        if(name === "backBtn"){
+            location.href = "/login";
+        }
+
     });
 
     // 생성한 회원가입 폼을 DHTMLX content cell에 붙여 실제 화면에 표시
