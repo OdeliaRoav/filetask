@@ -1,5 +1,6 @@
 package com.example.filetask.dto;
 
+import com.example.filetask.entity.Info;
 import lombok.Getter;
 
 @Getter
@@ -13,5 +14,9 @@ public class SignupRequest {
         this.id = id;
         this.pwd = pwd;
         this.name = name;
+    }
+
+    public Info newInfo(){
+        return new Info(id, pwd, name);
     }
 }

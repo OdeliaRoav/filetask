@@ -2,7 +2,7 @@ package com.example.filetask.controller;
 
 import com.example.filetask.dto.LoginRequest;
 import com.example.filetask.dto.SignupRequest;
-import com.example.filetask.entity.User;
+import com.example.filetask.entity.FileUser;
 import com.example.filetask.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +26,14 @@ public class UserController {
     // 전체 사용자 조회 API
     // 업로드 화면 Grid 초기 로딩과 새로고침에서 사용하며 조회 결과를 JSON 배열로 반환
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<FileUser> getAllUsers() {
         return userService.getAllUsers();
     }
 
     // 조건 검색 API
     // field와 keyword는 URL query parameter(GET으로 전송 받음)로 받고, QueryDSL 조건 생성은 Repository 계층에서 처리
     @GetMapping("/search")
-    public List<User> searchUsers(@RequestParam String field, @RequestParam String keyword) {
+    public List<FileUser> searchUsers(@RequestParam String field, @RequestParam String keyword) {
         return userService.searchUsers(field, keyword);
     }
 
