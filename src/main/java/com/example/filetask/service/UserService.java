@@ -29,15 +29,13 @@ import java.util.Map;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final InfoRepository infoRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final UserQueryRepository userQueryRepository;
 
-    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, InfoRepository infoRepository) {
+    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.userQueryRepository = userQueryRepository;
-        this.infoRepository = infoRepository;
     }
 
     // dbfile 업로드 처리
@@ -54,9 +52,11 @@ public class UserService {
         String redisKey = "recent:" + fileName;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
+        //force -> default : false
         // 같은 파일명이 TTL 안에 다시 올라오면 저장하지 않고 확인용 응답을 내려 강제 업로드 여부를 받는다.
-        if (Boolean.TRUE.equals(duplicated) && !force) {
+        if (duplicated && !force) {
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
+
             result.put("duplicated", true);
             result.put("forced", false);
             result.put("message", "5분 안에 같은 파일명이 업로드되었습니다.");
@@ -124,6 +124,7 @@ public class UserService {
         }
 
         // 실제 저장된 데이터가 있을 때만 파일명을 Redis에 저장해 중복 업로드를 감지한다.
+        // 모두 실패되는 파일은 ttl 설정이 불필요하기 때문이다.
         if (successCount > 0) {
             redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
         }
@@ -152,47 +153,12 @@ public class UserService {
         return userQueryRepository.searchUsers(field, keyword);
     }
 
-    // 회원가입 처리
-    // 아이디 중복 여부를 먼저 확인한 뒤 Info 엔티티 생성 규칙을 통해 저장
-    public void signup(SignupRequest request) {
-        if (isBlank(request.getId()) || isBlank(request.getPwd()) || isBlank(request.getName())) {
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
-
-        if (infoRepository.existsById(request.getId())) {
-            throw new BusinessException(ErrorCode.DUPLICATE_USER);
-        }
-
-        Info signupUser = request.newInfo();
-        infoRepository.save(signupUser);
-    }
-
-    // 로그인 처리
-    // 아이디 존재 여부와 비밀번호 불일치를 다른 ErrorCode로 구분해 화면 메시지를 표현
-    public void login(LoginRequest request) {
-        if (isBlank(request.getId()) || isBlank(request.getPwd())) {
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
-        //JPA findById -> Optional로 .orElseThrow() 사용
-        Info user = infoRepository.findById(request.getId())
-                .orElseThrow(() -> new BusinessException(ErrorCode.LOGIN_ID_NOT_FOUND));
-
-        if (!user.getPwd().equals(request.getPwd())) {
-            throw new BusinessException(ErrorCode.INVALID_PASSWORD);
-        }
-    }
-
     // ID 기준 삭제 처리
     // 삭제 대상이 없으면 업무 예외로 표현하고, 응답 상태코드 변환은 GlobalExceptionHandler가 담당
     public void deleteById(String id) {
         FileUser fileUser = userRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.DELETE_USER_NOT_FOUND));
         userRepository.delete(fileUser);
-    }
-
-    //값이 null이거나, 아예 없거나.
-    private boolean isBlank(String value) {
-        return value == null || value.isBlank();
     }
 
 }
