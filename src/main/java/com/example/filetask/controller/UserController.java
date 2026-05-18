@@ -5,7 +5,11 @@ import com.example.filetask.dto.SignupRequest;
 import com.example.filetask.entity.FileUser;
 import com.example.filetask.service.InfoService;
 import com.example.filetask.service.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +17,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -36,14 +41,14 @@ public class UserController {
     // 조건 검색 API
     // field와 keyword는 URL query parameter(GET으로 전송 받음)로 받고, QueryDSL 조건 생성은 Repository 계층에서 처리
     @GetMapping("/search")
-    public List<FileUser> searchUsers(@RequestParam String field, @RequestParam String keyword) {
+    public List<FileUser> searchUsers(@RequestParam @NotBlank String field, @RequestParam @NotBlank @Size(max = 256) String keyword) {
         return userService.searchUsers(field, keyword);
     }
 
     // 회원가입 API
     // 요청 본문의 JSON을 SignupRequest로 받고, 중복 ID 같은 실패는 공통 예외 처리기로
     @PostMapping("/signup")
-    public ResponseEntity<Void> signup(@RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<Void> signup(@Valid @RequestBody SignupRequest signupRequest) {
         infoService.signup(signupRequest);
         return ResponseEntity.ok().build();
     }
@@ -51,7 +56,7 @@ public class UserController {
     // 로그인 API
     // 인증 성공 여부만 필요하므로(void) 성공 시 본문 없는 200 응답을 반환
     @PostMapping("/login")
-    public ResponseEntity<Void> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<Void> login(@Valid @RequestBody LoginRequest request) {
         infoService.login(request);
         return ResponseEntity.ok().build();
     }
@@ -66,7 +71,7 @@ public class UserController {
     // ID 기준 사용자 삭제 API
     // 삭제 대상 없음 같은 업무 실패는 Service가 BusinessException으로 표현하고 전역 예외 처리기가 응답
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable @NotBlank @Size(max = 16) String id) {
         userService.deleteById(id);
         return ResponseEntity.ok().build();
     }

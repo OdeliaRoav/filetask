@@ -1,14 +1,22 @@
 package com.example.filetask.dto;
 
 import com.example.filetask.entity.Info;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
 public class SignupRequest {
 
-    private final String id;
-    private final String pwd;
-    private final String name;
+    @NotBlank
+    @Size(max = 16)
+    private String id;
+    @NotBlank
+    @Size(max = 32)
+    private String pwd;
+    @NotBlank
+    @Size(max = 32)
+    private String name;
 
     public SignupRequest(String id, String pwd, String name) {
         this.id = id;

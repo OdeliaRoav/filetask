@@ -98,12 +98,14 @@ public class UserService {
                     throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
                 }
 
-                LocalDateTime regDate;
-                try {
-                    regDate = LocalDateTime.parse(data[5], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                } catch (DateTimeParseException e) {
-                    throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
-                }
+//                LocalDateTime regDate;
+//                try {
+//                    regDate = LocalDateTime.parse(data[5], DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//                } catch (DateTimeParseException e) {
+//                    throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
+//                }
+                LocalDateTime regDate = parseRegDate(data[5]);
+
 
                 FileUser fileUser = new FileUser(
                         data[0],
@@ -123,6 +125,8 @@ public class UserService {
             }
         }
 
+
+
         // 실제 저장된 데이터가 있을 때만 파일명을 Redis에 저장해 중복 업로드를 감지한다.
         // 모두 실패되는 파일은 ttl 설정이 불필요하기 때문이다.
         if (successCount > 0) {
@@ -139,6 +143,14 @@ public class UserService {
         result.put("ttlSeconds", successCount > 0 ? 300 : 0);
 
         return result;
+    }
+
+    private LocalDateTime parseRegDate(String value){
+        try{
+            return LocalDateTime.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        }catch (DateTimeParseException e){
+            throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
+        }
     }
 
     // Grid 전체 조회
