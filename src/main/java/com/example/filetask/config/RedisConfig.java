@@ -24,6 +24,7 @@ public class RedisConfig {
         return new LettuceConnectionFactory(host, port);
     }
 
+    //기본적으로 데이터를 읽고 쓰는데 필요한 모든 작업을 처리
     @Bean
     public RedisTemplate<String, String> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();

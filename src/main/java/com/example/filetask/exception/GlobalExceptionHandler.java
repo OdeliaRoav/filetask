@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
 // 전역 예외 처리기
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleGlobalException(Exception e) {
         log.error("예상하지 못한 에러 : ", e);
         return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
+    }
+
+    //devtools.json 404 에러 방지
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNoResourcesFoundException(Exception e){
+        return ResponseEntity.notFound().build();
     }
 
     // ErrorCode를 HTTP status와 응답 body로 변환하는 공통 생성 지점

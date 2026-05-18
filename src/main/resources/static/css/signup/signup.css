@@ -178,3 +178,7 @@ body {
 .contentGrid .dhx_form .dhx_button__text {
     border-radius: 10px !important;
 }
+
+.back-btn{
+    margin-bottom: 20px;
+}
