@@ -2,6 +2,8 @@ package com.example.filetask.repository;
 
 import com.example.filetask.entity.FileUser;
 import com.example.filetask.entity.QFileUser;
+import com.example.filetask.exception.BusinessException;
+import com.example.filetask.exception.ErrorCode;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -51,9 +53,8 @@ public class UserQueryRepository {
         QFileUser fileUser = QFileUser.fileUser;
 
         BooleanExpression condition = searchCondition(field, keyword);
-        // 검색 실패 시 빈 결과 출력
         if (condition == null) {
-            return List.of();
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
         // 조건을 변수로 분리해 null 여부를 먼저 판단하면 where(null) 호출보다 검색 실패 흐름이 명확
         return jpaQueryFactory
