@@ -1,7 +1,9 @@
 package com.example.filetask.exception;
 
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -12,6 +14,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     // Service에서 던진 업무 예외는 ErrorCode에 정의된 상태코드와 메시지로 응답
+    // 해당하는 기능에서 에러가 발생하면 여기서 받고, Exception e로 받아온다.
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException e) {
         return createErrorResponse(e.getErrorCode());
@@ -24,9 +27,24 @@ public class GlobalExceptionHandler {
         return createErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR);
     }
 
+    //DTO 검증 추가
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e){
+        log.error("DTO NotBlank 검증 실패 : ", e);
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE);
+    }
+
+    //파라미터 검증
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e){
+        log.error("요청 파라미터 검증 실패 : ", e);
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE);
+    }
+
     //devtools.json 404 에러 방지
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoResourcesFoundException(Exception e){
+        log.error("devtools 에러 : ", e);
         return ResponseEntity.notFound().build();
     }
 

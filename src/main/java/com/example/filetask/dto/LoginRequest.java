@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public class LoginRequest {
 
+    //NotBlank로 발생 시키는 에러 MethodArgumentNotValidException
     @NotBlank
     @Size(max = 16)
     private final String id;
