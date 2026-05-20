@@ -161,7 +161,7 @@ public class UserService {
     // Grid 조건 검색
     // field/keyword를 그대로 Repository로 넘겨 검색 조건 생성 책임을 한 곳에 둔다.
     public List<FileUser> searchUsers(String field, String keyword) {
-        if(!List.of("userid", "name", "email", "desc").contains(field)){
+        if(!List.of("id", "name", "level", "desc").contains(field)){
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
