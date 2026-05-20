@@ -1,12 +1,8 @@
 package com.example.filetask.service;
 
-import com.example.filetask.dto.LoginRequest;
-import com.example.filetask.dto.SignupRequest;
-import com.example.filetask.entity.Info;
 import com.example.filetask.entity.FileUser;
 import com.example.filetask.exception.BusinessException;
 import com.example.filetask.exception.ErrorCode;
-import com.example.filetask.repository.InfoRepository;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -16,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -69,7 +66,8 @@ public class UserService {
         List<String> lines = new ArrayList<>();
 
         // 자원 해제 try-with-resources로 파일 읽기 자원 관리
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream()))) {
+        // StandardCharsets.UTF_8 문자 깨짐 방지
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
                 lines.add(line);
@@ -104,6 +102,7 @@ public class UserService {
 //                } catch (DateTimeParseException e) {
 //                    throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
 //                }
+
                 LocalDateTime regDate = parseRegDate(data[5]);
 
 
@@ -162,6 +161,10 @@ public class UserService {
     // Grid 조건 검색
     // field/keyword를 그대로 Repository로 넘겨 검색 조건 생성 책임을 한 곳에 둔다.
     public List<FileUser> searchUsers(String field, String keyword) {
+        if(!List.of("userid", "name", "email", "desc").contains(field)){
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
         return userQueryRepository.searchUsers(field, keyword);
     }
 

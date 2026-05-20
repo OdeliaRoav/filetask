@@ -187,6 +187,7 @@ const createUploadForm = () => {
 // 검색 폼 초기화
 // 콤보박스와 검색어 입력값을 모두 비워, 다음 검색을 할 수 있게 세팅
 function resetSearchForm() {
+    // id, name, level, desc
     const combo = uploadForm.getItem("combobox");
     if(combo && typeof combo.clear === "function"){
         combo.clear();
@@ -530,6 +531,7 @@ const loadFile = () => {
 // 콤보박스의 field와 입력 keyword를 /users/search로 보내 조건에 맞는 사용자만 표시
 const searchFile = () => {
     const values = uploadForm.getValue();
+    // id, name, level, desc
     const field = values.combobox;
     const keyword = (values.keyword || "").trim();
 
