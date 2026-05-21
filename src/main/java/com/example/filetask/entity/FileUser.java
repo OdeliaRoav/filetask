@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Table(name = "t_user")
 public class FileUser {
@@ -36,4 +35,8 @@ public class FileUser {
 
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
+
+    protected FileUser(){
+    }
+
 }

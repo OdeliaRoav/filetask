@@ -1,5 +1,7 @@
 package com.example.filetask.entity;
 
+import com.example.filetask.exception.BusinessException;
+import com.example.filetask.exception.ErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import jakarta.persistence.Entity;
@@ -11,8 +13,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Table(name = "Info")
 public class Info {
 
@@ -25,5 +25,25 @@ public class Info {
 
     @Column(length = 32, nullable = false)
     private String name;
+
+    // 아무데서나 생성자를 만들지 못하게 protected로 막는다.
+    protected Info(){
+    }
+
+    public Info(String id, String pwd, String name){
+        if(id == null || id.isBlank()){
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if(pwd == null || pwd.isBlank()){
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+        if(name == null || name.isBlank()){
+            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+        }
+
+        this.id = id;
+        this.pwd = pwd;
+        this.name = name;
+    }
 
 }
