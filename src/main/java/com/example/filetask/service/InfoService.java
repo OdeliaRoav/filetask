@@ -20,15 +20,11 @@ public class InfoService {
     // 회원가입 처리
     // 아이디 중복 여부를 먼저 확인한 뒤 Info 엔티티 생성 규칙을 통해 저장
     public void signup(SignupRequest request) {
-        if (isBlank(request.getId()) || isBlank(request.getPwd()) || isBlank(request.getName())) {
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
-
-        if (infoRepository.existsById(request.getId())) {
+        if(infoRepository.existsById(request.getId())){
             throw new BusinessException(ErrorCode.DUPLICATE_USER);
         }
 
-        Info signupUser = request.newInfo();
+        Info signupUser = new Info(request.getId(), request.getPwd(), request.getName());
         infoRepository.save(signupUser);
     }
 

@@ -32,13 +32,13 @@ public class Info {
 
     public Info(String id, String pwd, String name){
         if(id == null || id.isBlank()){
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
         }
         if(pwd == null || pwd.isBlank()){
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
         }
         if(name == null || name.isBlank()){
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
         }
 
         this.id = id;

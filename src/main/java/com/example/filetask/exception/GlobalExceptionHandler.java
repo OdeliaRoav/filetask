@@ -28,6 +28,7 @@ public class GlobalExceptionHandler {
     }
 
     //DTO 검증 추가
+    //NotBlank로 발생 시키는 에러 MethodArgumentNotValidException
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException e){
         log.error("DTO NotBlank 검증 실패 : ", e);
