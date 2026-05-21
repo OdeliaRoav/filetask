@@ -1,14 +1,22 @@
 package com.example.filetask.dto;
 
-import com.example.filetask.entity.Info;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+// get메서드 자동 생성
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequest {
 
+    // @Emial -> 이메일 검증
     @NotBlank
+    @Email
     @Size(max = 16)
     private String id;
     @NotBlank
@@ -18,13 +26,4 @@ public class SignupRequest {
     @Size(max = 32)
     private String name;
 
-    public SignupRequest(String id, String pwd, String name) {
-        this.id = id;
-        this.pwd = pwd;
-        this.name = name;
-    }
-
-    public Info newInfo(){
-        return new Info(id, pwd, name);
-    }
 }
