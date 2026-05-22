@@ -26,24 +26,24 @@ public class Info {
     @Column(length = 32, nullable = false)
     private String name;
 
-    // 아무데서나 생성자를 만들지 못하게 protected로 막는다.
+    // 아무곳에서나 생성자를 만들지 못하게 protected로 막는다.
     protected Info(){
     }
 
     public Info(String id, String pwd, String name){
-        if(id == null || id.isBlank()){
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
-        if(pwd == null || pwd.isBlank()){
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
-        if(name == null || name.isBlank()){
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
+        validateRequired(id);
+        validateRequired(pwd);
+        validateRequired(name);
 
         this.id = id;
         this.pwd = pwd;
         this.name = name;
+    }
+
+    private void validateRequired(String value){
+        if(value == null || value.isBlank()){
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
+        }
     }
 
 }
