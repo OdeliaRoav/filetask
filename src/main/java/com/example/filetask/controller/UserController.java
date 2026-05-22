@@ -2,20 +2,21 @@ package com.example.filetask.controller;
 
 import com.example.filetask.dto.LoginRequest;
 import com.example.filetask.dto.SignupRequest;
+import com.example.filetask.dto.UploadResponse;
 import com.example.filetask.entity.FileUser;
 import com.example.filetask.service.InfoService;
 import com.example.filetask.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+
 
 @Validated
 @RestController
@@ -64,8 +65,9 @@ public class UserController {
 
     // dbfile 업로드 API
     // multipart/form-data 파일과 강제 업로드 여부를 Service에 전달하고 처리 결과 Map을 JSON으로 반환
+    // boolean은 default 값이 있기에 검증할 필요가 없다.
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
-    public Map<String, Object> uploadFile(@RequestParam("file") MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) throws IOException {
+    public UploadResponse uploadFile(@RequestParam("file") @NotNull MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) {
         return userService.uploadFile(file, force);
     }
 
