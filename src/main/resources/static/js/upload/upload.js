@@ -317,7 +317,7 @@ const uploadFile =() =>{
 
     formData.append("file", file, file.name);
 
-    if(data.force === true){
+    if(data.force === true || data.force === "true" || data.force === 1){
         formData.append("force", "true");
     }
 
@@ -331,13 +331,14 @@ const uploadFile =() =>{
         dataType: "json",
         success: function (res) {
             showUploadResult(res);
-            if(res.successCount != null){
-                clearFile();
-                closeUploadPopup();
-            } else {
+            if(res.duplicated === true && res.forced !== true){
                 showAlert("중복 파일입니다.");
                 showFileName();
+                return;
             }
+
+            clearFile();
+            closeUploadPopup();
         },
         error: function (err) {
             showAlert(getErrorMessage(err));
@@ -461,8 +462,8 @@ function clearFile() {
 const showUploadResult = (result) => {
     const area = document.getElementById("resultArea");
 
-    // successCount가 없으면 실제 저장 결과가 아니라 중복 업로드 안내 응답으로 판단한다.
-    if(result.successCount == null){
+    // duplicated가 true면 실제 저장 결과가 아니라 중복 업로드 안내 응답으로 판단한다.
+    if(result.duplicated === true && result.forced !== true){
         area.innerHTML = `
         <div class="result-panel">
             <div class="result-title">처리 결과</div>

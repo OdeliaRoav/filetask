@@ -22,34 +22,34 @@ public class UserService {
     private final RedisTemplate<String, String> redisTemplate;
     private final UserQueryRepository userQueryRepository;
     private final FileUserParser fileUserParser;
+    private final FileHashGenerator fileHashGenerator;
 
-    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, FileUserParser fileUserParser) {
+    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, FileUserParser fileUserParser, FileHashGenerator fileHashGenerator) {
         this.userRepository = userRepository;
         this.redisTemplate = redisTemplate;
         this.userQueryRepository = userQueryRepository;
         this.fileUserParser = fileUserParser;
+        this.fileHashGenerator = fileHashGenerator;
     }
 
     // dbfile 업로드 처리
     // 파일 검증, 중복 업로드 확인, 라인별 저장 결과 집계를 수행하고 화면에서 사용할 결과 Map을 반환
     public UploadResponse uploadFile(MultipartFile file, boolean force) {
-        if (file == null || file.isEmpty()) {
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
-
         String fileName = file.getOriginalFilename();
-
         // 업로드 가능한 파일은 과제 조건의 .dbfile로 제한하고, 실패 응답은 공통 ErrorCode로 표현
         if (fileName == null || !fileName.endsWith(".dbfile")) {
             throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
         }
 
-        String redisKey = "recent:" + fileName;
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
+        }
+        // 파일 내용을 기준으로 redis에 저장한다.
+        String fileHash = fileHashGenerator.generateFileHash(file);
+        String redisKey = "recent:file:" + fileHash;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
-        //force -> default : false
-        // 같은 파일명이 TTL 안에 다시 올라오면 저장하지 않고 확인용 응답을 내려 강제 업로드 여부를 받는다.
-        if (duplicated && !force) {
+        if (Boolean.TRUE.equals(duplicated) && !force) {
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             return UploadResponse.duplicated(fileName, ttlSeconds);
         }
@@ -64,6 +64,9 @@ public class UserService {
             String oneLine = lines.get(i);
             try {
                 FileUser fileUser = fileUserParser.parseLine(oneLine);
+                if(userRepository.existsById(fileUser.getId())){
+                    throw new BusinessException(ErrorCode.DUPLICATE_USER);
+                }
                 userRepository.save(fileUser);
                 successCount++;
             } catch (Exception e) {
