@@ -44,8 +44,7 @@ public class GlobalExceptionHandler {
 
     //devtools.json 404 에러 방지
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourcesFoundException(Exception e){
-        log.error("devtools 에러 : ", e);
+    public ResponseEntity<Void> handleNoResourcesFoundException(NoResourceFoundException e){
         return ResponseEntity.notFound().build();
     }
 
