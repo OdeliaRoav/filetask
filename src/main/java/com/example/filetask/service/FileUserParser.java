@@ -62,7 +62,7 @@ public class FileUserParser {
 
     private LocalDateTime parseRegDate(String value){
         try{
-            return LocalDateTime.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+            return LocalDateTime.parse(value, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         } catch (DateTimeParseException e){
             throw new BusinessException(ErrorCode.INVALID_DATE_FORMAT);
         }
