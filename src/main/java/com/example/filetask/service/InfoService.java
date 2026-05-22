@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class InfoService {
-
+    // 로그인, 회원가입 담당
     private final InfoRepository infoRepository;
 
     public InfoService(InfoRepository infoRepository){

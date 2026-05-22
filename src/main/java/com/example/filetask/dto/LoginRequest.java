@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class LoginRequest {
 
     //NotBlank로 발생 시키는 에러 MethodArgumentNotValidException
+    //null, 빈 값, 공백을 막는다. -> 문자열 검증에 주로 사용
     @NotBlank
     @Email
     @Size(max = 16)
