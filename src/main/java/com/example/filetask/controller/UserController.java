@@ -1,9 +1,9 @@
 package com.example.filetask.controller;
 
+import com.example.filetask.dto.FileUserResponse;
 import com.example.filetask.dto.LoginRequest;
 import com.example.filetask.dto.SignupRequest;
 import com.example.filetask.dto.UploadResponse;
-import com.example.filetask.entity.FileUser;
 import com.example.filetask.service.InfoService;
 import com.example.filetask.service.UserService;
 import jakarta.validation.Valid;
@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-
+// 삭제, 조회 API는 Controller에서 검증을 진행한다. -> @Validated
 @Validated
 @RestController
 @RequestMapping("/users")
@@ -35,7 +35,7 @@ public class UserController {
     // 전체 사용자 조회 API
     // 업로드 화면 Grid 초기 로딩과 새로고침에서 사용하며 조회 결과를 JSON 배열로 반환
     @GetMapping
-    public List<FileUser> getAllUsers() {
+    public List<FileUserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -43,7 +43,7 @@ public class UserController {
     // field와 keyword는 URL query parameter(GET으로 전송 받음)로 받고, QueryDSL 조건 생성은 Repository 계층에서 처리
     // URL Parameter로 받고 있기 때문에 Valid가 아니라 Validated를 사용해야한다.
     @GetMapping("/search")
-    public List<FileUser> searchUsers(@RequestParam @NotBlank String field, @RequestParam @NotBlank @Size(max = 256) String keyword) {
+    public List<FileUserResponse> searchUsers(@RequestParam @NotBlank String field, @RequestParam @NotBlank @Size(max = 256) String keyword) {
         return userService.searchUsers(field, keyword);
     }
 
