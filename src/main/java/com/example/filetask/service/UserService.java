@@ -1,19 +1,21 @@
 package com.example.filetask.service;
 
+import com.example.filetask.dto.FileUserResponse;
 import com.example.filetask.dto.UploadResponse;
 import com.example.filetask.entity.FileUser;
 import com.example.filetask.exception.BusinessException;
 import com.example.filetask.exception.ErrorCode;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service
 public class UserService {
     // 업로드 흐름 담당
@@ -23,27 +25,13 @@ public class UserService {
     private final UserQueryRepository userQueryRepository;
     private final FileUserParser fileUserParser;
     private final FileHashGenerator fileHashGenerator;
-
-    public UserService(UserRepository userRepository, RedisTemplate<String, String> redisTemplate, UserQueryRepository userQueryRepository, FileUserParser fileUserParser, FileHashGenerator fileHashGenerator) {
-        this.userRepository = userRepository;
-        this.redisTemplate = redisTemplate;
-        this.userQueryRepository = userQueryRepository;
-        this.fileUserParser = fileUserParser;
-        this.fileHashGenerator = fileHashGenerator;
-    }
+    private final UploadFileNameValidator uploadFileNameValidator;
 
     // dbfile 업로드 처리
     // 파일 검증, 중복 업로드 확인, 라인별 저장 결과 집계를 수행하고 화면에서 사용할 결과 Map을 반환
     public UploadResponse uploadFile(MultipartFile file, boolean force) {
-        String fileName = file.getOriginalFilename();
-        // 업로드 가능한 파일은 과제 조건의 .dbfile로 제한하고, 실패 응답은 공통 ErrorCode로 표현
-        if (fileName == null || !fileName.endsWith(".dbfile")) {
-            throw new BusinessException(ErrorCode.INVALID_FILE_EXTENSION);
-        }
+        String fileName = uploadFileNameValidator.validate(file);
 
-        if (file == null || file.isEmpty()) {
-            throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
-        }
         // 파일 내용을 기준으로 redis에 저장한다.
         String fileHash = fileHashGenerator.generateFileHash(file);
         String redisKey = "recent:file:" + fileHash;
@@ -56,56 +44,60 @@ public class UserService {
 
         List<String> lines = fileUserParser.readLines(file);
 
-        int successCount = 0;
-        int failCount = 0;
-        List<String> failList = new ArrayList<>();
+        UploadResult result = new UploadResult();
 
         for (int i = 0; i < lines.size(); i++) {
             String oneLine = lines.get(i);
             try {
                 FileUser fileUser = fileUserParser.parseLine(oneLine);
-                if(userRepository.existsById(fileUser.getId())){
-                    throw new BusinessException(ErrorCode.DUPLICATE_USER);
-                }
-                userRepository.save(fileUser);
-                successCount++;
+                saveFileUser(fileUser);
+                result.addSuccess();
             } catch (Exception e) {
-                failList.add((i + 1) + "번 줄 실패 : " + oneLine + "\n" + e.getMessage());
-                failCount++;
+                result.addFail(i+1, oneLine, e);
             }
         }
 
-        if (successCount > 0) {
+        if (result.isSuccess()) {
             redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
         }
 
-        return UploadResponse.complete(
+        return result.toResponse(
                 duplicated,
                 force,
                 fileName,
                 lines.size(),
-                successCount,
-                failList,
-                failCount,
-                successCount > 0 ? 300:0
+                result.isSuccess() ? 300 : 0
         );
+    }
 
+    // 무엇을 하는지 명확하게 보기 위해 분리
+    private void saveFileUser(FileUser fileUser){
+        if(userRepository.existsById(fileUser.getId())){
+            throw new BusinessException(ErrorCode.DUPLICATE_USER);
+        }
+        userRepository.save(fileUser);
     }
 
     // Grid 전체 조회
     // Controller는 요청만 받고 실제 조회 방식은 QueryDSL Repository에 보낸다.
-    public List<FileUser> getAllUsers() {
-        return userQueryRepository.findAllUsers();
+    public List<FileUserResponse> getAllUsers() {
+        return userQueryRepository.findAllUsers()
+                .stream()
+                .map(FileUserResponse::user)
+                .toList();
     }
 
     // Grid 조건 검색
     // field/keyword를 그대로 Repository로 넘겨 검색 조건 생성 책임을 한 곳에 둔다.
-    public List<FileUser> searchUsers(String field, String keyword) {
-        if(!List.of("id", "name", "level", "desc").contains(field)){
+    public List<FileUserResponse> searchUsers(String field, String keyword) {
+        if (!List.of("id", "name", "level", "desc").contains(field)) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
 
-        return userQueryRepository.searchUsers(field, keyword);
+        return userQueryRepository.searchUsers(field, keyword)
+                .stream()
+                .map(FileUserResponse::user)
+                .toList();
     }
 
     // ID 기준 삭제 처리
@@ -117,6 +109,14 @@ public class UserService {
     }
 
 }
+
+
+
+
+
+
+
+
 
 
 //    private LocalDateTime parseRegDate(String value){
