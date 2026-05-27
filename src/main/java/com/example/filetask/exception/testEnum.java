@@ -1,38 +1,26 @@
 package com.example.filetask.exception;
 
-// enum이란 관련이 있는 상수들의 집합.
-public enum testEnum {
-    FILE_SUCCESS(200, "200_OK"),
-    FILE_CONTINUE(201, "201_CONTINUE");
+import org.springframework.http.HttpStatus;
 
-    private final int status;
-    private final String code;
+public enum testEnum{
+    FILE_SUCCESS(HttpStatus.OK, "업로드 성공"),
+    FILE_FAIL(HttpStatus.NOT_FOUND, "업로드 실패");
 
-    testEnum(int status, String code){
+    private final  HttpStatus status;
+    private final String message;
+
+    testEnum(HttpStatus status, String message){
         this.status = status;
-        this.code = code;
+        this.message = message;
     }
 
-    public int getStatus(){
+    public HttpStatus getStatus() {
         return status;
     }
 
-    public String getCode(){
-        return code;
+    public String getMessage() {
+        return message;
     }
 
+
 }
-
-
-
-/*
-* public enum testEnum{
-*   FILE_SUCCESS(200, "200_OK"),
-*   FILE_CONTINUE(201, "201_OK")
-*
-*
-*
-*
-*
-*
-* */
