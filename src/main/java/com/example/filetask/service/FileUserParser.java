@@ -20,7 +20,6 @@ import java.util.List;
 @Service
 public class FileUserParser {
     // 파일 해석 담당
-
     public List<String> readLines(MultipartFile file){
         List<String> lines = new ArrayList<>();
 

@@ -35,7 +35,8 @@ public class FileUser {
     @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
-    //아무곳에서나 객체를 생성하지 못하게 막는다.
+    // 아무곳에서나 객체를 생성하지 못하게 막는다.
+    //
     protected FileUser(){
     }
 
@@ -44,7 +45,6 @@ public class FileUser {
         validateRequired(pwd);
         validateRequired(name);
         validateRequired(level);
-        validateRequired(desc);
 
         if(regDate == null){
             throw new BusinessException(ErrorCode.REQUIRED_VALUE_EMPTY);
