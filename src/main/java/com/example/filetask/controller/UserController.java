@@ -5,11 +5,13 @@ import com.example.filetask.dto.LoginRequest;
 import com.example.filetask.dto.SignupRequest;
 import com.example.filetask.dto.UploadResponse;
 import com.example.filetask.service.InfoService;
+import com.example.filetask.service.UploadFileService;
 import com.example.filetask.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -19,18 +21,16 @@ import java.util.List;
 
 // 삭제, 조회 API는 Controller에서 검증을 진행한다. -> @Validated
 @Validated
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     // Controller는 HTTP 요청/응답 경계만 담당하고, 실제 검증과 저장 로직은 UserService에서 처리
     private final UserService userService;
+    private final UploadFileService uploadFileService;
     private final InfoService infoService;
 
-    public UserController(UserService userService, InfoService infoService) {
-        this.userService = userService;
-        this.infoService = infoService;
-    }
 
     // 전체 사용자 조회 API
     // 업로드 화면 Grid 초기 로딩과 새로고침에서 사용하며 조회 결과를 JSON 배열로 반환
@@ -68,7 +68,7 @@ public class UserController {
     // boolean은 default 값이 있기에 검증할 필요가 없다.
     @PostMapping(value = "/upload", consumes = "multipart/form-data")
     public UploadResponse uploadFile(@RequestParam("file") @NotNull MultipartFile file, @RequestParam(value = "force", defaultValue = "false") boolean force) {
-        return userService.uploadFile(file, force);
+        return uploadFileService.uploadFile(file, force);
     }
 
     // ID 기준 사용자 삭제 API

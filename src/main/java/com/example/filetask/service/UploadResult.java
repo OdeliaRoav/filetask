@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UploadResult {
+    // 업로드 결과 담당
     private int successCount;
     private int failCount;
     private List<String> failList = new ArrayList<>();

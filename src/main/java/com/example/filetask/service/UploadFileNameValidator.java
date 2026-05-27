@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UploadFileNameValidator {
+    // 파일명 담당
     public String validate(MultipartFile file) {
         String fileName = file.getOriginalFilename();
         if(fileName == null || !fileName.endsWith(".dbfile")){
