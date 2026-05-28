@@ -38,13 +38,8 @@ public class UserQueryRepository {
             return null;
         }
 
-        return switch (field) {
-            case "id" -> fileUser.id.containsIgnoreCase(keyword);
-            case "name" -> fileUser.name.containsIgnoreCase(keyword);
-            case "level" -> fileUser.level.containsIgnoreCase(keyword);
-            case "desc" -> fileUser.desc.containsIgnoreCase(keyword);
-            default -> null;
-        };
+        UserSearchField searchField = UserSearchField.from(field);
+        return searchField.condition(fileUser, keyword);
     }
 
     // 조건 검색 실행
@@ -53,9 +48,7 @@ public class UserQueryRepository {
         QFileUser fileUser = QFileUser.fileUser;
 
         BooleanExpression condition = searchCondition(field, keyword);
-        if (condition == null) {
-            throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
-        }
+
         // 조건을 변수로 분리해 null 여부를 먼저 판단하면 where(null) 호출보다 검색 실패 흐름이 명확
         return jpaQueryFactory
                 .selectFrom(fileUser)

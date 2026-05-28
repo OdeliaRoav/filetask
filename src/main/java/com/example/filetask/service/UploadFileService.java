@@ -25,6 +25,7 @@ public class UploadFileService {
         private final FileUserParser fileUserParser;
         private final FileHashGenerator fileHashGenerator;
         private final UploadFileNameValidator uploadFileNameValidator;
+        private final UploadDuplicateChecker uploadDuplicateChecker;
 
         // dbfile 업로드 처리
         // 파일 검증, 중복 업로드 확인, 라인별 저장 결과 집계를 수행하고 화면에서 사용할 DTO를 반환
@@ -32,25 +33,22 @@ public class UploadFileService {
             String fileName = uploadFileNameValidator.validate(file);
 
             // 파일 내용을 기준으로 redis에 저장한다.
-            String fileHash = fileHashGenerator.generateFileHash(file);
-            String redisKey = "recent:file:" + fileHash;
-            Boolean duplicated = redisTemplate.hasKey(redisKey);
+            UploadDuplicateResult duplicateResult = uploadDuplicateChecker.check(file);
 
-            if(duplicated && !force){
-                Long ttlSeconds = redisTemplate.getExpire(redisKey);
-                return UploadResponse.duplicated(fileName, ttlSeconds);
+            if(duplicateResult.duplicated() && !force){
+                return UploadResponse.duplicated(fileName, duplicateResult.ttlSeconds());
             }
 
             List<String> lines = fileUserParser.readLines(file);
             UploadResult result = processLine(lines);
 
             if(result.isSuccess()){
-                redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
-                log.info(fileHash);
+                redisTemplate.opsForValue().set(duplicateResult.redisKey(), fileName, Duration.ofSeconds(300));
+                log.info(duplicateResult.redisKey());
             }
 
             return result.toResponse(
-                    duplicated,
+                    duplicateResult.duplicated(),
                     force,
                     fileName,
                     lines.size(),
