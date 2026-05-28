@@ -2,8 +2,6 @@ package com.example.filetask.repository;
 
 import com.example.filetask.entity.FileUser;
 import com.example.filetask.entity.QFileUser;
-import com.example.filetask.exception.BusinessException;
-import com.example.filetask.exception.ErrorCode;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.stereotype.Repository;
@@ -20,7 +18,7 @@ public class UserQueryRepository {
     }
 
     // 전체 조회
-    // 업로드 화면의 Grid에 표시할 사용자 데이터를 QueryDSL로 조회한다.
+    // 업로드 화면 Grid에 표시할 사용자 데이터를 QueryDSL로 조회한다.
     public List<FileUser> findAllUsers() {
         QFileUser fileUser = QFileUser.fileUser;
 
@@ -30,7 +28,7 @@ public class UserQueryRepository {
     }
 
     // 검색 조건 생성
-    // field 값에 따라 QueryDSL BooleanExpression을 만들고, 유효하지 않은 조건은 null로 반환
+    // field 값 검증과 QueryDSL 조건 생성은 UserSearchField enum에 위임한다.
     private BooleanExpression searchCondition(String field, String keyword) {
         QFileUser fileUser = QFileUser.fileUser;
 
@@ -43,13 +41,13 @@ public class UserQueryRepository {
     }
 
     // 조건 검색 실행
-    // 화면 콤보박스에서 선택한 검색 기준과 검색어를 받아 조건에 맞는 row만 조회
+    // 화면 콤보박스에서 선택한 검색 기준과 검색어를 받아 조건에 맞는 row만 조회한다.
     public List<FileUser> searchUsers(String field, String keyword) {
         QFileUser fileUser = QFileUser.fileUser;
 
         BooleanExpression condition = searchCondition(field, keyword);
 
-        // 조건을 변수로 분리해 null 여부를 먼저 판단하면 where(null) 호출보다 검색 실패 흐름이 명확
+        // 생성된 조건을 where 절에 넣어 QueryDSL 조회를 수행한다.
         return jpaQueryFactory
                 .selectFrom(fileUser)
                 .where(condition)
