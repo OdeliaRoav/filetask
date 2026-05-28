@@ -42,20 +42,8 @@ public class UploadFileService {
             }
 
             List<String> lines = fileUserParser.readLines(file);
+            UploadResult result = processLine(lines);
 
-            UploadResult result = new UploadResult();
-
-            for(int i = 0; i < lines.size(); i++){
-                String oneLine = lines.get(i);
-                try{
-                    FileUser fileUser = fileUserParser.parseLine(oneLine);
-                    saveFileUser(fileUser);
-                    result.addSuccess();
-                }catch(Exception e){
-                    result.addFail(i+1, oneLine, e);
-                }
-
-            }
             if(result.isSuccess()){
                 redisTemplate.opsForValue().set(redisKey, fileName, Duration.ofSeconds(300));
                 log.info(fileHash);
@@ -78,5 +66,23 @@ public class UploadFileService {
             }
             userRepository.save(fileUser);
         }
+
+        private UploadResult processLine(List<String> lines){
+            UploadResult result = new UploadResult();
+
+            for(int i = 0; i < lines.size(); i++){
+                String oneLine = lines.get(i);
+                try{
+                    FileUser fileUser = fileUserParser.parseLine(oneLine);
+                    saveFileUser(fileUser);
+                    result.addSuccess();
+                }catch(Exception e){
+                    result.addFail(i+1, oneLine, e);
+                }
+
+            }
+            return result;
+        }
+
 
 }
