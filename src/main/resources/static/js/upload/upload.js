@@ -5,6 +5,7 @@ var popupForm;
 var mainLayout;
 var pagination;
 var checkedIds = new Set();
+var latestResultHtml = getDefaultResultHtml();
 
 
 // 업로드 화면 초기화
@@ -17,42 +18,20 @@ const boardManager = () => {
 }
 
 // 전체 화면 레이아웃 생성
-// 왼쪽은 업로드/조회 결과, 오른쪽은 도구 영역과 사용자 데이터 Grid로 나눈다.
+// 결과 영역은 별도 사이드바가 아니라 도구 영역의 결과 보기 버튼으로 확인한다.
 const createLayout = () => {
     layout = new dhx.Layout("layout", {
         type: "line",
         rows: [
             {
                 css: "tabArea",
-                cols: [
-                    {
-                        id: "sidebar",
-                        header: "결과",
-                        collapsable: true,
-                        width: "370px",
-                        resizable: true,
-                        align: "center"
-                    },
-                    {
-                        id: "content",
-                        css:"contentGrid",
-                        header: "Filetask",
-                        resizable: true
-                    },
-                ]
+                id: "content",
+                css:"contentGrid",
+                header: "Filetask",
+                resizable: true
             },
         ]
     });
-
-    layout.getCell("sidebar").attachHTML(`
-        <div id="resultArea">
-            <div class="result-panel">
-                <div class="result-title">처리 결과</div>
-                <p class="result-empty">아직 처리 결과가 없습니다.</p>
-                <p class="result-help">파일 업로드 후 결과가 표시됩니다.</p>
-            </div>
-        </div>
-    `);
 };
 
 // 업로드, 검색, 초기화, 삭제 도구 폼 생성
@@ -154,6 +133,20 @@ const createUploadForm = () => {
                     {
                         type: "spacer",
                         width: "18px"
+                    },
+                    {
+                        type: "button",
+                        name: "showResultBtn",
+                        text: "결과 보기",
+                        height: 32,
+                        width: 86,
+                        size: "small",
+                        view: "flat",
+                        color: "primary"
+                    },
+                    {
+                        type: "spacer",
+                        width: "18px"
                     }
                 ]
             }
@@ -177,6 +170,10 @@ const createUploadForm = () => {
 
         if(name === "deleteIdBtn"){
             deleteById();
+        }
+
+        if(name === "showResultBtn"){
+            openResultPopup();
         }
 
     });
@@ -458,13 +455,11 @@ function clearFile() {
 }
 
 // 업로드 결과 표시
-// 서버 응답의 중복 여부, 성공/실패 건수, 라인별 실패 목록을 왼쪽 결과 영역에 보여준다.
+// 서버 응답의 중복 여부, 성공/실패 건수, 라인별 실패 목록을 결과 보기 팝업에서 확인할 수 있게 저장한다.
 const showUploadResult = (result) => {
-    const area = document.getElementById("resultArea");
-
     // duplicated가 true면 실제 저장 결과가 아니라 중복 업로드 안내 응답으로 판단한다.
     if(result.duplicated === true && result.forced !== true){
-        area.innerHTML = `
+        setLatestResultHtml(`
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
             <div class="result-row"><span>상태</span><strong>확인 필요</strong></div>
@@ -472,13 +467,13 @@ const showUploadResult = (result) => {
             <div class="result-row"><span>처리 결과</span><strong>${escapeHtml(result.message || "중복 파일입니다.")}</strong></div>
             <div class="result-row"><span>남은 시간</span><strong>${result.ttlSeconds || 0}초</strong></div>
         </div>
-        `;
+        `);
         return;
     }
 
     // 실패 건수가 0이면 전체 성공 메시지만 간단히 보여준다.
     if(result.failCount == 0 ){
-        area.innerHTML = `
+        setLatestResultHtml(`
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
             <div class="result-row"><span>상태</span><strong>전체 성공</strong></div>
@@ -486,7 +481,7 @@ const showUploadResult = (result) => {
             <div class="result-row"><span>성공 건수</span><strong>${result.successCount}건</strong></div>
             <div class="result-row"><span>실패 건수</span><strong>${result.failCount}건</strong></div>
         </div>
-        `;
+        `);
         return;
     }
 
@@ -494,7 +489,7 @@ const showUploadResult = (result) => {
     const failHtml = (result.failList || []).map(fail => `<li>${escapeHtml(fail)}</li>`).join("");
     const uploadStatus = result.successCount == 0 ? "전체 실패" : "일부 실패";
 
-    area.innerHTML = `
+    setLatestResultHtml(`
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
             <div class="result-row"><span>상태</span><strong>${uploadStatus}</strong></div>
@@ -506,7 +501,7 @@ const showUploadResult = (result) => {
                 <ul>${failHtml}</ul>
             </div>
         </div>
-        `;
+        `);
 };
 
 // 전체 데이터 조회
@@ -914,15 +909,42 @@ function escapeHtml(value) {
 }
 
 
+function getDefaultResultHtml() {
+    return `
+        <div class="result-panel">
+            <div class="result-title">처리 결과</div>
+            <p class="result-empty">아직 처리 결과가 없습니다.</p>
+            <p class="result-help">파일 업로드 후 결과가 표시됩니다.</p>
+        </div>
+    `;
+}
+
+// 최근 처리 결과 저장
+// 결과 보기 버튼을 눌렀을 때 최신 업로드/조회 결과를 팝업으로 다시 보여준다.
+function setLatestResultHtml(html) {
+    latestResultHtml = html || getDefaultResultHtml();
+}
+
+// 결과 보기 팝업 열기
+function openResultPopup() {
+    dhx.alert({
+        header: "결과 보기",
+        text: `<div class="result-area result-popup-content">${latestResultHtml}</div>`,
+        htmlEnable: true,
+        buttonsAlignment: "center",
+        buttons: ["닫기"],
+        css: "result_popup_alert"
+    });
+}
+
 // 빈 조회 결과 표시
-// Grid만 비우면 사용자가 조회 완료 여부를 알기 어려워 왼쪽 결과 영역에도 안내를 남긴다.
+// Grid만 비우면 사용자가 조회 완료 여부를 알기 어려워 결과 보기 팝업에도 안내를 남긴다.
 function showEmptyDataResult() {
-    const area = document.getElementById("resultArea");
-    area.innerHTML = `
+    setLatestResultHtml(`
         <div class="result-panel">
             <div class="result-title">조회 결과</div>
             <p class="result-empty">조회된 고객 데이터가 없습니다.</p>
             <p class="result-help">전체 조회 또는 조건 검색으로 고객 데이터를 확인하세요.</p>
         </div>
-    `;
+    `);
 }
