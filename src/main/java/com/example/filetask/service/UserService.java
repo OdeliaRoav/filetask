@@ -6,6 +6,7 @@ import com.example.filetask.exception.BusinessException;
 import com.example.filetask.exception.ErrorCode;
 import com.example.filetask.repository.UserQueryRepository;
 import com.example.filetask.repository.UserRepository;
+import com.example.filetask.repository.UserSearchField;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,9 @@ public class UserService {
     // Grid 조건 검색
     // Service는 검색 요청을 Repository에 전달하고, 검색 필드 검증과 조건 생성은 Repository 계층에 맡긴다.
     public List<FileUserResponse> searchUsers(String field, String keyword) {
-        return userQueryRepository.searchUsers(field, keyword)
+        UserSearchField searchField = UserSearchField.from(field);
+
+        return userQueryRepository.searchUsers(searchField, keyword)
                 .stream()
                 .map(FileUserResponse::user)
                 .toList();

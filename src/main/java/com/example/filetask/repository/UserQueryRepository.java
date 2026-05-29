@@ -29,23 +29,22 @@ public class UserQueryRepository {
 
     // 검색 조건 생성
     // field 값 검증과 QueryDSL 조건 생성은 UserSearchField enum에 위임한다.
-    private BooleanExpression searchCondition(String field, String keyword) {
+    private BooleanExpression searchCondition(UserSearchField searchField, String keyword) {
         QFileUser fileUser = QFileUser.fileUser;
 
-        if (field == null || keyword == null || keyword.isBlank()) {
+        if (searchField == null || keyword == null || keyword.isBlank()) {
             return null;
         }
 
-        UserSearchField searchField = UserSearchField.from(field);
         return searchField.condition(fileUser, keyword);
     }
 
     // 조건 검색 실행
     // 화면 콤보박스에서 선택한 검색 기준과 검색어를 받아 조건에 맞는 row만 조회한다.
-    public List<FileUser> searchUsers(String field, String keyword) {
+    public List<FileUser> searchUsers(UserSearchField searchField, String keyword) {
         QFileUser fileUser = QFileUser.fileUser;
 
-        BooleanExpression condition = searchCondition(field, keyword);
+        BooleanExpression condition = searchCondition(searchField, keyword);
 
         // 생성된 조건을 where 절에 넣어 QueryDSL 조회를 수행한다.
         return jpaQueryFactory
