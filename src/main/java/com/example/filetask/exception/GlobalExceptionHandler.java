@@ -3,7 +3,9 @@ package com.example.filetask.exception;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -39,6 +41,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e){
         log.error("요청 파라미터 검증 실패 : ", e);
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE);
+    }
+
+    //컨트롤러가 요구하는 필수 파라미터가 HTTP 요청에 누락되었을 때 발생하는 예외
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameterException(MissingServletRequestParameterException e){
+        return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE);
+    }
+
+    //JSON 파싱 오류 등으로 요청 본문을 읽을 수 없을 때 발생한다.
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handlerHttpMessageNotReadableException(HttpMessageNotReadableException e){
         return createErrorResponse(ErrorCode.INVALID_INPUT_VALUE);
     }
 
