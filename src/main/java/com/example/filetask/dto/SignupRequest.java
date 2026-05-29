@@ -14,13 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SignupRequest {
 
-    // @Emial -> 이메일 검증
     @NotBlank
-    @Email
     @Size(max = 16)
     private String id;
     @NotBlank
-    @Size(max = 32)
+    @Size(min = 4, max = 32)
     private String pwd;
     @NotBlank
     @Size(max = 32)
