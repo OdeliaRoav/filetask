@@ -38,7 +38,7 @@ public class FileUserParser {
 
     public FileUser parseLine(String oneLine){
         // 빈 컬럼도 보존[split("/", -1)]해야 컬럼 수 누락을 구분할 수 있다.
-        String data[] = oneLine.split("/", -1);
+        String data [] = oneLine.split("/", -1);
         //길이가 6이 아닐 때 예외처리
         if (data.length != 6) {
             throw new BusinessException(ErrorCode.INVALID_FILE_COLUMN_COUNT);

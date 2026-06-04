@@ -37,7 +37,7 @@ public class UserService {
         String redisKey = "recent:file:" + fileHash;
         Boolean duplicated = redisTemplate.hasKey(redisKey);
 
-        if (Boolean.TRUE.equals(duplicated) && !force) {
+        if (duplicated && !force) {
             Long ttlSeconds = redisTemplate.getExpire(redisKey);
             return UploadResponse.duplicated(fileName, ttlSeconds);
         }
@@ -93,7 +93,6 @@ public class UserService {
         if (!List.of("id", "name", "level", "desc").contains(field)) {
             throw new BusinessException(ErrorCode.INVALID_INPUT_VALUE);
         }
-
         return userQueryRepository.searchUsers(field, keyword)
                 .stream()
                 .map(FileUserResponse::user)

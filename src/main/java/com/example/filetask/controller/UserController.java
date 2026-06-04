@@ -42,6 +42,7 @@ public class UserController {
     // 조건 검색 API
     // field와 keyword는 URL query parameter(GET으로 전송 받음)로 받고, QueryDSL 조건 생성은 Repository 계층에서 처리
     // URL Parameter로 받고 있기 때문에 Valid가 아니라 Validated를 사용해야한다.
+    // URL Parameter를 받고 조회, 삭제 API의 경우 Controller에서 검증을 진행한다.
     @GetMapping("/search")
     public List<FileUserResponse> searchUsers(@RequestParam @NotBlank String field, @RequestParam @NotBlank @Size(max = 256) String keyword) {
         return userService.searchUsers(field, keyword);

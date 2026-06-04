@@ -5,7 +5,7 @@ var popupForm;
 var mainLayout;
 var pagination;
 var checkedIds = new Set();
-var latestResultHtml = getDefaultResultHtml();
+var latestResult = getDefaultResultHtml();
 
 
 // 업로드 화면 초기화
@@ -24,7 +24,6 @@ const createLayout = () => {
         type: "line",
         rows: [
             {
-                css: "tabArea",
                 id: "content",
                 css:"contentGrid",
                 header: "Filetask",
@@ -133,6 +132,9 @@ const createUploadForm = () => {
                     {
                         type: "spacer",
                         width: "18px"
+                    },
+                    {
+                        type: "spacer"
                     },
                     {
                         type: "button",
@@ -459,7 +461,7 @@ function clearFile() {
 const showUploadResult = (result) => {
     // duplicated가 true면 실제 저장 결과가 아니라 중복 업로드 안내 응답으로 판단한다.
     if(result.duplicated === true && result.forced !== true){
-        setLatestResultHtml(`
+        setLatestResult(`
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
             <div class="result-row"><span>상태</span><strong>확인 필요</strong></div>
@@ -473,7 +475,7 @@ const showUploadResult = (result) => {
 
     // 실패 건수가 0이면 전체 성공 메시지만 간단히 보여준다.
     if(result.failCount == 0 ){
-        setLatestResultHtml(`
+        setLatestResult(`
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
             <div class="result-row"><span>상태</span><strong>전체 성공</strong></div>
@@ -489,7 +491,7 @@ const showUploadResult = (result) => {
     const failHtml = (result.failList || []).map(fail => `<li>${escapeHtml(fail)}</li>`).join("");
     const uploadStatus = result.successCount == 0 ? "전체 실패" : "일부 실패";
 
-    setLatestResultHtml(`
+    setLatestResult(`
         <div class="result-panel">
             <div class="result-title">처리 결과</div>
             <div class="result-row"><span>상태</span><strong>${uploadStatus}</strong></div>
@@ -921,15 +923,15 @@ function getDefaultResultHtml() {
 
 // 최근 처리 결과 저장
 // 결과 보기 버튼을 눌렀을 때 최신 업로드/조회 결과를 팝업으로 다시 보여준다.
-function setLatestResultHtml(html) {
-    latestResultHtml = html || getDefaultResultHtml();
+function setLatestResult(html) {
+    latestResult = html || getDefaultResultHtml();
 }
 
 // 결과 보기 팝업 열기
 function openResultPopup() {
     dhx.alert({
         header: "결과 보기",
-        text: `<div class="result-area result-popup-content">${latestResultHtml}</div>`,
+        text: `<div class="result-area result-popup-content">${latestResult}</div>`,
         htmlEnable: true,
         buttonsAlignment: "center",
         buttons: ["닫기"],
@@ -940,7 +942,7 @@ function openResultPopup() {
 // 빈 조회 결과 표시
 // Grid만 비우면 사용자가 조회 완료 여부를 알기 어려워 결과 보기 팝업에도 안내를 남긴다.
 function showEmptyDataResult() {
-    setLatestResultHtml(`
+    setLatestResult(`
         <div class="result-panel">
             <div class="result-title">조회 결과</div>
             <p class="result-empty">조회된 고객 데이터가 없습니다.</p>
