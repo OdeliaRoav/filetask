@@ -21,7 +21,6 @@ import java.util.List;
 
 // 삭제, 조회 API는 Controller에서 검증을 진행한다. -> @Validated
 @Validated
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -31,6 +30,11 @@ public class UserController {
     private final UploadFileService uploadFileService;
     private final InfoService infoService;
 
+    public UserController(UserService userService, UploadFileService uploadFileService, InfoService infoService){
+        this.userService = userService;
+        this.uploadFileService = uploadFileService;
+        this.infoService = infoService;
+    }
 
     // 전체 사용자 조회 API
     // 업로드 화면 Grid 초기 로딩과 새로고침에서 사용하며 조회 결과를 JSON 배열로 반환
