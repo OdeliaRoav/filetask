@@ -82,5 +82,6 @@ public class UserController {
         userService.deleteById(id);
         return ResponseEntity.ok().build();
     }
+
 }
 

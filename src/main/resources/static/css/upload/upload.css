@@ -253,6 +253,10 @@ body {
 	padding: 0;
 }
 
+.upload_popup_alert .dhx_alert__footer .dhx_button {
+	border-radius: 7px;
+}
+
 .uploadPopupContent {
 	background-color: #ffffff;
 	width: 100%;
